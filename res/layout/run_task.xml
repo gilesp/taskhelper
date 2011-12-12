@@ -1,21 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
- android:layout_width="wrap_content" 
- android:layout_height="wrap_content"         
- android:layout_centerHorizontal="true">
-    <Button android:id="@+id/btnNext"
-            android:layout_height="wrap_content" 
-            android:layout_width="wrap_content"     
-            android:text="Next"
-            android:layout_alignParentBottom="true" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout android:id="@+id/buttonBar"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+    </LinearLayout>
+    <!--  may need to wrap this in a scrollable layout if the content is going 
+    to be large, to avoid pushing the buttons off the bottom of the screen -->
     <LinearLayout android:layout_width="fill_parent" 
-                  android:layout_height="fill_parent"
-                  android:layout_above="@id/btnNext" 
+                  android:layout_height="wrap_content"
+                  android:layout_above="@+id/buttonBar" 
+                  android:layout_alignParentTop="true"
                   android:id="@+id/pageContent" 
                   android:orientation="vertical">
-        <TextView android:id="@+id/taskId" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="id"></TextView>
-        <TextView android:id="@+id/taskName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="name"></TextView>
-        <TextView android:id="@+id/taskDescription" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="description"></TextView>
     </LinearLayout>
-</RelativeLayout> 
-
+</RelativeLayout>
     

@@ -29,9 +29,26 @@ import android.os.Bundle;
 
 /**
  * This class is an implementation of AbstractAccountAuthenticator for
- * authenticating accounts in the com.example.android.samplesync domain.
+ * authenticating accounts in the com.example.android.samplesync domain. The
+ * interesting thing that this class demonstrates is the use of authTokens as
+ * part of the authentication process. In the account setup UI, the user enters
+ * their username and password. But for our subsequent calls off to the service
+ * for syncing, we want to use an authtoken instead - so we're not continually
+ * sending the password over the wire. getAuthToken() will be called when
+ * SyncAdapter calls AccountManager.blockingGetAuthToken(). When we get called,
+ * we need to return the appropriate authToken for the specified account. If we
+ * already have an authToken stored in the account, we return that authToken. If
+ * we don't, but we do have a username and password, then we'll attempt to talk
+ * to the sample service to fetch an authToken. If that fails (or we didn't have
+ * a username/password), then we need to prompt the user - so we create an
+ * AuthenticatorActivity intent and return that. That will display the dialog
+ * that prompts the user for their login information.
  */
+
 class Authenticator extends AbstractAccountAuthenticator {
+	
+	private static final String TAG = "Authenticator";
+	
     // Authentication Service context
     private final Context mContext;
 
@@ -44,14 +61,11 @@ class Authenticator extends AbstractAccountAuthenticator {
      * {@inheritDoc}
      */
     @Override
-    public Bundle addAccount(AccountAuthenticatorResponse response,
-        String accountType, String authTokenType, String[] requiredFeatures,
-        Bundle options) {
+    public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, 
+    		String authTokenType, String[] requiredFeatures, Bundle options) {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
-        intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE,
-            authTokenType);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-            response);
+        intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -64,10 +78,12 @@ class Authenticator extends AbstractAccountAuthenticator {
     public Bundle confirmCredentials(AccountAuthenticatorResponse response,
         Account account, Bundle options) {
         if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
-            final String password =
-                options.getString(AccountManager.KEY_PASSWORD);
-            final boolean verified =
-                onlineConfirmPassword(account.name, password);
+            final String password = options.getString(AccountManager.KEY_PASSWORD);
+            final String authToken = NetworkUtilities.authenticate(account.name, password);
+            boolean verified = false;
+            if((authToken != null) && (authToken.length() > 0)){
+            	verified = true;
+            }
             final Bundle result = new Bundle();
             result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified);
             return result;
@@ -76,8 +92,7 @@ class Authenticator extends AbstractAccountAuthenticator {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
         intent.putExtra(AuthenticatorActivity.PARAM_CONFIRM_CREDENTIALS, true);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-            response);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -98,22 +113,22 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response,
         Account account, String authTokenType, Bundle loginOptions) {
+    	
+    	// Return an error is the wrong type of authToken accompanies this request
         if (!authTokenType.equals(Constants.AUTHTOKEN_TYPE)) {
             final Bundle result = new Bundle();
-            result.putString(AccountManager.KEY_ERROR_MESSAGE,
-                "invalid authTokenType");
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
             return result;
         }
+        
         final AccountManager am = AccountManager.get(mContext);
         final String password = am.getPassword(account);
         if (password != null) {
-            final boolean verified =
-                onlineConfirmPassword(account.name, password);
-            if (verified) {
+        	final String authToken = NetworkUtilities.authenticate(account.name, password);
+            if (authToken != null && authToken.length() > 0) {
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-                result.putString(AccountManager.KEY_ACCOUNT_TYPE,
-                    Constants.ACCOUNT_TYPE);
+                result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
                 result.putString(AccountManager.KEY_AUTHTOKEN, password);
                 return result;
             }
@@ -122,10 +137,8 @@ class Authenticator extends AbstractAccountAuthenticator {
         // Activity that will prompt the user for the password.
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
-        intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE,
-            authTokenType);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-            response);
+        intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -144,7 +157,9 @@ class Authenticator extends AbstractAccountAuthenticator {
     }
 
     /**
-     * {@inheritDoc}
+     * This call is used to query whether the Authenticator supports
+     * specific features. We don't expect to get called, so we always
+     * return false (no) for any queries.
      */
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response,
@@ -152,14 +167,6 @@ class Authenticator extends AbstractAccountAuthenticator {
         final Bundle result = new Bundle();
         result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
         return result;
-    }
-
-    /**
-     * Validates user's password on the server
-     */
-    private boolean onlineConfirmPassword(String username, String password) {
-        return NetworkUtilities.authenticate(username, password,
-            null/* Handler */, null/* Context */);
     }
 
     /**

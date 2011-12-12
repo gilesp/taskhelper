@@ -1,8 +1,9 @@
 package uk.co.vurt.taskhelper.providers;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import uk.co.vurt.taskhelper.providers.Task.Definitions;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -22,34 +23,43 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "task.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
-	private static final String DEFINITION_PAGES_TABLE_NAME = "definitionPages";
+	private static final String JOBS_TABLE_NAME = "jobs";
 
 	private static HashMap<String, String> definitionsProjectionMap;
-	private static HashMap<String, String> pagesProjectionMap;
+	private static HashMap<String, String> jobsProjectionMap;
 	
-	private static final int DEFINITIONS = 1;
-	private static final int DEFINITION_ID = 2;
-	private static final int PAGES = 3;
-	private static final int PAGE_ID = 4;
+	private static final int DEFINITIONS_URI = 1;
+	private static final int DEFINITION_ID_URI = 2;
+	private static final int JOBS_URI = 3;
+	private static final int JOB_ID_URI = 4;
 	
 	private static final UriMatcher uriMatcher;
 	private DatabaseHelper dbHelper;
 
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH, DEFINITIONS);
-		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH + "/#", DEFINITION_ID);
-
-		definitionsProjectionMap = new HashMap<String, String>();
-		definitionsProjectionMap.put(Definitions._ID, Definitions._ID);
-		definitionsProjectionMap.put(Definitions.NAME, Definitions.NAME);
-		definitionsProjectionMap.put(Definitions.DESCRIPTION, Definitions.DESCRIPTION);
 		
-		pagesProjectionMap = new HashMap<String, String>();
-//		pagesProjectionMap.put(Pages._ID, Pages._ID);
-//		pagesProjectionMap.put(Pages.DEFINITION_ID, Pages.DEFINITION_ID);
+		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH, DEFINITIONS_URI);
+		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH + "/#", DEFINITION_ID_URI);
+		uriMatcher.addURI(Job.AUTHORITY, Job.Definitions.PATH, JOBS_URI);
+		uriMatcher.addURI(Job.AUTHORITY, Job.Definitions.PATH + "/#", JOB_ID_URI);
+		
+		definitionsProjectionMap = new HashMap<String, String>();
+		definitionsProjectionMap.put(Task.Definitions._ID, Task.Definitions._ID);
+		definitionsProjectionMap.put(Task.Definitions.NAME, Task.Definitions.NAME);
+		definitionsProjectionMap.put(Task.Definitions.DESCRIPTION, Task.Definitions.DESCRIPTION);
+		definitionsProjectionMap.put(Task.Definitions.JSON, Task.Definitions.JSON);
+		
+		jobsProjectionMap = new HashMap<String, String>();
+		jobsProjectionMap.put(Job.Definitions._ID, Job.Definitions._ID);
+		jobsProjectionMap.put(Job.Definitions.NAME, Job.Definitions.NAME);
+		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_ID, Job.Definitions.TASK_DEFINITION_ID);
+		jobsProjectionMap.put(Job.Definitions.CREATED, Job.Definitions.CREATED);
+		jobsProjectionMap.put(Job.Definitions.DUE, Job.Definitions.DUE);
+		jobsProjectionMap.put(Job.Definitions.STATUS, Job.Definitions.STATUS);
+		
 	}
 
 	@Override
@@ -57,16 +67,26 @@ public class TaskProvider extends ContentProvider {
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		int count;
 		switch (uriMatcher.match(uri)) {
-			case DEFINITIONS:
+			case DEFINITIONS_URI:
 				count = db.delete(DEFINITIONS_TABLE_NAME, whereClause, whereArgs);
 				break;
-			case DEFINITION_ID:
+			case DEFINITION_ID_URI:
 				String definitionId = uri.getPathSegments().get(1);
-				count = db.delete(DEFINITIONS_TABLE_NAME, Definitions._ID
+				count = db.delete(DEFINITIONS_TABLE_NAME, Task.Definitions._ID
 						+ "="
 						+ definitionId
 						+ (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause
 								+ ')' : ""), whereArgs);
+				break;
+			case JOBS_URI:
+				count = db.delete(JOBS_TABLE_NAME, whereClause, whereArgs);
+				break;
+			case JOB_ID_URI:
+				String jobId = uri.getPathSegments().get(1);
+				count = db.delete(JOBS_TABLE_NAME, Job.Definitions._ID
+						+ "="
+						+ jobId
+						+ (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -78,10 +98,14 @@ public class TaskProvider extends ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		switch (uriMatcher.match(uri)) {
-			case DEFINITIONS:
-				return Definitions.CONTENT_TYPE;
-			case DEFINITION_ID:
-				return Definitions.CONTENT_ITEM_TYPE;
+			case DEFINITIONS_URI:
+				return Task.Definitions.CONTENT_TYPE;
+			case DEFINITION_ID_URI:
+				return Task.Definitions.CONTENT_ITEM_TYPE;
+			case JOBS_URI:
+				return Job.Definitions.CONTENT_TYPE;
+			case JOB_ID_URI:
+				return Job.Definitions.CONTENT_ITEM_TYPE;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -89,42 +113,85 @@ public class TaskProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues initialValues) {
-		if (uriMatcher.match(uri) != DEFINITIONS) {
-			throw new IllegalArgumentException("Unknown URI: " + uri);
-		}
-
 		ContentValues values;
-		if (initialValues != null) {
-			values = new ContentValues(initialValues);
-			Log.d(TAG, "Using initial values");
-		} else {
-			values = new ContentValues();
-			Log.d(TAG, "Using empty contentvalues");
+		Log.d(TAG, "URI: " + uri);
+		switch (uriMatcher.match(uri)){
+			case DEFINITIONS_URI:
+				Log.d(TAG, "Processing Task Definition");
+				if (initialValues != null) {
+					values = new ContentValues(initialValues);
+					Log.d(TAG, "Using initial values for Task Definition");
+				} else {
+					values = new ContentValues();
+					Log.d(TAG, "Using empty contentvalues for Task Definition");
+				}
+
+				// Ensure all values are set
+				if (values.containsKey(Task.Definitions.NAME)
+						&& values.containsKey(Task.Definitions.DESCRIPTION)
+						&& values.containsKey(Task.Definitions._ID)) {
+
+					SQLiteDatabase db = dbHelper.getWritableDatabase();
+					long rowId = db.insert(DEFINITIONS_TABLE_NAME, Task.Definitions.NAME,
+							values);
+					if (rowId > 0) {
+						Uri definitionUri = ContentUris.withAppendedId(
+								Task.Definitions.CONTENT_URI, rowId);
+						getContext().getContentResolver().notifyChange(definitionUri,
+								null);
+						return definitionUri;
+					}
+				}else {
+					Log.d(TAG, "Missing value.");
+					Log.d(TAG, "Name: " + values.containsKey(Task.Definitions.NAME));
+					Log.d(TAG, "Description: " + values.containsKey(Task.Definitions.DESCRIPTION));
+					Log.d(TAG, "Id: " + values.containsKey(Task.Definitions._ID));
+					Set<Entry<String,Object>> valueSet = values.valueSet();
+					for(Entry<String,Object> entry: valueSet){
+						Log.d(TAG, "KEY: " + entry.getKey() + " VALUE: " + entry.getValue());
+					}
+					throw new SQLException("Unable to insert row into " + uri);
+				}
+				break;
+			case JOBS_URI:
+				Log.d(TAG, "Processing Job");
+				if(initialValues != null){
+					values = new ContentValues(initialValues);
+					Log.d(TAG, "Using initial values for Job");
+				}else {
+					values = new ContentValues();
+					Log.d(TAG, "Using empty contentvalues for Job");
+				}
+				
+				if(values.containsKey(Job.Definitions.NAME) 
+						&& values.containsKey(Job.Definitions.TASK_DEFINITION_ID)
+						&& values.containsKey(Job.Definitions.CREATED)
+						&& values.containsKey(Job.Definitions.DUE)
+						&& values.containsKey(Job.Definitions.STATUS)
+						&& values.containsKey(Job.Definitions._ID)){
+					SQLiteDatabase db = dbHelper.getWritableDatabase();
+					long rowId = db.insert(JOBS_TABLE_NAME, Job.Definitions.NAME, values);
+					if(rowId > 0){
+						Uri definitionUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, rowId);
+						getContext().getContentResolver().notifyChange(definitionUri, null);
+						return definitionUri;
+					}
+				} else {
+					Log.d(TAG, "Missing value.");
+					Log.d(TAG, "Id: " + values.containsKey(Task.Definitions._ID));
+					Log.d(TAG, "Name: " + values.containsKey(Job.Definitions.NAME));
+					Log.d(TAG, "Definition ID: " + values.containsKey(Job.Definitions.TASK_DEFINITION_ID));
+					Log.d(TAG, "Created: " + values.containsKey(Job.Definitions.CREATED));
+					Log.d(TAG, "Due: " + values.containsKey(Job.Definitions.DUE));
+					Log.d(TAG, "Status: " + values.containsKey(Job.Definitions.STATUS));
+					throw new SQLException("Unable to insert row into " + uri);
+				}
+				
+			break;
+			default:
+				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-
-		// Ensure all values are set
-		if (values.containsKey(Definitions.NAME)
-				&& values.containsKey(Definitions.DESCRIPTION)
-				&& values.containsKey(Definitions._ID)) {
-
-			SQLiteDatabase db = dbHelper.getWritableDatabase();
-			long rowId = db.insert(DEFINITIONS_TABLE_NAME, Definitions.NAME,
-					values);
-			if (rowId > 0) {
-				Uri definitionUri = ContentUris.withAppendedId(
-						Definitions.CONTENT_URI, rowId);
-				getContext().getContentResolver().notifyChange(definitionUri,
-						null);
-				return definitionUri;
-			}
-		}else {
-			Log.d(TAG, "Missing value.");
-			Log.d(TAG, "Name: " + values.containsKey(Definitions.NAME));
-			Log.d(TAG, "Description: " + values.containsKey(Definitions.DESCRIPTION));
-			Log.d(TAG, "Id: " + values.containsKey(Definitions._ID));
-		}
-
-		throw new SQLException("Unable to insert row into " + uri);
+		return null;
 	}
 
 	@Override
@@ -137,26 +204,38 @@ public class TaskProvider extends ContentProvider {
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-		queryBuilder.setTables(DEFINITIONS_TABLE_NAME);
-
+		
+		String orderBy;
 		switch (uriMatcher.match(uri)) {
-			case DEFINITIONS:
+			case DEFINITIONS_URI:
+				queryBuilder.setTables(DEFINITIONS_TABLE_NAME);
 				queryBuilder.setProjectionMap(definitionsProjectionMap);
+				orderBy = Task.Definitions.DEFAULT_SORT_ORDER;
 				break;
-			case DEFINITION_ID:
+			case DEFINITION_ID_URI:
+				queryBuilder.setTables(DEFINITIONS_TABLE_NAME);
 				queryBuilder.setProjectionMap(definitionsProjectionMap);
-				queryBuilder.appendWhere(Definitions._ID + "="
+				orderBy = Task.Definitions.DEFAULT_SORT_ORDER;
+				queryBuilder.appendWhere(Task.Definitions._ID + "="
 						+ uri.getPathSegments().get(1));
+				break;
+			case JOBS_URI:
+				queryBuilder.setTables(JOBS_TABLE_NAME);
+				queryBuilder.setProjectionMap(jobsProjectionMap);
+				orderBy = Job.Definitions.DEFAULT_SORT_ORDER;
+				break;
+			case JOB_ID_URI:
+				queryBuilder.setTables(JOBS_TABLE_NAME);
+				queryBuilder.setProjectionMap(jobsProjectionMap);
+				orderBy = Job.Definitions.DEFAULT_SORT_ORDER;
+				queryBuilder.appendWhere(Job.Definitions._ID + "=" + uri.getPathSegments().get(1));
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
-		// If no sort order is specified use the default
-		String orderBy;
-		if (TextUtils.isEmpty(sortOrder)) {
-			orderBy = Definitions.DEFAULT_SORT_ORDER;
-		} else {
+		// Use specified sort order, if provided
+		if (!TextUtils.isEmpty(sortOrder)) {
 			orderBy = sortOrder;
 		}
 
@@ -176,16 +255,20 @@ public class TaskProvider extends ContentProvider {
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
         switch (uriMatcher.match(uri)) {
-	        case DEFINITIONS:
+	        case DEFINITIONS_URI:
 	            count = db.update(DEFINITIONS_TABLE_NAME, values, whereClause, whereArgs);
 	            break;
-	
-	        case DEFINITION_ID:
-	            String noteId = uri.getPathSegments().get(1);
-	            count = db.update(DEFINITIONS_TABLE_NAME, values, Definitions._ID + "=" + noteId
+	        case DEFINITION_ID_URI:
+	            count = db.update(DEFINITIONS_TABLE_NAME, values, Task.Definitions._ID + "=" + uri.getPathSegments().get(1)
 	                    + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
 	            break;
-	
+	        case JOBS_URI:
+	            count = db.update(JOBS_TABLE_NAME, values, whereClause, whereArgs);
+	            break;
+	        case JOB_ID_URI:
+	            count = db.update(JOBS_TABLE_NAME, values, Job.Definitions._ID + "=" + uri.getPathSegments().get(1)
+	                    + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
+	            break;
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -205,10 +288,23 @@ public class TaskProvider extends ContentProvider {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE " + DEFINITIONS_TABLE_NAME + " ("
-					+ Definitions._ID + " INTEGER PRIMARY KEY,"
-					+ Definitions.NAME + " TEXT," + Definitions.DESCRIPTION
-					+ " TEXT" + ");");
+			//Create Task Definitions table
+			db.execSQL("CREATE TABLE IF NOT EXISTS " + DEFINITIONS_TABLE_NAME + " ("
+					+ Task.Definitions._ID + " INTEGER PRIMARY KEY,"
+					+ Task.Definitions.NAME + " TEXT," 
+					+ Task.Definitions.DESCRIPTION + " TEXT,"
+					+ Task.Definitions.JSON + " TEXT"
+					+ ");");
+			
+			//Create Jobs table
+			db.execSQL("CREATE TABLE IF NOT EXISTS " + JOBS_TABLE_NAME + " ("
+					+ Job.Definitions._ID + " INTEGER PRIMARY KEY, "
+					+ Job.Definitions.NAME + " TEXT, "
+					+ Job.Definitions.TASK_DEFINITION_ID + " INTEGER REFERENCES " + DEFINITIONS_TABLE_NAME + " (" + Task.Definitions._ID + "), "
+					+ Job.Definitions.CREATED + " INTEGER, "
+					+ Job.Definitions.DUE + " INTEGER," 
+					+ Job.Definitions.STATUS + " TEXT "
+					+ ");");
 		}
 
 		@Override

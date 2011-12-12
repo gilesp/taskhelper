@@ -6,6 +6,8 @@
 
     <string name="run_activity_title">Run Task</string>
     
+    <string name="job_list_title">Your Job List</string>
+    
 	<!-- Permission label -->
 	<string name="permlab_samplesyncadapterAuthPassword">access to passwords for Sample SyncAdapter accounts
 	</string>

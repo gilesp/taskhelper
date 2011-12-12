@@ -23,12 +23,12 @@ public final class Task {
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of notes.
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.vurt.task.definition";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.vurt.taskhelper.task.definition";
         
         /**
          * The MIME type of a {@link #CONTENT_URI} sub-directory of a single note.
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.vurt.task.definition";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.vurt.taskhelper.task.definition";
 
         /**
          * The name of the task definition
@@ -43,6 +43,10 @@ public final class Task {
         public static final String DESCRIPTION = "description";
 
         public static final String PAGES = "pages";
+        
+        public static final String PAGE_ITEMS = "items";
+        
+        public static final String JSON = "json";
         
         /**
          * The default sort order for this table

@@ -52,9 +52,9 @@ public class RunTask extends Activity {
 		
 		setContentView(R.layout.run_task);
 		
-		idText = (TextView)findViewById(R.id.taskId);
-		nameText = (TextView)findViewById(R.id.taskName);
-		descriptionText = (TextView)findViewById(R.id.taskDescription);
+//		idText = (TextView)findViewById(R.id.taskId);
+//		nameText = (TextView)findViewById(R.id.taskName);
+//		descriptionText = (TextView)findViewById(R.id.taskDescription);
 		
 		//Get the task definition
 		cursor = managedQuery(uri, PROJECTION, null, null, null);

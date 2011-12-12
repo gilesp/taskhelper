@@ -1,18 +1,20 @@
 package uk.co.vurt.taskhelper.client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -25,12 +27,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import uk.co.vurt.taskhelper.authenticator.AuthenticatorActivity;
-
+import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
+import uk.co.vurt.taskhelper.domain.job.JobDefinition;
 import android.accounts.Account;
-import android.content.Context;
 import android.net.ParseException;
-import android.os.Handler;
 import android.util.Log;
 
 final public class NetworkUtilities {
@@ -41,6 +41,8 @@ final public class NetworkUtilities {
 	    /** The Intent extra to store password. **/
 	    public static final String PARAM_PASSWORD = "password";
 
+	    public static final String PARAM_AUTHTOKEN = "authToken";
+	    
 	    /** The Intent extra to store username. **/
 	    public static final String PARAM_USERNAME = "username";
 
@@ -48,17 +50,18 @@ final public class NetworkUtilities {
 
 	    public static final String USER_AGENT = "TaskHelper/1.0";
 
-	    public static final int REGISTRATION_TIMEOUT_MS = 30 * 1000; // ms
+	    public static final int REQUEST_TIMEOUT_MS = 30 * 1000; // ms
 
-	    public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper";
+	    //public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper"; /**TODO: Load Server URL from resource file?? */
+	    
+	    public static final String BASE_URL = "http://10.32.48.36:8080/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
 
 	    public static final String AUTH_URI = BASE_URL + "/auth";
 
-	    public static final String FETCH_JOBS_URI = BASE_URL + "/fetch_jobs";
+	    public static final String FETCH_JOBS_URI = BASE_URL + "/jobs/for";
 	    
-	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/fetch_tasks";
+	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/taskdefinitions";
 
-	    private static HttpClient mHttpClient;
 
 	    private NetworkUtilities() {
 	    }
@@ -66,38 +69,17 @@ final public class NetworkUtilities {
 	    /**
 	     * Configures the httpClient to connect to the URL provided.
 	     */
-	    public static void maybeCreateHttpClient() {
-	        if (mHttpClient == null) {
-	            mHttpClient = new DefaultHttpClient();
-	            final HttpParams params = mHttpClient.getParams();
-	            HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT_MS);
-	            HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT_MS);
-	            ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT_MS);
-	        }
+	    public static HttpClient getHttpClient() {
+            HttpClient httpClient = new DefaultHttpClient();
+            final HttpParams params = httpClient.getParams();
+            HttpConnectionParams.setConnectionTimeout(params, REQUEST_TIMEOUT_MS);
+            HttpConnectionParams.setSoTimeout(params, REQUEST_TIMEOUT_MS);
+            ConnManagerParams.setTimeout(params, REQUEST_TIMEOUT_MS);
+            return httpClient;
 	    }
-
+	    
 	    /**
-	     * Executes the network requests on a separate thread.
-	     * 
-	     * @param runnable The runnable instance containing network mOperations to
-	     *        be executed.
-	     */
-	    public static Thread performOnBackgroundThread(final Runnable runnable) {
-	        final Thread t = new Thread() {
-	            @Override
-	            public void run() {
-	                try {
-	                    runnable.run();
-	                } finally {
-	                }
-	            }
-	        };
-	        t.start();
-	        return t;
-	    }
-
-	    /**
-	     * Connects to the Voiper server, authenticates the provided username and
+	     * Connects to the server, authenticates the provided username and
 	     * password.
 	     * 
 	     * @param username The user's username
@@ -107,8 +89,7 @@ final public class NetworkUtilities {
 	     * @return boolean The boolean result indicating whether the user was
 	     *         successfully authenticated.
 	     */
-	    public static boolean authenticate(String username, String password, Handler handler,
-	        final Context context) {
+	    public static String authenticate(String username, String password) {
 
 	        final HttpResponse resp;
 	        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -121,31 +102,39 @@ final public class NetworkUtilities {
 	            // this should never happen.
 	            throw new AssertionError(e);
 	        }
+	        if (Log.isLoggable(TAG, Log.INFO)) {
+                Log.i(TAG, "Authentication to: " + AUTH_URI);
+            }
 	        final HttpPost post = new HttpPost(AUTH_URI);
 	        post.addHeader(entity.getContentType());
 	        post.setEntity(entity);
-	        maybeCreateHttpClient();
 	        try {
-	            resp = mHttpClient.execute(post);
+	            resp = getHttpClient().execute(post);
+	            String authToken = null;
 	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	                    Log.v(TAG, "Successful authentication");
+	            	InputStream inputStream = (resp.getEntity() != null) ? resp.getEntity().getContent() : null;
+	            	if(inputStream != null){
+	            		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+	            		authToken = reader.readLine().trim();
+	            		
+	            	}
+	            }
+	            if((authToken != null) && (authToken.length() > 0)){
+	            	if (Log.isLoggable(TAG, Log.VERBOSE)) {
+	                    Log.v(TAG, "Successful authentication: " + authToken);
 	                }
-	                sendResult(true, handler, context);
-	                return true;
+	                return authToken;
 	            } else {
 	                if (Log.isLoggable(TAG, Log.VERBOSE)) {
 	                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
 	                }
-	                sendResult(false, handler, context);
-	                return false;
+	                return null;
 	            }
 	        } catch (final IOException e) {
-	            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	                Log.v(TAG, "IOException when getting authtoken", e);
+	            if (Log.isLoggable(TAG, Log.ERROR)) {
+	                Log.e(TAG, "IOException when getting authtoken", e);
 	            }
-	            sendResult(false, handler, context);
-	            return false;
+	            return null;
 	        } finally {
 	            if (Log.isLoggable(TAG, Log.VERBOSE)) {
 	                Log.v(TAG, "getAuthtoken completing");
@@ -153,188 +142,92 @@ final public class NetworkUtilities {
 	        }
 	    }
 
-	    /**
-	     * Sends the authentication response from server back to the caller main UI
-	     * thread through its handler.
-	     * 
-	     * @param result The boolean holding authentication result
-	     * @param handler The main UI thread's handler instance.
-	     * @param context The caller Activity's context.
-	     */
-	    private static void sendResult(final Boolean result, final Handler handler,
-	        final Context context) {
-	        if (handler == null || context == null) {
-	            return;
-	        }
-	        handler.post(new Runnable() {
-	            public void run() {
-	                ((AuthenticatorActivity) context).onAuthenticationResult(result);
-	            }
-	        });
-	    }
-
-	    /**
-	     * Attempts to authenticate the user credentials on the server.
-	     * 
-	     * @param username The user's username
-	     * @param password The user's password to be authenticated
-	     * @param handler The main UI thread's handler instance.
-	     * @param context The caller Activity's context
-	     * @return Thread The thread on which the network mOperations are executed.
-	     */
-	    public static Thread attemptAuth(final String username, final String password,
-	        final Handler handler, final Context context) {
-
-	        final Runnable runnable = new Runnable() {
-	            public void run() {
-	                authenticate(username, password, handler, context);
-	            }
-	        };
-	        // run on background thread.
-	        return NetworkUtilities.performOnBackgroundThread(runnable);
-	    }
-
-	    public static List<Job> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
-	    	final ArrayList<Job> jobList = new ArrayList<Job>();
+	    public static List<JobDefinition> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
+	    	final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
 	    	
-	    	//TODO: retrieve jobs from server
+	    	String data = fetchData(FETCH_JOBS_URI + "/" + account.name, null, null, null);
+	    	Log.d(TAG, "JOBS DATA: " + data);
+	    	final JSONArray jobs = new JSONArray(data);
 	    	
+	    	for (int i = 0; i < jobs.length(); i++) {
+                jobList.add(JobDefinition.valueOf(jobs.getJSONObject(i)));
+            }
 	    	return jobList;
+	    }
+	    
+	    private static String fetchData(String url, Account account, String authToken, ArrayList<NameValuePair> params) throws ClientProtocolException, IOException, AuthenticationException{
+	    	String data = null;
+	    	if(params == null){
+	    		params = new ArrayList<NameValuePair>();
+	    	}
+	    	if(account != null){
+	    		params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+		        params.add(new BasicNameValuePair(PARAM_AUTHTOKEN, authToken));
+	    	}
+	    	
+	    	Log.i(TAG, params.toString());
+	        HttpEntity entity = new UrlEncodedFormEntity(params);
+	        final HttpPost post = new HttpPost(url);
+	        post.addHeader(entity.getContentType());
+	        post.setEntity(entity);
+	        
+	        final HttpResponse httpResponse = getHttpClient().execute(post);
+	    	if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+	    		data = EntityUtils.toString(httpResponse.getEntity());
+	    	} else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+	    		Log.e(TAG, "Authentication exception in fetching remote task definitions");
+                throw new AuthenticationException();
+	    	} else {
+	    		Log.e(TAG, "Server error in fetching remote task definitions: " + httpResponse.getStatusLine());
+                throw new IOException();
+	    	}
+	    	return data;
 	    }
 	    
 	    public static List<TaskDefinition> fetchTaskDefinitions(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
 	    	final ArrayList<TaskDefinition> definitionList = new ArrayList<TaskDefinition>();
-	    	final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-	        params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-	        params.add(new BasicNameValuePair(PARAM_PASSWORD, authToken));
-	        if (lastUpdated != null) {
-	            final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-	            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	            params.add(new BasicNameValuePair(PARAM_UPDATED, formatter.format(lastUpdated)));
-	        }
-	        Log.i(TAG, params.toString());
-	        HttpEntity entity = null;
-	        entity = new UrlEncodedFormEntity(params);
-	        final HttpPost post = new HttpPost(FETCH_TASK_DEFINITIONS_URI);
-	        post.addHeader(entity.getContentType());
-	        post.setEntity(entity);
-	        
-	        maybeCreateHttpClient();
-	        final HttpResponse resp = mHttpClient.execute(post);
-	        final String response = EntityUtils.toString(resp.getEntity());
-	        if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	            // Succesfully connected to the samplesyncadapter server and
-	            // authenticated.
-	            final JSONArray definitions = new JSONArray(response);
-	            Log.d(TAG, response);
-	            for (int i = 0; i < definitions.length(); i++) {
-	                definitionList.add(TaskDefinition.valueOf(definitions.getJSONObject(i)));
-	            }
-	        } else {
-	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-	                Log.e(TAG, "Authentication exception in fetching remote task definitions");
-	                throw new AuthenticationException();
-	            } else {
-	                Log.e(TAG, "Server error in fetching remote task definitions: " + resp.getStatusLine());
-	                throw new IOException();
-	            }
-	        }
+	    	
+	    	/**
+	    	 * I'm commenting this out for the time being as the current emphasis is on working with lists of pre-set jobs, rather than choosing 
+	    	 * from a list of possible tasks. It'll be reinstated as and when required.
+	    	 */
+//	    	final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+//	        params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+//	        params.add(new BasicNameValuePair(PARAM_AUTHTOKEN, authToken));
+//	        if (lastUpdated != null) {
+//	            final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+//	            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//	            params.add(new BasicNameValuePair(PARAM_UPDATED, formatter.format(lastUpdated)));
+//	        }
+//	        Log.i(TAG, params.toString());
+//	        HttpEntity entity = null;
+//	        entity = new UrlEncodedFormEntity(params);
+//	        final HttpPost post = new HttpPost(FETCH_TASK_DEFINITIONS_URI);
+//	        post.addHeader(entity.getContentType());
+//	        post.setEntity(entity);
+//	        
+//	        final HttpResponse resp = getHttpClient().execute(post);
+//	        final String response = EntityUtils.toString(resp.getEntity());
+//	        if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+//	            // Succesfully connected to the samplesyncadapter server and
+//	            // authenticated.
+//	            final JSONArray definitions = new JSONArray(response);
+//	            Log.d(TAG, response);
+//	            for (int i = 0; i < definitions.length(); i++) {
+//	                definitionList.add(TaskDefinition.valueOf(definitions.getJSONObject(i)));
+//	            }
+//	        } else {
+//	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+//	                Log.e(TAG, "Authentication exception in fetching remote task definitions");
+//	                throw new AuthenticationException();
+//	            } else {
+//	                Log.e(TAG, "Server error in fetching remote task definitions: " + resp.getStatusLine());
+//	                throw new IOException();
+//	            }
+//	        }
 	        
 	    	return definitionList;
 	    }
 	    
-	    /**
-	     * Fetches the list of friend data updates from the server
-	     * 
-	     * @param account The account being synced.
-	     * @param authtoken The authtoken stored in AccountManager for this account
-	     * @param lastUpdated The last time that sync was performed
-	     * @return list The list of updates received from the server.
-	     
-	    public static List<User> fetchFriendUpdates(Account account, String authtoken, Date lastUpdated)
-	        throws JSONException, ParseException, IOException, AuthenticationException {
-
-	        final ArrayList<User> friendList = new ArrayList<User>();
-	        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-	        params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-	        params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
-	        if (lastUpdated != null) {
-	            final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-	            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	            params.add(new BasicNameValuePair(PARAM_UPDATED, formatter.format(lastUpdated)));
-	        }
-	        Log.i(TAG, params.toString());
-	        HttpEntity entity = null;
-	        entity = new UrlEncodedFormEntity(params);
-	        final HttpPost post = new HttpPost(FETCH_FRIEND_UPDATES_URI);
-	        post.addHeader(entity.getContentType());
-	        post.setEntity(entity);
-	        maybeCreateHttpClient();
-	        final HttpResponse resp = mHttpClient.execute(post);
-	        final String response = EntityUtils.toString(resp.getEntity());
-	        if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	            // Succesfully connected to the samplesyncadapter server and
-	            // authenticated.
-	            // Extract friends data in json format.
-	            final JSONArray friends = new JSONArray(response);
-	            Log.d(TAG, response);
-	            for (int i = 0; i < friends.length(); i++) {
-	                friendList.add(User.valueOf(friends.getJSONObject(i)));
-	            }
-	        } else {
-	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-	                Log.e(TAG, "Authentication exception in fetching remote contacts");
-	                throw new AuthenticationException();
-	            } else {
-	                Log.e(TAG, "Server error in fetching remote contacts: " + resp.getStatusLine());
-	                throw new IOException();
-	            }
-	        }
-	        return friendList;
-	    }
-*/
-	    /**
-	     * Fetches status messages for the user's friends from the server
-	     * 
-	     * @param account The account being synced.
-	     * @param authtoken The authtoken stored in the AccountManager for the
-	     *        account
-	     * @return list The list of status messages received from the server.
-	     
-	    public static List<User.Status> fetchFriendStatuses(Account account, String authtoken)
-	        throws JSONException, ParseException, IOException, AuthenticationException {
-
-	        final ArrayList<User.Status> statusList = new ArrayList<User.Status>();
-	        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-	        params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-	        params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
-	        HttpEntity entity = null;
-	        entity = new UrlEncodedFormEntity(params);
-	        final HttpPost post = new HttpPost(FETCH_STATUS_URI);
-	        post.addHeader(entity.getContentType());
-	        post.setEntity(entity);
-	        maybeCreateHttpClient();
-	        final HttpResponse resp = mHttpClient.execute(post);
-	        final String response = EntityUtils.toString(resp.getEntity());
-	        if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	            // Succesfully connected to the samplesyncadapter server and
-	            // authenticated.
-	            // Extract friends data in json format.
-	            final JSONArray statuses = new JSONArray(response);
-	            for (int i = 0; i < statuses.length(); i++) {
-	                statusList.add(User.Status.valueOf(statuses.getJSONObject(i)));
-	            }
-	        } else {
-	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-	                Log.e(TAG, "Authentication exception in fetching friend status list");
-	                throw new AuthenticationException();
-	            } else {
-	                Log.e(TAG, "Server error in fetching friend status list");
-	                throw new IOException();
-	            }
-	        }
-	        return statusList;
-	    }
-	    */
 	}
 
