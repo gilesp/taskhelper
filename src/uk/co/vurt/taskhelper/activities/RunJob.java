@@ -1,13 +1,17 @@
 package uk.co.vurt.taskhelper.activities;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.domain.definition.Page;
 import uk.co.vurt.taskhelper.domain.definition.PageItem;
 import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
+import uk.co.vurt.taskhelper.domain.job.DataItem;
 import uk.co.vurt.taskhelper.domain.job.JobDefinition;
+import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
@@ -15,6 +19,7 @@ import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -66,13 +71,16 @@ public class RunJob extends Activity {
 	private Cursor definitionCursor;
 	private int currentPageId = 0;
 	private ContentResolver contentResolver;
-
+	private int jobId;
+	
 	
 	private LinearLayout pageContent;
 	private LinearLayout buttonBar;
 	
 	private TaskDefinition taskDefinition;
 	private JobDefinition job;
+	
+	private Map<String, View> widgetMap;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +106,8 @@ public class RunJob extends Activity {
 		Log.d(TAG, "Job URI: " + uri);
 		//Get the task definition
 		jobCursor = managedQuery(uri, JOB_PROJECTION, null, null, null);
+		
+		widgetMap = new HashMap<String, View>();
 	}
 	
 	@Override
@@ -106,13 +116,56 @@ public class RunJob extends Activity {
 		drawPage();
 	}
 	
+	protected void savePage(Page currentPage){
+		Log.d(TAG, "Saving page: " + currentPage);
+		List<PageItem> items = currentPage.getItems();
+		for(PageItem item: items){
+			String widgetKey = createWidgetKey(currentPage, item);
+			View widget = widgetMap.get(widgetKey);
+			
+			if(widget != null){
+				String value = null;
+				if("TEXT".equals(item.getType())){
+					LabelledEditBox editBox = (LabelledEditBox)widget;
+					value = editBox.getValue();
+				}else if("DIGITS".equals(item.getType())){
+					LabelledEditBox editBox = (LabelledEditBox)widget;
+					value = editBox.getValue();
+				}else if("DATETIME".equals(item.getType())){
+					LabelledDatePicker datePicker = (LabelledDatePicker)widget;
+					value = datePicker.getValue();
+				}
+				if(value != null){
+					//TODO: Do I need to bother with the dataitem class at all?
+					DataItem dataItem = new DataItem(currentPage.getName(), item.getName(), item.getType(), value);
+					ContentValues values = new ContentValues();
+					values.put(Dataitem.Definitions.JOB_ID, jobId);
+					values.put(Dataitem.Definitions.PAGENAME, dataItem.getPageName());
+					values.put(Dataitem.Definitions.NAME, dataItem.getName());
+					values.put(Dataitem.Definitions.TYPE, dataItem.getType());
+					values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
+					
+					Uri dataItemUri = contentResolver.insert(Dataitem.Definitions.CONTENT_URI, values);
+					//TODO: Do something with this uri?
+				}
+			}else {
+				Log.e(TAG, "Unable to retrieve widget with key: " + widgetKey);
+			}
+		}
+		
+	}
+	
+	private String createWidgetKey(Page page, PageItem item){
+		return page.getName() + "_" + item.getName() + "_" + item.getType();
+	}
+	
 	protected void drawPage(){
 		Log.d(TAG, "Cursor: " + jobCursor);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			Log.d(TAG, "state: " + state);
 			if(state == STATE_RUN){
-				int jobId = jobCursor.getInt(COLUMN_INDEX_JOB_ID);
+				jobId = jobCursor.getInt(COLUMN_INDEX_JOB_ID);
 				String jobName = jobCursor.getString(COLUMN_INDEX_JOB_NAME);
 				int definitionId = jobCursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID);
 				Date jobCreated = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_CREATED));
@@ -133,8 +186,9 @@ public class RunJob extends Activity {
 				
 				pageContent.removeAllViewsInLayout();
 				
+				
 				List<Page> pages = taskDefinition.getPages();
-				Page currentPage = pages.get(currentPageId);
+				final Page currentPage = pages.get(currentPageId);
 				Log.d(TAG, "Current page: " + currentPage);
 				setTitle(taskDefinition.getName() + ": " + currentPage.getName());
 				
@@ -143,29 +197,41 @@ public class RunJob extends Activity {
 					Log.d(TAG, "Items: " + items.size());
 					for(PageItem item: items){
 						Log.d(TAG, "Current item: " + item);
-						if("LABEL".equals(item.getType())){
-							TextView label = new TextView(this);
-							label.setText(item.getValue());
-							pageContent.addView(label);
-							Log.d(TAG, "Added TextView label");
-						}else if("TEXT".equals(item.getType())){
-							LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
-							pageContent.addView(editBox);
-							Log.d(TAG, "Added LabelledEditbox");
-						}else if("DIGITS".equals(item.getType())){
-							LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
-							pageContent.addView(editBox);
-							Log.d(TAG, "Added LabelledEditbox");
-						}else if("DATETIME".equals(item.getType())){
-							LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), item.getValue());
-							pageContent.addView(datePicker);
-							Log.d(TAG, "Added LabelledEditbox");
+						String widgetKey = createWidgetKey(currentPage, item);
+						View widget = null;
+						if(widgetMap.containsKey(widgetKey)){
+							//retrieve widget from map
+							widget = widgetMap.get(widgetKey);
 						} else {
-							TextView errorLabel = new TextView(this);
-							errorLabel.setText("Unknown item: '" + item.getType() + "'");
-							pageContent.addView(errorLabel);
-							Log.d(TAG, "Unknown item: '" + item.getType() + "'");
+							//create new widget and add it to the map
+							if("LABEL".equals(item.getType())){
+								TextView label = new TextView(this);
+								label.setText(item.getValue());
+								widget = label;
+								Log.d(TAG, "Added TextView label");
+							}else if("TEXT".equals(item.getType())){
+								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
+								widget = editBox;
+								Log.d(TAG, "Added LabelledEditbox");
+							}else if("DIGITS".equals(item.getType())){
+								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
+								widget = editBox;
+								Log.d(TAG, "Added LabelledEditbox");
+							}else if("DATETIME".equals(item.getType())){
+								LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), item.getValue());
+								widget = datePicker;
+								Log.d(TAG, "Added LabelledEditbox");
+							} else {
+								TextView errorLabel = new TextView(this);
+								errorLabel.setText("Unknown item: '" + item.getType() + "'");
+								widget = errorLabel;
+								Log.d(TAG, "Unknown item: '" + item.getType() + "'");
+							}
+							
+							widgetMap.put(widgetKey, widget);
 						}
+						
+						pageContent.addView(widget);
 					}
 				} else {
 					TextView errorLabel = new TextView(this);
@@ -183,7 +249,7 @@ public class RunJob extends Activity {
 					previousButton.setOnClickListener(new Button.OnClickListener(){
 
 						public void onClick(View view) {
-							//TODO: save form data
+							savePage(currentPage);
 							currentPageId--;
 							drawPage();
 							return;
@@ -199,7 +265,7 @@ public class RunJob extends Activity {
 					nextButton.setOnClickListener(new Button.OnClickListener(){
 
 						public void onClick(View view) {
-							//TODO: save form data
+							savePage(currentPage);
 							currentPageId++;
 							drawPage();
 							return;
@@ -215,7 +281,7 @@ public class RunJob extends Activity {
 					finishButton.setOnClickListener(new Button.OnClickListener(){
 
 						public void onClick(View view) {
-							//TODO: save form data
+							savePage(currentPage);
 							currentPageId = 0;
 							RunJob.this.finish();
 							return;
