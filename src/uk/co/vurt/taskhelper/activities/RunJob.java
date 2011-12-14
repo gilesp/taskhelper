@@ -174,6 +174,28 @@ public class RunJob extends Activity {
 		
 	}
 	
+	private DataItem retrieveDataItem(int jobId, String pageName, String name, String type){
+		DataItem dataitem = null;
+		Cursor cursor = contentResolver.query(Dataitem.Definitions.CONTENT_URI, 
+				  new String[]{Dataitem.Definitions._ID, Dataitem.Definitions.VALUE} /*projection*/,
+				  Dataitem.Definitions.JOB_ID+ "=? "
+				  + "AND " + Dataitem.Definitions.PAGENAME + "=? "
+				  + "AND " + Dataitem.Definitions.NAME + "=? " 
+				  + "AND " + Dataitem.Definitions.TYPE + "=?" /*where*/, 
+				  new String[]{""+jobId, pageName, name, type}/*args*/, 
+				  null /*sort order*/);
+		
+		if(cursor != null){
+			cursor.moveToFirst();
+			if(cursor.getCount() > 0){
+				dataitem = new DataItem(pageName, name, type, cursor.getString(1));
+			}
+			cursor.close();
+		}
+		
+		return dataitem;
+	}
+	
 	private String createWidgetKey(Page page, PageItem item){
 		return page.getName() + "_" + item.getName() + "_" + item.getType();
 	}
@@ -218,12 +240,13 @@ public class RunJob extends Activity {
 						Log.d(TAG, "Current item: " + item);
 						String widgetKey = createWidgetKey(currentPage, item);
 						View widget = null;
-						//TODO: Retrieve value from dataitem if present
-						//If we have a dataitem value, use that in preference to any job specified value.
 						if(widgetMap.containsKey(widgetKey)){
 							//retrieve widget from map
 							widget = widgetMap.get(widgetKey);
 						} else {
+							//Retrieve value from dataitem if present
+							//If we have a dataitem value, use that in preference to any job specified value.
+							DataItem dataItem = retrieveDataItem(jobId, currentPage.getName(), item.getName(), item.getType());
 							//create new widget and add it to the map
 							if("LABEL".equals(item.getType())){
 								TextView label = new TextView(this);
@@ -231,15 +254,15 @@ public class RunJob extends Activity {
 								widget = label;
 								Log.d(TAG, "Added TextView label");
 							}else if("TEXT".equals(item.getType())){
-								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
+								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), dataItem != null ? dataItem.getValue() : item.getValue());
 								widget = editBox;
 								Log.d(TAG, "Added LabelledEditbox");
 							}else if("DIGITS".equals(item.getType())){
-								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), item.getValue());
+								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
 								widget = editBox;
 								Log.d(TAG, "Added LabelledEditbox");
 							}else if("DATETIME".equals(item.getType())){
-								LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), item.getValue());
+								LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
 								widget = datePicker;
 								Log.d(TAG, "Added LabelledEditbox");
 							} else {
@@ -248,7 +271,7 @@ public class RunJob extends Activity {
 								widget = errorLabel;
 								Log.d(TAG, "Unknown item: '" + item.getType() + "'");
 							}
-							
+
 							widgetMap.put(widgetKey, widget);
 						}
 						
