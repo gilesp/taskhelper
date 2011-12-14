@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public class Dataitem {
 
-	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
+//	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
 	
 	private Dataitem(){}
 	
@@ -14,7 +14,7 @@ public class Dataitem {
 		
 		public static final String PATH = "dataitem";
 		
-		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
+		public static final Uri CONTENT_URI = Uri.parse("content://" + TaskProvider.AUTHORITY + "/" + PATH);
 		
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.vurt.taskhelper.dataitem";
 		

@@ -5,8 +5,10 @@ import java.util.Date;
 
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.providers.Job;
+import uk.co.vurt.taskhelper.providers.TaskProvider;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -81,6 +84,8 @@ public class JobList extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.taskhelper_menu, menu);
         // This is our one standard application action -- inserting a
         // new note into the list.
 //        menu.add(0, MENU_ITEM_INSERT, 0, R.string.menu_insert)
@@ -98,6 +103,27 @@ public class JobList extends ListActivity {
 
         return true;
     }
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+	    switch (item.getItemId()) {
+	    	case R.id.synchronise:
+	    		synchronise();
+	    		return true;
+	    	default:
+	    		return super.onOptionsItemSelected(item);
+	    }
+	}
+
+	private void synchronise(){
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		ContentResolver.requestSync(null, TaskProvider.AUTHORITY, bundle);
+	}
 	
 	public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);

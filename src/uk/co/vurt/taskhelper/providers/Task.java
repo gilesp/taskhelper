@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public final class Task {
 
-	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
+//	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
 	
 	/* Don't instantiate this class. */
 	private Task(){}
@@ -18,7 +18,7 @@ public final class Task {
 		/**
          * The content:// style URL for this table
          */
-        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
+        public static final Uri CONTENT_URI = Uri.parse("content://" + TaskProvider.AUTHORITY + "/" + PATH);
         
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of notes.

@@ -25,10 +25,12 @@ import android.util.Log;
  */
 public class TaskProvider extends ContentProvider {
 
+	public static final String AUTHORITY = "uk.co.vurt.taskhelper";
+	
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "task.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 6;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -50,10 +52,12 @@ public class TaskProvider extends ContentProvider {
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		
-		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH, DEFINITIONS_URI);
-		uriMatcher.addURI(Task.AUTHORITY, Task.Definitions.PATH + "/#", DEFINITION_ID_URI);
-		uriMatcher.addURI(Job.AUTHORITY, Job.Definitions.PATH, JOBS_URI);
-		uriMatcher.addURI(Job.AUTHORITY, Job.Definitions.PATH + "/#", JOB_ID_URI);
+		uriMatcher.addURI(AUTHORITY, Task.Definitions.PATH, DEFINITIONS_URI);
+		uriMatcher.addURI(AUTHORITY, Task.Definitions.PATH + "/#", DEFINITION_ID_URI);
+		uriMatcher.addURI(AUTHORITY, Job.Definitions.PATH, JOBS_URI);
+		uriMatcher.addURI(AUTHORITY, Job.Definitions.PATH + "/#", JOB_ID_URI);
+		uriMatcher.addURI(AUTHORITY, Dataitem.Definitions.PATH, DATAITEMS_URI);
+		uriMatcher.addURI(AUTHORITY, Dataitem.Definitions.PATH + "/#", DATAITEM_ID_URI);
 		
 		definitionsProjectionMap = new HashMap<String, String>();
 		definitionsProjectionMap.put(Task.Definitions._ID, Task.Definitions._ID);
@@ -392,7 +396,8 @@ public class TaskProvider extends ContentProvider {
 					+ Dataitem.Definitions.PAGENAME + " TEXT, "
 					+ Dataitem.Definitions.NAME + " TEXT, "
 					+ Dataitem.Definitions.TYPE + " TEXT, "
-					+ Dataitem.Definitions.VALUE + " TEXT "
+					+ Dataitem.Definitions.VALUE + " TEXT, "
+					+ "UNIQUE (" + Dataitem.Definitions.JOB_ID + "," + Dataitem.Definitions.PAGENAME + "," + Dataitem.Definitions.NAME + "," + Dataitem.Definitions.TYPE + ")"
 					+ ");");
 		}
 

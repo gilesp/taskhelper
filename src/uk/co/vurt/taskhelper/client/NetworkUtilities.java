@@ -154,7 +154,8 @@ final public class NetworkUtilities {
 	     */
 	    public static boolean submitData(Account account, String authToken){
 	    	
-	    	String data = fetchData(SUBMIT_JOB_DATA_URI, account, authToken, params);
+//	    	String data = fetchData(SUBMIT_JOB_DATA_URI, account, authToken, params);
+	    	return false;
 	    }
 	    
 	    public static List<JobDefinition> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {

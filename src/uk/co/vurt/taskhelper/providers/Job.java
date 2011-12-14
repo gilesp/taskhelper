@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public class Job {
 
-	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
+//	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
 	
 	/* Don't insantiate this class. */
 	private Job(){}
@@ -15,7 +15,7 @@ public class Job {
 		
 		public static final String PATH = "job";
 		
-		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
+		public static final Uri CONTENT_URI = Uri.parse("content://" + TaskProvider.AUTHORITY + "/" + PATH);
 		
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.vurt.taskhelper.job";
 		

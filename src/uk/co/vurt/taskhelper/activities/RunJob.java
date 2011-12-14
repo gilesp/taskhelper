@@ -145,7 +145,26 @@ public class RunJob extends Activity {
 					values.put(Dataitem.Definitions.TYPE, dataItem.getType());
 					values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
 					
-					Uri dataItemUri = contentResolver.insert(Dataitem.Definitions.CONTENT_URI, values);
+					Cursor cursor = contentResolver.query(Dataitem.Definitions.CONTENT_URI, 
+														  new String[]{Dataitem.Definitions._ID} /*projection*/,
+														  Dataitem.Definitions.JOB_ID+ "=? "
+														  + "AND " + Dataitem.Definitions.PAGENAME + "=? "
+														  + "AND " + Dataitem.Definitions.NAME + "=? " 
+														  + "AND " + Dataitem.Definitions.TYPE + "=?" /*where*/, 
+														  new String[]{""+jobId, dataItem.getPageName(), dataItem.getName(), dataItem.getType()}/*args*/, 
+														  null /*sort order*/);
+					int count = 0;
+					if(cursor != null){
+						cursor.moveToFirst();
+						if(cursor.getCount() > 0){
+							int dataItemId = cursor.getInt(0);
+							count = contentResolver.update(Uri.withAppendedPath(Dataitem.Definitions.CONTENT_URI, ""+dataItemId), values, null, null);
+						}
+						cursor.close();
+					}
+					if(count <= 0){
+						Uri dataItemUri = contentResolver.insert(Dataitem.Definitions.CONTENT_URI, values);
+					}
 					//TODO: Do something with this uri?
 				}
 			}else {
@@ -199,6 +218,8 @@ public class RunJob extends Activity {
 						Log.d(TAG, "Current item: " + item);
 						String widgetKey = createWidgetKey(currentPage, item);
 						View widget = null;
+						//TODO: Retrieve value from dataitem if present
+						//If we have a dataitem value, use that in preference to any job specified value.
 						if(widgetMap.containsKey(widgetKey)){
 							//retrieve widget from map
 							widget = widgetMap.get(widgetKey);
@@ -206,7 +227,7 @@ public class RunJob extends Activity {
 							//create new widget and add it to the map
 							if("LABEL".equals(item.getType())){
 								TextView label = new TextView(this);
-								label.setText(item.getValue());
+								label.setText(item.getLabel());
 								widget = label;
 								Log.d(TAG, "Added TextView label");
 							}else if("TEXT".equals(item.getType())){

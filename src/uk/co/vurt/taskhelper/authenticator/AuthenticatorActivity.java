@@ -4,6 +4,7 @@ import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
 import uk.co.vurt.taskhelper.providers.Task;
+import uk.co.vurt.taskhelper.providers.TaskProvider;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -166,7 +167,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         if (requestNewAccount) {
             accountManager.addAccountExplicitly(account, password, null);
             // Set contacts sync for this account.
-            ContentResolver.setSyncAutomatically(account, Task.AUTHORITY, true);
+            ContentResolver.setSyncAutomatically(account, TaskProvider.AUTHORITY, true);
         } else {
             accountManager.setPassword(account, password);
         }
