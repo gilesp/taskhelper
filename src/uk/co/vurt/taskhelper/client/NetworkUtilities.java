@@ -62,6 +62,7 @@ final public class NetworkUtilities {
 	    
 	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/taskdefinitions";
 
+	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/jobs/submit";
 
 	    private NetworkUtilities() {
 	    }
@@ -142,6 +143,20 @@ final public class NetworkUtilities {
 	        }
 	    }
 
+	    /**
+	     * Submit job data back to the server
+	     * 
+	     * essentially json encoded version of the dataitems submitted as form 
+	     * data.
+	     * @param account
+	     * @param authToken
+	     * @return
+	     */
+	    public static boolean submitData(Account account, String authToken){
+	    	
+	    	String data = fetchData(SUBMIT_JOB_DATA_URI, account, authToken, params);
+	    }
+	    
 	    public static List<JobDefinition> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
 	    	final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
 	    	
