@@ -64,7 +64,7 @@ final public class NetworkUtilities {
 	    
 	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/taskdefinitions";
 
-	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/submissions/from/";
+	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/submissions/job/";
 
 	    private NetworkUtilities() {
 	    }
@@ -159,7 +159,7 @@ final public class NetworkUtilities {
 	    	StringEntity stringEntity;
 			try {
 				stringEntity = new StringEntity(submission.toJSON().toString());
-				final HttpPost post = new HttpPost(SUBMIT_JOB_DATA_URI + account.name);
+				final HttpPost post = new HttpPost(SUBMIT_JOB_DATA_URI);
 		    	post.setEntity(stringEntity);
 		    	post.setHeader("Accept", "application/json");
 		    	post.setHeader("Content-type", "application/json");

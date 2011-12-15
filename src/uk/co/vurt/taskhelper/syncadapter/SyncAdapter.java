@@ -137,6 +137,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 			jobCursor.close();
 			
+			//TODO: Stop fetch jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
 			jobs = NetworkUtilities.fetchJobs(account, authToken, new Date(lastUpdated));
 			/**
 			 * Commented out while developing/testing job synch
