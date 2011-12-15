@@ -1,5 +1,8 @@
 package uk.co.vurt.taskhelper.domain.job;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class DataItem {
 
 	String name;
@@ -44,5 +47,17 @@ public class DataItem {
 		this.pageName = pageName;
 	}
 	
-	
+	public JSONObject toJSON(){
+		JSONObject data = new JSONObject();
+		try {
+			data.put("pageName", pageName);
+			data.put("name", name);
+			data.put("type", type);
+			data.put("value", value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return data;
+	}
 }

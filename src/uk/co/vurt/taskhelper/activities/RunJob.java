@@ -116,6 +116,14 @@ public class RunJob extends Activity {
 		drawPage();
 	}
 	
+	protected void finishJob(){
+		job.setStatus("COMPLETED");
+		ContentValues values = new ContentValues();
+		values.put(Job.Definitions.STATUS, job.getStatus());
+		contentResolver.update(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+job.getId()) , values, null, null);
+		RunJob.this.finish();
+	}
+	
 	protected void savePage(Page currentPage){
 		Log.d(TAG, "Saving page: " + currentPage);
 		List<PageItem> items = currentPage.getItems();
@@ -327,7 +335,7 @@ public class RunJob extends Activity {
 						public void onClick(View view) {
 							savePage(currentPage);
 							currentPageId = 0;
-							RunJob.this.finish();
+							finishJob();
 							return;
 						}
 						

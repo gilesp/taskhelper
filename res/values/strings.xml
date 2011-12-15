@@ -59,4 +59,6 @@
 	<string name="cancel_button_label">Cancel</string>
 	<string name="profile_action">Sample profile</string>
 	<string name="view_profile">View Profile</string>
+	
+	<string name="synch_menu">Sync</string>
 </resources>

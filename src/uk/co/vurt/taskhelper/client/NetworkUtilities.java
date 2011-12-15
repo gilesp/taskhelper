@@ -19,6 +19,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
@@ -29,6 +30,7 @@ import org.json.JSONException;
 
 import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
 import uk.co.vurt.taskhelper.domain.job.JobDefinition;
+import uk.co.vurt.taskhelper.domain.job.Submission;
 import android.accounts.Account;
 import android.net.ParseException;
 import android.util.Log;
@@ -62,7 +64,7 @@ final public class NetworkUtilities {
 	    
 	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/taskdefinitions";
 
-	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/jobs/submit";
+	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/submissions/from/";
 
 	    private NetworkUtilities() {
 	    }
@@ -152,10 +154,31 @@ final public class NetworkUtilities {
 	     * @param authToken
 	     * @return
 	     */
-	    public static boolean submitData(Account account, String authToken){
+	    public static boolean submitData(Account account, String authToken, Submission submission){
 	    	
-//	    	String data = fetchData(SUBMIT_JOB_DATA_URI, account, authToken, params);
+	    	StringEntity stringEntity;
+			try {
+				stringEntity = new StringEntity(submission.toJSON().toString());
+				final HttpPost post = new HttpPost(SUBMIT_JOB_DATA_URI + account.name);
+		    	post.setEntity(stringEntity);
+		    	post.setHeader("Accept", "application/json");
+		    	post.setHeader("Content-type", "application/json");
+		    	final HttpResponse httpResponse = getHttpClient().execute(post);
+		    	if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED){
+		    		return true;
+		    	}else{
+		    		Log.e(TAG, "Data submission failed: " + httpResponse.getStatusLine().getStatusCode());
+		    		return false;
+		    	}
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "Unable to convert submission to JSON", e);
+			} catch (ClientProtocolException e) {
+				Log.e(TAG, "Error submitting json", e);
+			} catch (IOException e) {
+				Log.e(TAG, "Error submitting json", e);
+			}
 	    	return false;
+	    	
 	    }
 	    
 	    public static List<JobDefinition> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
@@ -183,6 +206,7 @@ final public class NetworkUtilities {
 	    	
 	    	Log.i(TAG, params.toString());
 	        HttpEntity entity = new UrlEncodedFormEntity(params);
+	        
 	        final HttpPost post = new HttpPost(url);
 	        post.addHeader(entity.getContentType());
 	        post.setEntity(entity);

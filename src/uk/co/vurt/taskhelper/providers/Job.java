@@ -30,6 +30,15 @@ public class Job {
 		public static final String STATUS = "status";
 		
 		public static final String DEFAULT_SORT_ORDER = DUE + " ASC";
+		
+		public static final String[] ALL = new String[]{
+			_ID,
+			NAME,
+			TASK_DEFINITION_ID,
+			CREATED,
+			DUE,
+			STATUS
+		};
 	}
 	
 	public final static class Instance implements BaseColumns{

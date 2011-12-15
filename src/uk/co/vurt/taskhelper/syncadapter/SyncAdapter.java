@@ -11,7 +11,10 @@ import org.json.JSONException;
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
 import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
+import uk.co.vurt.taskhelper.domain.job.DataItem;
 import uk.co.vurt.taskhelper.domain.job.JobDefinition;
+import uk.co.vurt.taskhelper.domain.job.Submission;
+import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
 import android.accounts.Account;
@@ -90,17 +93,49 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			authToken = accountManager.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, NOTIFY_AUTH_FAILURE);
 			long lastUpdated = getLastUpdatedDate(account);
 			
+			
 			//Submit completed jobs
 			//Find which jobs have been completed.
-			//for each completed job:
-			//	retrieve dataitems for them and combine into a submission
-			//	add submission to list
-			
-			//convert list of submissions into json array
-			
-			//submit json array to server
-			
-			//if successful, delete completed jobs and dataitems.
+			Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
+			if(jobCursor != null){
+				jobCursor.moveToFirst();
+				//for each completed job:
+				while(!jobCursor.isAfterLast()){
+					
+					
+					int jobId = jobCursor.getInt(0);
+					
+					Submission submission = new Submission();
+					submission.setJobId(jobId);
+					submission.setUsername(account.name);
+
+					// retrieve dataitems for them and combine into a submission
+					Cursor diCursor = provider.query(Dataitem.Definitions.CONTENT_URI, 
+													 new String[]{Dataitem.Definitions.PAGENAME, Dataitem.Definitions.NAME, Dataitem.Definitions.TYPE, Dataitem.Definitions.VALUE}, 
+													 Dataitem.Definitions.JOB_ID + " = ?", 
+													 new String[]{""+jobId}, 
+													 null);
+					if(diCursor != null){
+						diCursor.moveToFirst();
+						while(!diCursor.isAfterLast()){
+							submission.addDataItem(new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3)));
+							diCursor.moveToNext();
+						}
+						diCursor.close();
+						diCursor = null;
+					}
+
+					//if successful, delete completed job and dataitems.
+					boolean submitted = NetworkUtilities.submitData(account, authToken, submission);
+					if(submitted){
+						provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
+						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
+					}
+					jobCursor.moveToNext();
+				}
+				
+			}
+			jobCursor.close();
 			
 			jobs = NetworkUtilities.fetchJobs(account, authToken, new Date(lastUpdated));
 			/**
@@ -166,6 +201,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		}catch(final IOException ioe){
 			Log.e(TAG, "IOException", ioe);
 			syncResult.stats.numIoExceptions++;
+		} catch (RemoteException e) {
+			Log.e(TAG, "RemoteException ", e);
 		}
 	}
 
