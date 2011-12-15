@@ -90,6 +90,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			authToken = accountManager.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, NOTIFY_AUTH_FAILURE);
 			long lastUpdated = getLastUpdatedDate(account);
 			
+			//Submit completed jobs
+			//Find which jobs have been completed.
+			//for each completed job:
+			//	retrieve dataitems for them and combine into a submission
+			//	add submission to list
+			
+			//convert list of submissions into json array
+			
+			//submit json array to server
+			
+			//if successful, delete completed jobs and dataitems.
+			
 			jobs = NetworkUtilities.fetchJobs(account, authToken, new Date(lastUpdated));
 			/**
 			 * Commented out while developing/testing job synch
