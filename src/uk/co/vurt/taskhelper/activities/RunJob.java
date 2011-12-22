@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -99,7 +100,10 @@ public class RunJob extends Activity {
 			return;
 		}
 		
+		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		setContentView(R.layout.run_task);
+		//TODO: Make this dynamic, based on the task definition type
+		setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.hsc_logo);
 		
 		buttonBar = (LinearLayout)findViewById(R.id.buttonBar);
 		pageContent = (LinearLayout)findViewById(R.id.pageContent);
@@ -210,6 +214,9 @@ public class RunJob extends Activity {
 	}
 	
 	protected void drawPage(){
+		
+		
+		
 		Log.d(TAG, "Cursor: " + jobCursor);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
