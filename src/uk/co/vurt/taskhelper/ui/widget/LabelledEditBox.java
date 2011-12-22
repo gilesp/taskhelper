@@ -1,6 +1,7 @@
 package uk.co.vurt.taskhelper.ui.widget;
 
 import android.content.Context;
+import android.text.method.KeyListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -34,5 +35,9 @@ public class LabelledEditBox extends LinearLayout {
 	
 	public void setLabel(String labelText){
 		label.setText(labelText);
+	}
+	
+	public void setKeyListener(KeyListener input){
+		textBox.setKeyListener(input);
 	}
 }

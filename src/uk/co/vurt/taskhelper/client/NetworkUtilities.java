@@ -56,7 +56,8 @@ final public class NetworkUtilities {
 
 	    //public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper"; /**TODO: Load Server URL from resource file?? */
 	    
-	    public static final String BASE_URL = "http://10.32.48.36:8080/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
+//	    public static final String BASE_URL = "http://10.32.48.36:8080/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
+	    public static final String BASE_URL = "http://appsdev.wmfs.net:8280/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
 
 	    public static final String AUTH_URI = BASE_URL + "/auth";
 
