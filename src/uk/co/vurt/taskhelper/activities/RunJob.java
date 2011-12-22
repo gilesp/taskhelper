@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -237,6 +238,7 @@ public class RunJob extends Activity {
 				
 				
 				List<Page> pages = taskDefinition.getPages();
+				//TODO: handle tasks with no pages
 				final Page currentPage = pages.get(currentPageId);
 				Log.d(TAG, "Current page: " + currentPage);
 				setTitle(taskDefinition.getName() + ": " + currentPage.getName());
@@ -267,6 +269,7 @@ public class RunJob extends Activity {
 								Log.d(TAG, "Added LabelledEditbox");
 							}else if("DIGITS".equals(item.getType())){
 								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
+								editBox.setKeyListener(new DigitsKeyListener());
 								widget = editBox;
 								Log.d(TAG, "Added LabelledEditbox");
 							}else if("DATETIME".equals(item.getType())){
