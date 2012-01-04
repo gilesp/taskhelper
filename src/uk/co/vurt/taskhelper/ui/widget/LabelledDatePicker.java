@@ -1,8 +1,10 @@
 package uk.co.vurt.taskhelper.ui.widget;
 
+import uk.co.vurt.taskhelper.R;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,41 +19,27 @@ public class LabelledDatePicker extends LinearLayout {
 	private EditText textBox;
 	private Button pickDateButton;
 
-	private int mYear;
-	private int mMonth;
-	private int mDay;
 	
-	static final int DATE_DIALOG_ID = 0;
 	
-	// the callback received when the user "sets" the date in the dialog
-    private DatePickerDialog.OnDateSetListener mDateSetListener =
-            new DatePickerDialog.OnDateSetListener() {
-
-                public void onDateSet(DatePicker view, int year, 
-                                      int monthOfYear, int dayOfMonth) {
-                    mYear = year;
-                    mMonth = monthOfYear;
-                    mDay = dayOfMonth;
-                    updateDisplay();
-                }
-            };
+	
+	
+	
             
 	public LabelledDatePicker(Context context, String labelText, String initialValue) {
 		super(context);
-		label = new TextView(context);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater.inflate(R.layout.labelled_date_picker, this);
+		
+		label = (TextView)findViewById(R.id.labelled_date_picker_label);
 		label.setText(labelText);
-		textBox = new EditText(context);
+		textBox = (EditText)findViewById(R.id.labelled_date_picker_value);
 		textBox.setEnabled(false);
 		if(initialValue != null){
 			textBox.setText(initialValue);
 		}
-		textBox.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		pickDateButton = new Button(context);
-		pickDateButton.setText("Date");
-		pickDateButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		pickDateButton = (Button)findViewById(R.id.labelled_date_picker_button);
 
-
-		// add a click listener to the button
+//		// add a click listener to the button
 //        pickDateButton.setOnClickListener(new View.OnClickListener() {
 //            public void onClick(View v) {
 //                showDialog(DATE_DIALOG_ID);
@@ -59,19 +47,12 @@ public class LabelledDatePicker extends LinearLayout {
 //        });
 
         
-		this.addView(label);
-		this.addView(textBox);
-		this.addView(pickDateButton);
+//		this.addView(label);
+//		this.addView(textBox);
+//		this.addView(pickDateButton);
 	}
 	
-	private void updateDisplay() {
-        textBox.setText(
-            new StringBuilder()
-                    .append(mDay).append("-")
-                    // Month is 0 based so add 1
-                    .append(mMonth + 1).append("-")
-                    .append(mYear).append(" "));
-    }
+	
 	
 //	protected Dialog onCreateDialog(int id) {
 //	    switch (id) {
@@ -82,6 +63,10 @@ public class LabelledDatePicker extends LinearLayout {
 //	    }
 //	    return null;
 //	}
+	
+	public void setOnClickListener(View.OnClickListener listener){
+		pickDateButton.setOnClickListener(listener);
+	}
 	
 	public String getValue(){
 		return textBox.getText().toString();

@@ -137,7 +137,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 			jobCursor.close();
 			
-			//TODO: Stop fetch jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
+			
 			jobs = NetworkUtilities.fetchJobs(account, authToken, new Date(lastUpdated));
 			/**
 			 * Commented out while developing/testing job synch
@@ -167,11 +167,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					values.put(Job.Definitions.STATUS, job.getStatus());
 					
 					Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
+
+					//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
+					//This is because the job could have been completed on another device or by other means.
 					
+					//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
 					try{
 						Cursor cursor = provider.query(jobUri, null, null, null, null);
 						if(cursor.moveToFirst()){
 							Log.d(TAG, "Updating job " + job.getId());
+							values.remove(Job.Definitions.STATUS);
 							provider.update(jobUri, values, null, null);
 						} else {
 							Log.d(TAG, "Inserting new job " + job.getId());
