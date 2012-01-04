@@ -60,5 +60,9 @@
 	<string name="profile_action">Sample profile</string>
 	<string name="view_profile">View Profile</string>
 	
-	<string name="synch_menu">Sync</string>
+	<string name="menu_sync_label">Sync</string>
+	<string name="menu_settings_label">Settings</string>
+	
+	<string name="settings_sync_server_label">Sync Server</string>
+	<string name="settings_sync_server_prompt">Specify the server to sync with.</string>
 </resources>

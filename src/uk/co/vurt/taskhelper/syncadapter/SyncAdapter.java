@@ -126,7 +126,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					}
 
 					//if successful, delete completed job and dataitems.
-					boolean submitted = NetworkUtilities.submitData(account, authToken, submission);
+					boolean submitted = NetworkUtilities.submitData(context, account, authToken, submission);
 					if(submitted){
 						provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
 						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
@@ -138,7 +138,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			jobCursor.close();
 			
 			
-			jobs = NetworkUtilities.fetchJobs(account, authToken, new Date(lastUpdated));
+			jobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(lastUpdated));
 			/**
 			 * Commented out while developing/testing job synch
 			 */
