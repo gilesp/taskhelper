@@ -1,5 +1,6 @@
 package uk.co.vurt.taskhelper.activities;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -31,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -280,7 +284,13 @@ public class RunJob extends Activity {
 								widget = editBox;
 								Log.d(TAG, "Added LabelledEditbox");
 							}else if("DATETIME".equals(item.getType())){
-								LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
+								final LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
+								datePicker.setOnClickListener(new View.OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										showDatePickerDialog(datePicker);
+									}
+								});
 								widget = datePicker;
 								Log.d(TAG, "Added LabelledEditbox");
 							} else {
@@ -356,4 +366,53 @@ public class RunJob extends Activity {
 			}
 		}
 	}
+	
+	static final int DATE_DIALOG_ID = 0;
+	
+	private int mYear;
+	private int mMonth;
+	private int mDay;
+	
+	private LabelledDatePicker currentDatePicker;
+	
+	private void showDatePickerDialog(LabelledDatePicker datePicker){
+		currentDatePicker = datePicker;
+		//TODO: Extract default date value from labelled date picker
+		Calendar cal = Calendar.getInstance();
+		mYear = cal.get(Calendar.YEAR);
+		mMonth = cal.get(Calendar.MONTH);
+		mDay = cal.get(Calendar.DAY_OF_MONTH);
+		showDialog(DATE_DIALOG_ID);
+	}
+	
+	// the callback received when the user "sets" the date in the dialog
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year, 
+                                      int monthOfYear, int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    updateDisplay();
+                }
+            };
+            
+    private void updateDisplay() {
+    	currentDatePicker.setValue(new StringBuilder()
+        .append(mDay).append("-")
+        // Month is 0 based so add 1
+        .append(mMonth + 1).append("-")
+        .append(mYear).append(" ").toString());
+    }
+    
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+        case DATE_DIALOG_ID:
+            return new DatePickerDialog(this,
+                        mDateSetListener,
+                        mYear, mMonth, mDay);
+        }
+        return null;
+    }
 }

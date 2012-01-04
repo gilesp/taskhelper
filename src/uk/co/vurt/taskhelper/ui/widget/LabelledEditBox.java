@@ -1,7 +1,9 @@
 package uk.co.vurt.taskhelper.ui.widget;
 
+import uk.co.vurt.taskhelper.R;
 import android.content.Context;
 import android.text.method.KeyListener;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -14,15 +16,19 @@ public class LabelledEditBox extends LinearLayout {
 	
 	public LabelledEditBox(Context context, String labelText, String initialValue) {
 		super(context);
-		label = new TextView(context);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater.inflate(R.layout.labelled_edit_box, this);
+
+		label = (TextView)findViewById(R.id.labelled_edit_box_label);
+		textBox = (EditText)findViewById(R.id.labelled_edit_box_value);
+		
+		this.setOrientation(VERTICAL);
+
 		label.setText(labelText);
-		textBox = new EditText(context);
+		
 		if(initialValue != null){
 			textBox.setText(initialValue);
 		}
-		textBox.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		this.addView(label);
-		this.addView(textBox);
 	}
 
 	public String getValue(){
@@ -40,4 +46,5 @@ public class LabelledEditBox extends LinearLayout {
 	public void setKeyListener(KeyListener input){
 		textBox.setKeyListener(input);
 	}
+	
 }

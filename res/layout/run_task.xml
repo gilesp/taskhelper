@@ -8,14 +8,27 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
     </LinearLayout>
-    <!--  may need to wrap this in a scrollable layout if the content is going 
-    to be large, to avoid pushing the buttons off the bottom of the screen -->
     <LinearLayout android:layout_width="fill_parent" 
                   android:layout_height="wrap_content"
                   android:layout_above="@+id/buttonBar" 
                   android:layout_alignParentTop="true"
-                  android:id="@+id/pageContent" 
                   android:orientation="vertical">
+        <ScrollView
+	        android:layout_width="fill_parent"
+	        android:layout_height="0dip"
+	        android:layout_weight="1">
+	        <LinearLayout
+	            android:id="@+id/pageContent"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="vertical"
+	            android:paddingTop="5dip"
+	            android:paddingBottom="13dip"
+	            android:paddingLeft="20dip"
+	            android:paddingRight="20dip">
+	        </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </RelativeLayout>
     

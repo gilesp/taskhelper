@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/synchronise" android:title="@string/synch_menu" android:icon="@drawable/ic_menu_refresh"></item>
+    <item android:id="@+id/synchronise" 
+          android:title="@string/synch_menu" 
+          android:icon="@drawable/ic_menu_refresh"
+          android:showAsAction="ifRoom|withText"/>
 </menu>
