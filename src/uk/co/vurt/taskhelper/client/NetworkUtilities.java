@@ -32,7 +32,10 @@ import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
 import uk.co.vurt.taskhelper.domain.job.JobDefinition;
 import uk.co.vurt.taskhelper.domain.job.Submission;
 import android.accounts.Account;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ParseException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 final public class NetworkUtilities {
@@ -57,19 +60,23 @@ final public class NetworkUtilities {
 	    //public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper"; /**TODO: Load Server URL from resource file?? */
 	    
 //	    public static final String BASE_URL = "http://10.32.48.36:8080/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
-	    public static final String BASE_URL = "http://appsdev.wmfs.net:8280/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
+	    //public static final String BASE_URL = "http://appsdev.wmfs.net:8280/taskhelper_server"; /**TODO: Load Server URL from resource file?? */
 
-	    public static final String AUTH_URI = BASE_URL + "/auth";
+	    public static final String AUTH_URI = "/auth";
 
-	    public static final String FETCH_JOBS_URI = BASE_URL + "/jobs/for";
-	    
-	    public static final String FETCH_TASK_DEFINITIONS_URI = BASE_URL + "/taskdefinitions";
+	    public static final String FETCH_JOBS_URI = "/jobs/for";
+//	    
+//	    public static final String FETCH_TASK_DEFINITIONS_URI = "/taskdefinitions";
 
-	    public static final String SUBMIT_JOB_DATA_URI = BASE_URL + "/submissions/job/";
+	    public static final String SUBMIT_JOB_DATA_URI = "/submissions/job/";
 
 	    private NetworkUtilities() {
 	    }
 
+	    private static String getBaseUrl(Context context){
+	    	return PreferenceManager.getDefaultSharedPreferences(context).getString("sync_server", null);
+	    }
+	    
 	    /**
 	     * Configures the httpClient to connect to the URL provided.
 	     */
@@ -93,7 +100,7 @@ final public class NetworkUtilities {
 	     * @return boolean The boolean result indicating whether the user was
 	     *         successfully authenticated.
 	     */
-	    public static String authenticate(String username, String password) {
+	    public static String authenticate(Context context, String username, String password) {
 
 	        final HttpResponse resp;
 	        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -106,10 +113,11 @@ final public class NetworkUtilities {
 	            // this should never happen.
 	            throw new AssertionError(e);
 	        }
+	        String baseUrl = getBaseUrl(context);
 	        if (Log.isLoggable(TAG, Log.INFO)) {
-                Log.i(TAG, "Authentication to: " + AUTH_URI);
+                Log.i(TAG, "Authentication to: " + baseUrl + AUTH_URI);
             }
-	        final HttpPost post = new HttpPost(AUTH_URI);
+	        final HttpPost post = new HttpPost(baseUrl + AUTH_URI);
 	        post.addHeader(entity.getContentType());
 	        post.setEntity(entity);
 	        try {
@@ -155,12 +163,12 @@ final public class NetworkUtilities {
 	     * @param authToken
 	     * @return
 	     */
-	    public static boolean submitData(Account account, String authToken, Submission submission){
+	    public static boolean submitData(Context context, Account account, String authToken, Submission submission){
 	    	
 	    	StringEntity stringEntity;
 			try {
 				stringEntity = new StringEntity(submission.toJSON().toString());
-				final HttpPost post = new HttpPost(SUBMIT_JOB_DATA_URI);
+				final HttpPost post = new HttpPost(getBaseUrl(context) + SUBMIT_JOB_DATA_URI);
 		    	post.setEntity(stringEntity);
 		    	post.setHeader("Accept", "application/json");
 		    	post.setHeader("Content-type", "application/json");
@@ -182,10 +190,10 @@ final public class NetworkUtilities {
 	    	
 	    }
 	    
-	    public static List<JobDefinition> fetchJobs(Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
+	    public static List<JobDefinition> fetchJobs(Context context, Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
 	    	final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
 	    	
-	    	String data = fetchData(FETCH_JOBS_URI + "/" + account.name, null, null, null);
+	    	String data = fetchData(getBaseUrl(context) + FETCH_JOBS_URI + "/" + account.name, null, null, null);
 	    	Log.d(TAG, "JOBS DATA: " + data);
 	    	final JSONArray jobs = new JSONArray(data);
 	    	

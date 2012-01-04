@@ -50,11 +50,11 @@ class Authenticator extends AbstractAccountAuthenticator {
 	private static final String TAG = "Authenticator";
 	
     // Authentication Service context
-    private final Context mContext;
+    private final Context context;
 
     public Authenticator(Context context) {
         super(context);
-        mContext = context;
+        this.context = context;
     }
 
     /**
@@ -63,7 +63,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, 
     		String authTokenType, String[] requiredFeatures, Bundle options) {
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
@@ -79,7 +79,7 @@ class Authenticator extends AbstractAccountAuthenticator {
         Account account, Bundle options) {
         if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
             final String password = options.getString(AccountManager.KEY_PASSWORD);
-            final String authToken = NetworkUtilities.authenticate(account.name, password);
+            final String authToken = NetworkUtilities.authenticate(context, account.name, password);
             boolean verified = false;
             if((authToken != null) && (authToken.length() > 0)){
             	verified = true;
@@ -89,7 +89,7 @@ class Authenticator extends AbstractAccountAuthenticator {
             return result;
         }
         // Launch AuthenticatorActivity to confirm credentials
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
         intent.putExtra(AuthenticatorActivity.PARAM_CONFIRM_CREDENTIALS, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -121,10 +121,10 @@ class Authenticator extends AbstractAccountAuthenticator {
             return result;
         }
         
-        final AccountManager am = AccountManager.get(mContext);
+        final AccountManager am = AccountManager.get(context);
         final String password = am.getPassword(account);
         if (password != null) {
-        	final String authToken = NetworkUtilities.authenticate(account.name, password);
+        	final String authToken = NetworkUtilities.authenticate(context, account.name, password);
             if (authToken != null && authToken.length() > 0) {
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
@@ -135,7 +135,7 @@ class Authenticator extends AbstractAccountAuthenticator {
         }
         // the password was missing or incorrect, return an Intent to an
         // Activity that will prompt the user for the password.
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -150,7 +150,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public String getAuthTokenLabel(String authTokenType) {
         if (authTokenType.equals(Constants.AUTHTOKEN_TYPE)) {
-            return mContext.getString(R.string.label);
+            return context.getString(R.string.label);
         }
         return null;
 
@@ -175,7 +175,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response,
         Account account, String authTokenType, Bundle loginOptions) {
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE,
             authTokenType);

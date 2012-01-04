@@ -112,6 +112,9 @@ public class JobList extends ListActivity {
 	    	case R.id.synchronise:
 	    		synchronise();
 	    		return true;
+	    	case R.id.preferences:
+				startActivity(new Intent(this, PreferencesActivity.class));
+	    		return true;
 	    	default:
 	    		return super.onOptionsItemSelected(item);
 	    }

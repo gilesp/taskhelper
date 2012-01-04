@@ -2,6 +2,7 @@ package uk.co.vurt.taskhelper.authenticator;
 
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.R;
+import uk.co.vurt.taskhelper.activities.CheckAccountExistsActivity;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
 import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.providers.TaskProvider;
@@ -67,6 +68,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
 
     private EditText usernameEdit;
     
+    private boolean returnToStart = false;
+    
     public void onCreate(Bundle icicle) {
 
         Log.i(TAG, "onCreate(" + icicle + ")");
@@ -74,6 +77,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         accountManager = AccountManager.get(this);
         Log.i(TAG, "loading data from Intent");
         final Intent intent = getIntent();
+        returnToStart = intent.getBooleanExtra(CheckAccountExistsActivity.RETURN_TO_START_KEY, false);
         username = intent.getStringExtra(PARAM_USERNAME);
 //        mAuthtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         requestNewAccount = username == null;
@@ -149,6 +153,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+        if(returnToStart){
+        	startActivity(new Intent(this, CheckAccountExistsActivity.class));
+        }
         finish();
     }
     
@@ -176,6 +183,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+        if(returnToStart){
+        	startActivity(new Intent(this, CheckAccountExistsActivity.class));
+        }
         finish();
     }
     
@@ -263,7 +273,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
             // We do the actual work of authenticating the user
             // in the NetworkUtilities class.
             try {
-                return NetworkUtilities.authenticate(username, password);
+                return NetworkUtilities.authenticate(AuthenticatorActivity.this, username, password);
             } catch (Exception ex) {
                 Log.e(TAG, "UserLoginTask.doInBackground: failed to authenticate");
                 Log.i(TAG, ex.toString());
