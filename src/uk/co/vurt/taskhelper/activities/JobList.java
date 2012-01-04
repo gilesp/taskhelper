@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -34,7 +35,8 @@ public class JobList extends ListActivity {
 	private static final String[] PROJECTION = new String[] {
 		Job.Definitions._ID, //0
 		Job.Definitions.NAME, //1
-		Job.Definitions.DUE //2
+		Job.Definitions.DUE, //2
+		Job.Definitions.STATUS //3
 	};
 	
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,8 @@ public class JobList extends ListActivity {
         
         // Used to map task definition entries from the database to views
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.selectjob_list_item, cursor,
-                												new String[] { Job.Definitions.NAME, Job.Definitions.DUE }, 
-                												new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate});
+                												new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
+                												new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
         
         adapter.setViewBinder(new ViewBinder(){
 
@@ -71,6 +73,15 @@ public class JobList extends ListActivity {
 					TextView textView = (TextView)view;
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 					textView.setText("Due: " + sdf.format(new Date(dueDate)));
+					return true;
+				} else if(columnIndex == 3){
+					String status = cursor.getString(3);
+					ImageView image = (ImageView)view;
+					if("COMPLETED".equals(status)){
+						image.setImageResource(R.drawable.ic_completed_star);
+					}else{
+						image.setImageResource(R.drawable.ic_uncompleted_star);
+					}
 					return true;
 				}
 				return false;

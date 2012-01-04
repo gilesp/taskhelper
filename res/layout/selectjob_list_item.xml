@@ -5,22 +5,34 @@
     android:layout_height="wrap_content">
     <TextView 
 	    android:id="@+id/joblist_entry_name"
-	    android:layout_width="wrap_content"
+	    android:layout_width="0dip"
 	    android:layout_height="?android:attr/listPreferredItemHeight"
+	    android:layout_weight="1"
 	    android:textAppearance="?android:attr/textAppearanceLarge"
 	    android:gravity="center_vertical"
 	    android:paddingLeft="5dip"
 	    android:singleLine="true"
+	    android:text="Job Name"
 	/>    
 	<TextView
 	    android:id="@+id/joblist_entry_duedate"
-	    android:layout_width="fill_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
+	    android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="right"
         android:paddingRight="5dip"
         android:singleLine="true" 
         android:textSize="12sp"
+        android:text="Due: 01/01/12"
 	/>
+
+	<ImageView
+	    android:id="@+id/joblist_entry_completed"
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:baselineAlignBottom="true"
+	    android:contentDescription="Uncompleted"
+	    android:src="@drawable/ic_uncompleted_star" />
+
 </LinearLayout>
 
