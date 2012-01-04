@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-public class CheckAccountExistsActivity extends Activity {
+public class DispatcherActivity extends Activity {
 
 	public final static String RETURN_TO_START_KEY = "uk.co.vurt.taskhelper.activities.ReturnToStart";
 	protected AccountManager accountManager;

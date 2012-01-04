@@ -2,7 +2,7 @@ package uk.co.vurt.taskhelper.authenticator;
 
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.R;
-import uk.co.vurt.taskhelper.activities.CheckAccountExistsActivity;
+import uk.co.vurt.taskhelper.activities.DispatcherActivity;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
 import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.providers.TaskProvider;
@@ -77,7 +77,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         accountManager = AccountManager.get(this);
         Log.i(TAG, "loading data from Intent");
         final Intent intent = getIntent();
-        returnToStart = intent.getBooleanExtra(CheckAccountExistsActivity.RETURN_TO_START_KEY, false);
+        returnToStart = intent.getBooleanExtra(DispatcherActivity.RETURN_TO_START_KEY, false);
         username = intent.getStringExtra(PARAM_USERNAME);
 //        mAuthtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         requestNewAccount = username == null;
@@ -154,7 +154,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         if(returnToStart){
-        	startActivity(new Intent(this, CheckAccountExistsActivity.class));
+        	startActivity(new Intent(this, DispatcherActivity.class));
         }
         finish();
     }
@@ -184,7 +184,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         if(returnToStart){
-        	startActivity(new Intent(this, CheckAccountExistsActivity.class));
+        	startActivity(new Intent(this, DispatcherActivity.class));
         }
         finish();
     }
