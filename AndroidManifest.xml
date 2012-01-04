@@ -60,39 +60,11 @@
             android:theme="@android:style/Theme.Dialog"
             android:excludeFromRecents="true"
             >
-            <!--
-                No intent-filter here! This activity is only ever launched by
-                someone who explicitly knows the class name
-            -->
         </activity>
-<!-- 		<activity android:name=".activities.SelectTask" -->
-<!-- 			android:label="@string/app_name"> -->
-<!-- 			<intent-filter> -->
-<!-- 				<action android:name="android.intent.action.MAIN" /> -->
-<!-- 				<category android:name="android.intent.category.LAUNCHER" /> -->
-<!-- 			</intent-filter> -->
-<!-- 			<intent-filter> -->
-<!--                 <action android:name="android.intent.action.VIEW" /> -->
-<!--                 <action android:name="android.intent.action.EDIT" /> -->
-<!--                 <action android:name="android.intent.action.PICK" /> -->
-<!--                 <category android:name="android.intent.category.DEFAULT" /> -->
-<!--                 <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.task.definition" /> -->
-<!--             </intent-filter> -->
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.GET_CONTENT" /> -->
-<!--                 <category android:name="android.intent.category.DEFAULT" /> -->
-<!--                 <data android:mimeType="vnd.android.cursor.item/vnd.vurt.task.definition" /> -->
-<!--             </intent-filter> -->
-<!-- 		</activity> -->
 	   <activity android:name=".activities.TaskList"
 			android:label="@string/app_name">
-<!-- 			<intent-filter> -->
-<!-- 				<action android:name="android.intent.action.MAIN" /> -->
-<!-- 				<category android:name="android.intent.category.LAUNCHER" /> -->
-<!-- 			</intent-filter> -->
 			<intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-<!--                 <action android:name="android.intent.action.EDIT" /> -->
                 <action android:name="android.intent.action.PICK" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.taskhelper.task.definition" />
@@ -107,7 +79,7 @@
             android:label="@string/job_list_title">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-<!--                 <action android:name="android.intent.action.EDIT" /> -->
+                <action android:name="android.intent.action.EDIT" />
                 <action android:name="android.intent.action.PICK" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.taskhelper.job" />
@@ -132,7 +104,7 @@
               <data android:mimeType="vnd.android.cursor.item/vnd.vurt.taskhelper.job" />
           </intent-filter>
         </activity>
-		<activity android:name=".activities.CheckAccountExistsActivity"
+		<activity android:name=".activities.DispatcherActivity"
 		    android:label="@string/app_name">
            <intent-filter>
                <action android:name="android.intent.action.MAIN" />
