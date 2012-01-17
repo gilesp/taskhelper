@@ -16,7 +16,7 @@ public class JobDefinition {
 	private final Date created;
 	private final Date due;
 	private String status;
-
+	private String group;
 	
 	public JobDefinition(int id, String name, TaskDefinition definition, Date created,
 			Date due, String status) {
@@ -29,6 +29,11 @@ public class JobDefinition {
 		this.status = status;
 	}
 
+	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String group){
+		this(id, name, definition, created, due, status);
+		this.group = group;
+	}
+	
 	public static JobDefinition valueOf(JSONObject job){
 		try{
 			final int id = job.getInt("id");
@@ -38,7 +43,15 @@ public class JobDefinition {
 			final Date due = new Date(job.getLong("due"));
 			final String status = job.getString("status");
 
-			return new JobDefinition(id, name, definition, created, due, status);
+			JobDefinition jobDefinition;
+			if(job.has("group")){
+				final String group = job.getString("group");
+				jobDefinition = new JobDefinition(id, name, definition, created, due, status, group);
+			}else{
+				jobDefinition = new JobDefinition(id, name, definition, created, due, status); 
+			}
+			
+			return jobDefinition;
 			
 		} catch (final Exception e){
 			Log.i("Job", "Unable to parse JSON Job object: " + e.toString());
@@ -72,6 +85,10 @@ public class JobDefinition {
 
 	public Date getDue() {
 		return due;
+	}
+
+	public String getGroup() {
+		return group;
 	}
 
 	@Override
