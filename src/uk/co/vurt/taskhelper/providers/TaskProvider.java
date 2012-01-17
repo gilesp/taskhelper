@@ -30,7 +30,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "task.db";
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -72,6 +72,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions.CREATED, Job.Definitions.CREATED);
 		jobsProjectionMap.put(Job.Definitions.DUE, Job.Definitions.DUE);
 		jobsProjectionMap.put(Job.Definitions.STATUS, Job.Definitions.STATUS);
+		jobsProjectionMap.put(Job.Definitions.GROUP, Job.Definitions.GROUP);
 
 		dataitemsProjectionMap = new HashMap<String, String>();
 		dataitemsProjectionMap.put(Dataitem.Definitions._ID, Dataitem.Definitions._ID);
@@ -227,6 +228,7 @@ public class TaskProvider extends ContentProvider {
 					Log.d(TAG, "Created: " + values.containsKey(Job.Definitions.CREATED));
 					Log.d(TAG, "Due: " + values.containsKey(Job.Definitions.DUE));
 					Log.d(TAG, "Status: " + values.containsKey(Job.Definitions.STATUS));
+					Log.d(TAG, "Group: " + values.containsKey(Job.Definitions.GROUP));
 					throw new SQLException("Unable to insert row into " + uri);
 				}
 				break;
@@ -385,7 +387,8 @@ public class TaskProvider extends ContentProvider {
 					+ Job.Definitions.NAME + " TEXT, "
 					+ Job.Definitions.TASK_DEFINITION_ID + " INTEGER REFERENCES " + DEFINITIONS_TABLE_NAME + " (" + Task.Definitions._ID + "), "
 					+ Job.Definitions.CREATED + " INTEGER, "
-					+ Job.Definitions.DUE + " INTEGER," 
+					+ Job.Definitions.DUE + " INTEGER, "
+					+ Job.Definitions.GROUP + " TEXT DEFAULT 'Personal', "
 					+ Job.Definitions.STATUS + " TEXT "
 					+ ");");
 			
@@ -415,4 +418,5 @@ public class TaskProvider extends ContentProvider {
 			onCreate(db);
 		}
 	}
+
 }

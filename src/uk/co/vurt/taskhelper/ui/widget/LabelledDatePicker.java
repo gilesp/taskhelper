@@ -18,13 +18,7 @@ public class LabelledDatePicker extends LinearLayout {
 	private TextView label;
 	private EditText textBox;
 	private Button pickDateButton;
-
-	
-	
-	
-	
-	
-            
+  
 	public LabelledDatePicker(Context context, String labelText, String initialValue) {
 		super(context);
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -39,30 +33,7 @@ public class LabelledDatePicker extends LinearLayout {
 		}
 		pickDateButton = (Button)findViewById(R.id.labelled_date_picker_button);
 
-//		// add a click listener to the button
-//        pickDateButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                showDialog(DATE_DIALOG_ID);
-//            }
-//        });
-
-        
-//		this.addView(label);
-//		this.addView(textBox);
-//		this.addView(pickDateButton);
 	}
-	
-	
-	
-//	protected Dialog onCreateDialog(int id) {
-//	    switch (id) {
-//	    case DATE_DIALOG_ID:
-//	        return new DatePickerDialog(this,
-//	                    mDateSetListener,
-//	                    mYear, mMonth, mDay);
-//	    }
-//	    return null;
-//	}
 	
 	public void setOnClickListener(View.OnClickListener listener){
 		pickDateButton.setOnClickListener(listener);

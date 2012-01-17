@@ -1,9 +1,7 @@
 package uk.co.vurt.taskhelper.activities;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import uk.co.vurt.taskhelper.R;
+import uk.co.vurt.taskhelper.domain.job.JobDomainAdapter;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.TaskProvider;
 import android.app.ListActivity;
@@ -14,16 +12,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorAdapter.ViewBinder;
-import android.widget.TextView;
 
 public class JobList extends ListActivity {
 
@@ -36,8 +30,11 @@ public class JobList extends ListActivity {
 		Job.Definitions._ID, //0
 		Job.Definitions.NAME, //1
 		Job.Definitions.DUE, //2
-		Job.Definitions.STATUS //3
+		Job.Definitions.STATUS, //3
+		Job.Definitions.GROUP //4
 	};
+	
+	private SimpleCursorAdapter adapter;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,36 +55,42 @@ public class JobList extends ListActivity {
         // when needed.
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
         
-        // Used to map task definition entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.selectjob_list_item, cursor,
-                												new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
-                												new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
         
-        adapter.setViewBinder(new ViewBinder(){
-
-			@Override
-			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				Log.d(TAG, "Column index: " + columnIndex);
-				if(columnIndex == 2){
-					long dueDate = cursor.getLong(2);
-					TextView textView = (TextView)view;
-					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-					textView.setText("Due: " + sdf.format(new Date(dueDate)));
-					return true;
-				} else if(columnIndex == 3){
-					String status = cursor.getString(3);
-					ImageView image = (ImageView)view;
-					if("COMPLETED".equals(status)){
-						image.setImageResource(R.drawable.ic_completed_star);
-					}else{
-						image.setImageResource(R.drawable.ic_uncompleted_star);
-					}
-					return true;
-				}
-				return false;
-			}
-        	
-        });
+        //TODO: Replace this simplecursoradapter with our own custom adapter that extends CursorAdapter. Joy.
+        
+        // Used to map task definition entries from the database to views
+        adapter = new JobDomainAdapter(this, R.layout.selectjob_list_item, cursor,
+				new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
+				new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
+//        adapter = new SimpleCursorAdapter(this, R.layout.selectjob_list_item, cursor,
+//											new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
+//											new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
+//        
+//        adapter.setViewBinder(new ViewBinder(){
+//
+//			@Override
+//			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+//				Log.d(TAG, "Column index: " + columnIndex);
+//				if(columnIndex == 2){
+//					long dueDate = cursor.getLong(2);
+//					TextView textView = (TextView)view;
+//					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+//					textView.setText("Due: " + sdf.format(new Date(dueDate)));
+//					return true;
+//				} else if(columnIndex == 3){
+//					String status = cursor.getString(3);
+//					ImageView image = (ImageView)view;
+//					if("COMPLETED".equals(status)){
+//						image.setImageResource(R.drawable.ic_completed_star);
+//					}else{
+//						image.setImageResource(R.drawable.ic_uncompleted_star);
+//					}
+//					return true;
+//				}
+//				return false;
+//			}
+//        	
+//        });
         
         setListAdapter(adapter);
 	}
@@ -187,4 +190,5 @@ public class JobList extends ListActivity {
             startActivity(new Intent(Intent.ACTION_RUN, uri));
         }
     }
+
 }
