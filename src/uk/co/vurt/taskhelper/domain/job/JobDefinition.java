@@ -44,8 +44,8 @@ public class JobDefinition {
 			final String status = job.getString("status");
 
 			JobDefinition jobDefinition;
-			if(job.has("group")){
-				final String group = job.getString("group");
+			if(job.has("groupname") && !job.getString("groupname").equals("null")){
+				final String group = job.getString("groupname");
 				jobDefinition = new JobDefinition(id, name, definition, created, due, status, group);
 			}else{
 				jobDefinition = new JobDefinition(id, name, definition, created, due, status); 
