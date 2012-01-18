@@ -165,6 +165,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					values.put(Job.Definitions.CREATED, job.getCreated().getTime());
 					values.put(Job.Definitions.DUE, job.getDue().getTime());
 					values.put(Job.Definitions.STATUS, job.getStatus());
+					if(job.getGroup() != null){
+						values.put(Job.Definitions.GROUP, job.getGroup());
+					}
 					
 					Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
 

@@ -33,7 +33,6 @@ import uk.co.vurt.taskhelper.domain.job.JobDefinition;
 import uk.co.vurt.taskhelper.domain.job.Submission;
 import android.accounts.Account;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ParseException;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -120,38 +119,37 @@ final public class NetworkUtilities {
 	        final HttpPost post = new HttpPost(baseUrl + AUTH_URI);
 	        post.addHeader(entity.getContentType());
 	        post.setEntity(entity);
+	        String authToken = null;
+	        
 	        try {
 	            resp = getHttpClient().execute(post);
-	            String authToken = null;
+	            
 	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 	            	InputStream inputStream = (resp.getEntity() != null) ? resp.getEntity().getContent() : null;
 	            	if(inputStream != null){
 	            		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 	            		authToken = reader.readLine().trim();
-	            		
 	            	}
 	            }
 	            if((authToken != null) && (authToken.length() > 0)){
-	            	if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	                    Log.v(TAG, "Successful authentication: " + authToken);
+	            	if (Log.isLoggable(TAG, Log.INFO)) {
+	                    Log.i(TAG, "Successful authentication: " + authToken);
 	                }
-	                return authToken;
 	            } else {
-	                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
+	                if (Log.isLoggable(TAG, Log.INFO)) {
+	                	Log.i(TAG, "Error authenticating" + resp.getStatusLine());
 	                }
-	                return null;
 	            }
 	        } catch (final IOException e) {
-	            if (Log.isLoggable(TAG, Log.ERROR)) {
-	                Log.e(TAG, "IOException when getting authtoken", e);
+	            if (Log.isLoggable(TAG, Log.INFO)) {
+	            	Log.i(TAG, "IOException when getting authtoken", e);
 	            }
-	            return null;
 	        } finally {
 	            if (Log.isLoggable(TAG, Log.VERBOSE)) {
 	                Log.v(TAG, "getAuthtoken completing");
 	            }
 	        }
+	        return authToken;
 	    }
 
 	    /**
