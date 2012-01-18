@@ -62,35 +62,6 @@ public class JobList extends ListActivity {
         adapter = new JobDomainAdapter(this, R.layout.selectjob_list_item, cursor,
 				new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
 				new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
-//        adapter = new SimpleCursorAdapter(this, R.layout.selectjob_list_item, cursor,
-//											new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
-//											new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
-//        
-//        adapter.setViewBinder(new ViewBinder(){
-//
-//			@Override
-//			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-//				Log.d(TAG, "Column index: " + columnIndex);
-//				if(columnIndex == 2){
-//					long dueDate = cursor.getLong(2);
-//					TextView textView = (TextView)view;
-//					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
-//					textView.setText("Due: " + sdf.format(new Date(dueDate)));
-//					return true;
-//				} else if(columnIndex == 3){
-//					String status = cursor.getString(3);
-//					ImageView image = (ImageView)view;
-//					if("COMPLETED".equals(status)){
-//						image.setImageResource(R.drawable.ic_completed_star);
-//					}else{
-//						image.setImageResource(R.drawable.ic_uncompleted_star);
-//					}
-//					return true;
-//				}
-//				return false;
-//			}
-//        	
-//        });
         
         setListAdapter(adapter);
 	}

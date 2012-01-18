@@ -30,7 +30,7 @@ public class Job {
 		public static final String STATUS = "status";
 		public static final String GROUP = "groupname";
 		
-		public static final String DEFAULT_SORT_ORDER = DUE + " ASC";
+		public static final String DEFAULT_SORT_ORDER = GROUP + ", " + DUE + " ASC";
 		
 		public static final String[] ALL = new String[]{
 			_ID,
