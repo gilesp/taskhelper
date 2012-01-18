@@ -273,6 +273,7 @@ public class TaskProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		
 		String orderBy;
+		String groupBy = null;
 		switch (uriMatcher.match(uri)) {
 			case DEFINITIONS_URI:
 				queryBuilder.setTables(DEFINITIONS_TABLE_NAME);
@@ -290,6 +291,7 @@ public class TaskProvider extends ContentProvider {
 				queryBuilder.setTables(JOBS_TABLE_NAME);
 				queryBuilder.setProjectionMap(jobsProjectionMap);
 				orderBy = Job.Definitions.DEFAULT_SORT_ORDER;
+//				groupBy = Job.Definitions.GROUP;
 				break;
 			case JOB_ID_URI:
 				queryBuilder.setTables(JOBS_TABLE_NAME);
@@ -320,7 +322,7 @@ public class TaskProvider extends ContentProvider {
 		// Get the database and run the query
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
-				selectionArgs, null, null, orderBy);
+				selectionArgs, groupBy, null, orderBy);
 
 		// Tell the cursor what uri to watch, so it knows when its source data
 		// changes

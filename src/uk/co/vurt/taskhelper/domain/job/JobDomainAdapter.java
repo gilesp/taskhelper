@@ -49,7 +49,7 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 		String group = cursor.getString(cursor.getColumnIndex(Job.Definitions.GROUP)); //looking up column positions like this is porbably jsut as inefficient as when you do it with JDBC
 		String name = cursor.getString(cursor.getColumnIndex(Job.Definitions.NAME));
 		String status = cursor.getString(cursor.getColumnIndex(Job.Definitions.STATUS));
-		long duedate = cursor.getLong(cursor.getColumnIndex(Job.Definitions.GROUP));
+		long duedate = cursor.getLong(cursor.getColumnIndex(Job.Definitions.DUE));
 		
 		String previousGroup = null;
 		
@@ -65,7 +65,7 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 			holder.header.setVisibility(View.GONE);
 		} else {
 			//show the header
-			holder.header.setText(group);
+			holder.header.setText(group + " Tasks");
 			holder.header.setVisibility(View.VISIBLE);
 		}
 		
