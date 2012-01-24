@@ -11,6 +11,7 @@ import uk.co.vurt.taskhelper.providers.Task;
 import android.util.Log;
 
 public class Page {
+	private final static String TAG = "Page";
 	private final String name;
 	private final List<PageItem> items;
 	
@@ -39,7 +40,7 @@ public class Page {
 			}
 			return new Page(name, pageItems);
 		}catch(final Exception e){
-			Log.i("Page", "Unable to parse JSON Page object: " + e.toString());
+			Log.i(TAG, "Unable to parse JSON Page object: " + e.toString());
 		}
 		return null;
 	}

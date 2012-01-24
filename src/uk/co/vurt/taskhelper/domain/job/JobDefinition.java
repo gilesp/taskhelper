@@ -1,6 +1,7 @@
 package uk.co.vurt.taskhelper.domain.job;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import org.json.JSONObject;
 
@@ -10,6 +11,8 @@ import android.util.Log;
 
 public class JobDefinition {
 
+	private final static String TAG = "JobDefinition";
+	
 	private final int id;
 	private final String name;
 	private final TaskDefinition definition;
@@ -54,7 +57,7 @@ public class JobDefinition {
 			return jobDefinition;
 			
 		} catch (final Exception e){
-			Log.i("Job", "Unable to parse JSON Job object: " + e.toString());
+			Log.i(TAG, "Unable to parse JSON Job object: " + e.toString());
 		}
 		return null;
 	}

@@ -152,48 +152,62 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				storeTaskDefinition(provider, definition);
 			}
 			
+			ArrayList<Integer> newJobIds = new ArrayList<Integer>();
 			for(JobDefinition job: jobs){
+				newJobIds.add(job.getId());
+				
 				Log.d(TAG, "Adding a job to database: " + job);
-				if(job != null){
-					
-					storeTaskDefinition(provider, job.getDefinition());
-					
-					ContentValues values = new ContentValues();
-					values.put(Job.Definitions._ID, job.getId());
-					values.put(Job.Definitions.NAME, job.getName());
-					values.put(Job.Definitions.TASK_DEFINITION_ID, job.getDefinition().getId());
-					values.put(Job.Definitions.CREATED, job.getCreated().getTime());
-					values.put(Job.Definitions.DUE, job.getDue().getTime());
-					values.put(Job.Definitions.STATUS, job.getStatus());
-					if(job.getGroup() != null){
-						values.put(Job.Definitions.GROUP, job.getGroup());
-					}
-					
-					Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
+				storeTaskDefinition(provider, job.getDefinition());
+				
+				ContentValues values = new ContentValues();
+				values.put(Job.Definitions._ID, job.getId());
+				values.put(Job.Definitions.NAME, job.getName());
+				values.put(Job.Definitions.TASK_DEFINITION_ID, job.getDefinition().getId());
+				values.put(Job.Definitions.CREATED, job.getCreated().getTime());
+				values.put(Job.Definitions.DUE, job.getDue().getTime());
+				values.put(Job.Definitions.STATUS, job.getStatus());
+				if(job.getGroup() != null){
+					values.put(Job.Definitions.GROUP, job.getGroup());
+				}
+				
+				Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
 
-					//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
-					//This is because the job could have been completed on another device or by other means.
-					
-					//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
-					try{
-						Cursor cursor = provider.query(jobUri, null, null, null, null);
-						if(cursor.moveToFirst()){
-							Log.d(TAG, "Updating job " + job.getId());
-							values.remove(Job.Definitions.STATUS);
-							provider.update(jobUri, values, null, null);
-						} else {
-							Log.d(TAG, "Inserting new job " + job.getId());
-							provider.insert(Job.Definitions.CONTENT_URI, values);
-						}
-						cursor.close();
-						cursor = null;
-					} catch(RemoteException re){
-						Log.e(TAG, "RemoteException", re);
+				//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
+				//This is because the job could have been completed on another device or by other means.
+				
+				//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
+				try{
+					Cursor cursor = provider.query(jobUri, null, null, null, null);
+					if(cursor.moveToFirst()){
+						Log.d(TAG, "Updating job " + job.getId());
+						values.remove(Job.Definitions.STATUS);
+						provider.update(jobUri, values, null, null);
+					} else {
+						Log.d(TAG, "Inserting new job " + job.getId());
+						provider.insert(Job.Definitions.CONTENT_URI, values);
 					}
-				}else{
-					Log.d(TAG, "Null job");
+					cursor.close();
+					cursor = null;
+				} catch(RemoteException re){
+					Log.e(TAG, "RemoteException", re);
 				}
 			}
+			
+
+			//Delete old jobs from the database.
+			//Basically, anything that hasn't arrived in the recent sync.
+			Cursor cursor = provider.query(Job.Definitions.CONTENT_URI, new String[]{Job.Definitions._ID}, null, null, null);
+			if(cursor.moveToFirst()){
+				do{
+					int id = cursor.getInt(cursor.getColumnIndex(Job.Definitions._ID));
+					if(!newJobIds.contains(id)){
+						provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, id), null, null);
+					}
+				}while(cursor.moveToNext());
+			}
+			cursor.close();
+			cursor = null;
+			
 			setLastUpdatedDate(account, lastUpdated);
 		}catch(final AuthenticatorException ae){
 			syncResult.stats.numParseExceptions++;
