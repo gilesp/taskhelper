@@ -2,6 +2,7 @@ package uk.co.vurt.taskhelper.ui;
 
 import uk.co.vurt.taskhelper.domain.definition.PageItem;
 import uk.co.vurt.taskhelper.domain.job.DataItem;
+import uk.co.vurt.taskhelper.ui.widget.LabelledCheckBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
 import android.content.Context;
@@ -23,7 +24,7 @@ public class WidgetFactory {
 		}else if("TEXT".equals(item.getType())){
 			LabelledEditBox editBox = new LabelledEditBox(context, item.getLabel(), dataItem != null ? dataItem.getValue() : item.getValue());
 			widget = editBox;
-		}else if("DIGITS".equals(item.getType())){
+		}else if("DIGITS".equals(item.getType()) || "NUMERIC".equals(item.getType())){
 			LabelledEditBox editBox = new LabelledEditBox(context, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
 			editBox.setKeyListener(new DigitsKeyListener());
 			widget = editBox;
@@ -36,6 +37,9 @@ public class WidgetFactory {
 //				}
 //			});
 			widget = datePicker;
+		}else if("YESNO".equals(item.getType())){
+			LabelledCheckBox checkBox = new LabelledCheckBox(context, item.getLabel(), dataItem != null ? Boolean.parseBoolean(dataItem.getValue()) : false);
+			widget = checkBox;
 		} else {
 			TextView errorLabel = new TextView(context);
 			errorLabel.setText("Unknown item: '" + item.getType() + "'");
