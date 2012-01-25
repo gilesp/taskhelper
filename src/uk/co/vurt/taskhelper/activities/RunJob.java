@@ -16,8 +16,10 @@ import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.ui.WidgetFactory;
+import uk.co.vurt.taskhelper.ui.widget.LabelledCheckBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
+import uk.co.vurt.taskhelper.ui.widget.LabelledSpinner;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -152,6 +154,12 @@ public class RunJob extends Activity {
 				}else if("DATETIME".equals(item.getType())){
 					LabelledDatePicker datePicker = (LabelledDatePicker)widget;
 					value = datePicker.getValue();
+				} else if("YESNO".equals(item.getType())){
+					LabelledCheckBox checkBox = (LabelledCheckBox)widget;
+					value = Boolean.toString(checkBox.getValue());
+				} else if("SELECT".equals(item.getType())){
+					LabelledSpinner spinner = (LabelledSpinner)widget;
+					value = spinner.getSelectedValue();
 				}
 				if(value != null){
 					//TODO: Do I need to bother with the dataitem class at all?
@@ -279,40 +287,6 @@ public class RunJob extends Activity {
 									}
 								});
 							}
-//							//Retrieve value from dataitem if present
-//							//If we have a dataitem value, use that in preference to any job specified value.
-//							DataItem dataItem = retrieveDataItem(jobId, currentPage.getName(), item.getName(), item.getType());
-//							//create new widget and add it to the map
-//							if("LABEL".equals(item.getType())){
-//								TextView label = new TextView(this);
-//								label.setText(item.getLabel());
-//								widget = label;
-//								Log.d(TAG, "Added TextView label");
-//							}else if("TEXT".equals(item.getType())){
-//								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), dataItem != null ? dataItem.getValue() : item.getValue());
-//								widget = editBox;
-//								Log.d(TAG, "Added LabelledEditbox");
-//							}else if("DIGITS".equals(item.getType())){
-//								LabelledEditBox editBox = new LabelledEditBox(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
-//								editBox.setKeyListener(new DigitsKeyListener());
-//								widget = editBox;
-//								Log.d(TAG, "Added LabelledEditbox");
-//							}else if("DATETIME".equals(item.getType())){
-//								final LabelledDatePicker datePicker = new LabelledDatePicker(this, item.getLabel(), dataItem != null ? dataItem.getValue() :  item.getValue());
-//								datePicker.setOnClickListener(new View.OnClickListener() {
-//									@Override
-//									public void onClick(View v) {
-//										showDatePickerDialog(datePicker);
-//									}
-//								});
-//								widget = datePicker;
-//								Log.d(TAG, "Added LabelledEditbox");
-//							} else {
-//								TextView errorLabel = new TextView(this);
-//								errorLabel.setText("Unknown item: '" + item.getType() + "'");
-//								widget = errorLabel;
-//								Log.d(TAG, "Unknown item: '" + item.getType() + "'");
-//							}
 
 							widgetMap.put(widgetKey, widget);
 						}
