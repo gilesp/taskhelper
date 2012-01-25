@@ -1,20 +1,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_width="fill_parent">
+    android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/labelled_check_box_label"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingRight="5dip"
+        android:text="Does anyone in the household smoke?"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingRight="20dip" />
+        android:textStyle="bold" />
 
-    <CheckBox
-        android:id="@+id/labelled_check_box_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="" />
+	    <CheckBox
+	        android:id="@+id/labelled_check_box_value"
+	        android:layout_width="wrap_content"
+	        android:layout_height="match_parent"
+	        android:gravity="center" />
 </LinearLayout>
