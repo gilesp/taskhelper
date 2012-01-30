@@ -1,6 +1,8 @@
 package uk.co.vurt.taskhelper.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,12 +19,15 @@ import uk.co.vurt.taskhelper.ui.widget.LabelledSpinner;
 import uk.co.vurt.taskhelper.ui.widget.NameValueAdapter;
 import android.content.Context;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class WidgetFactory {
 
+	private static final String TAG = "WidgetFactory";
+	
 	public static View createWidget(Context context, PageItem item,
 			DataItem dataItem) {
 
@@ -64,21 +69,35 @@ public class WidgetFactory {
 							: false);
 			widget = checkBox;
 		} else if ("SELECT".equals(item.getType())) {
-			LabelledSpinner spinner = new LabelledSpinner(context, item.getLabel());
+			boolean multiSelect = false;
+			if(item.getAttributes() != null && item.getAttributes().containsKey("multiselect")){
+				Log.d(TAG, "multiselect: " + item.getAttributes().get("multiselect"));				
+				multiSelect = Boolean.parseBoolean(item.getAttributes().get("multiselect"));
+			}
+			LabelledSpinner spinner = new LabelledSpinner(context, item.getLabel(), multiSelect);
 			//At this point, the value is just a string containing json.
 			//we need to convert that to something usable by the spinner.
-//			ArrayList<String> spinnerArray = new ArrayList<String>();
 			ArrayList<NameValue> spinnerArray = new ArrayList<NameValue>();
 			spinnerArray.add(new NameValue("",null)); //add a blank entry to avoid the first item being pre-selected.
-			NameValue selected = null;
+
+			ArrayList<String> dataItemValues = new ArrayList<String>();
+			if(dataItem != null){
+				if(dataItem.getValue().contains(",")){
+					//multiselect value
+					dataItemValues.addAll(Arrays.asList(dataItem.getValue().split("[,]")));
+				} else {
+					dataItemValues.add(dataItem.getValue());
+				}
+			}
+			List<NameValue> selected = new ArrayList<NameValue>();
 			try {
 				JSONArray valueArray = new JSONArray(item.getValue());
 				for(int i = 0; i < valueArray.length(); i++){
 					JSONObject labelledValue = valueArray.getJSONObject(i);
 					if(labelledValue.has("label")){
 						NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
-						if(dataItem != null && nameValue.getValue().equals(dataItem.getValue())){
-							selected = nameValue;
+						if(dataItemValues.contains(nameValue.getValue())){
+							selected.add(nameValue);
 						}
 						spinnerArray.add(nameValue);
 					}
@@ -87,11 +106,11 @@ public class WidgetFactory {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, spinnerArray);
-			NameValueAdapter arrayAdapter = new NameValueAdapter(context, R.layout.spinner_item, spinnerArray);
-			spinner.setAdapter(arrayAdapter);
-			if(selected != null){
-				spinner.setSelected(selected);
+			spinner.setItems(spinnerArray);
+//			NameValueAdapter arrayAdapter = new NameValueAdapter(context, R.layout.spinner_item, spinnerArray);
+//			spinner.setAdapter(arrayAdapter);
+			for(NameValue selectedValue: selected){
+				spinner.setSelected(selectedValue);
 			}
 			widget = spinner;
 		} else {
