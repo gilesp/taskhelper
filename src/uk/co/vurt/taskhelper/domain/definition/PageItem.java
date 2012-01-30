@@ -1,5 +1,9 @@
 package uk.co.vurt.taskhelper.domain.definition;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -10,6 +14,7 @@ public class PageItem {
 	String label;
 	String type;
 	String value;
+	Map<String, String> attributes;
 	
 	public PageItem(){}
 	
@@ -19,6 +24,11 @@ public class PageItem {
 		this.label = label;
 		this.type = type;
 		this.value = value;
+	}
+	
+	public PageItem(String name, String label, String type, String value, Map<String, String> attributes) {
+		this(name, label, type, value);
+		this.attributes = attributes;
 	}
 	
 	public static PageItem valueOf(JSONObject jsonObject){
@@ -35,6 +45,17 @@ public class PageItem {
 			}
 			if(jsonObject.has("value")){
 				item.setValue(jsonObject.getString("value"));
+			}
+			if(jsonObject.has("attributes")){
+				Map<String, String> attributes = new HashMap<String, String>();
+				JSONArray attributesArray = jsonObject.getJSONArray("attributes");
+				for(int i = 0; i < attributesArray.length(); i++){
+					JSONObject attribute = attributesArray.getJSONObject(i);
+					if(attribute.has("name") && attribute.has("value")){
+						attributes.put(attribute.getString("name"), attribute.getString("value"));
+					}
+				}
+				item.setAttributes(attributes);
 			}
 			return item;
 		}catch(final Exception e){
@@ -74,6 +95,15 @@ public class PageItem {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, String> attributes) {
+		this.attributes = attributes;
+	}
+
 	@Override
 	public String toString() {
 		return "Item [name=" + name + ", type=" + type + ", label=" + label

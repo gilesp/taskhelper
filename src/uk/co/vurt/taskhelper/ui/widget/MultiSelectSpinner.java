@@ -3,6 +3,7 @@ package uk.co.vurt.taskhelper.ui.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.domain.NameValue;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -37,7 +38,13 @@ public class MultiSelectSpinner extends Spinner implements
 
 	public boolean performClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMultiChoiceItems(items.toArray(new CharSequence[items.size()]), selected, this);
+        if(items != null && selected != null){
+        	CharSequence[] labels = new CharSequence[items.size()];
+        	for(int i = 0; i < items.size(); i++){
+        		labels[i] = items.get(i).getName();
+        	}
+        	builder.setMultiChoiceItems(labels, selected, this);
+        }
         builder.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -62,7 +69,7 @@ public class MultiSelectSpinner extends Spinner implements
         
         // all text on the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item, new String[] { allText });
+                R.layout.spinner_item, new String[] { allText });
         setAdapter(adapter);
     }
 
@@ -71,24 +78,27 @@ public class MultiSelectSpinner extends Spinner implements
 		// refresh text on spinner
         StringBuffer spinnerBuffer = new StringBuffer();
         boolean someUnselected = false;
-        for (int i = 0; i < items.size(); i++) {
-            if (selected[i] == true) {
-                spinnerBuffer.append(items.get(i));
-                spinnerBuffer.append(", ");
-            } else {
-                someUnselected = true;
-            }
+        if(items != null){
+	        for (int i = 0; i < items.size(); i++) {
+	            if (selected[i] == true) {
+	                spinnerBuffer.append(items.get(i));
+	                spinnerBuffer.append(", ");
+	            } else {
+	                someUnselected = true;
+	            }
+	        }
         }
         String spinnerText;
         if (someUnselected) {
             spinnerText = spinnerBuffer.toString();
-            if (spinnerText.length() > 2)
+            if (spinnerText.length() > 2){
                 spinnerText = spinnerText.substring(0, spinnerText.length() - 2);
+            }
         } else {
             spinnerText = defaultText;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 new String[] { spinnerText });
         setAdapter(adapter);
 	}

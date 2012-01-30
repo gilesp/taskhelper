@@ -159,7 +159,22 @@ public class RunJob extends Activity {
 					value = Boolean.toString(checkBox.getValue());
 				} else if("SELECT".equals(item.getType())){
 					LabelledSpinner spinner = (LabelledSpinner)widget;
-					value = spinner.getSelectedValue();
+					if(spinner.isMultiSelect()){
+						//serialise values to a comma separated list.
+						String[] values = spinner.getSelectedValues();
+						StringBuffer valueBuffer = new StringBuffer();
+						for(int i = 0; i < values.length; i++){
+							valueBuffer.append(values[i]);
+							if(i < values.length - 1){
+								valueBuffer.append(",");
+							}
+						}
+						value = valueBuffer.toString();
+						valueBuffer = null;
+					}else {
+						value = spinner.getSelectedValue();
+					}
+					
 				}
 				if(value != null){
 					//TODO: Do I need to bother with the dataitem class at all?
