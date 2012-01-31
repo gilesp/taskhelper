@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -191,7 +192,8 @@ final public class NetworkUtilities {
 	    public static List<JobDefinition> fetchJobs(Context context, Account account, String authToken, Date lastUpdated) throws JSONException, ParseException, IOException, AuthenticationException {
 	    	final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
 	    	
-	    	String data = fetchData(getBaseUrl(context) + FETCH_JOBS_URI + "/" + account.name, null, null, null);
+	    	SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	    	String data = fetchData(getBaseUrl(context) + FETCH_JOBS_URI + "/" + account.name + "/" + dateFormatter.format(lastUpdated), null, null, null);
 	    	Log.d(TAG, "JOBS DATA: " + data);
 	    	final JSONArray jobs = new JSONArray(data);
 	    	
@@ -202,6 +204,7 @@ final public class NetworkUtilities {
 	    }
 	    
 	    private static String fetchData(String url, Account account, String authToken, ArrayList<NameValuePair> params) throws ClientProtocolException, IOException, AuthenticationException{
+	    	Log.d(TAG, "Fetching data from: " + url);
 	    	String data = null;
 	    	if(params == null){
 	    		params = new ArrayList<NameValuePair>();
