@@ -39,10 +39,24 @@ public class WidgetFactory {
 			label.setText(item.getLabel());
 			widget = label;
 		} else if ("TEXT".equals(item.getType())) {
-			LabelledEditBox editBox = new LabelledEditBox(context,
-					item.getLabel(), dataItem != null ? dataItem.getValue()
-							: item.getValue());
-			widget = editBox;
+			boolean readonly = false;
+			if(item.getAttributes() != null && item.getAttributes().containsKey("readonly")){
+				readonly = Boolean.parseBoolean(item.getAttributes().get("readonly"));
+				Log.i(TAG, "Readonly: " + readonly);
+			}
+			
+			if(readonly){
+				TextView label = new TextView(context);
+				label.setText(item.getLabel() + ": " + (dataItem != null ? dataItem.getValue() : item.getValue()));
+				widget = label;
+			}else{
+				LabelledEditBox editBox = new LabelledEditBox(context, 
+															  item.getLabel(), 
+															  dataItem != null ? dataItem.getValue() : item.getValue());
+				widget = editBox;
+			}
+			
+			
 		} else if ("DIGITS".equals(item.getType())
 				|| "NUMERIC".equals(item.getType())) {
 			LabelledEditBox editBox = new LabelledEditBox(context,
