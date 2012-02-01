@@ -1,8 +1,11 @@
 package uk.co.vurt.taskhelper.domain.job;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
@@ -20,9 +23,11 @@ public class JobDefinition {
 	private final Date due;
 	private String status;
 	private String group;
+	private String notes;
+	private Set<DataItem> dataItems = new HashSet<DataItem>();
 	
 	public JobDefinition(int id, String name, TaskDefinition definition, Date created,
-			Date due, String status) {
+			Date due, String status, String notes) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -30,10 +35,11 @@ public class JobDefinition {
 		this.created = created;
 		this.due = due;
 		this.status = status;
+		this.notes = notes;
 	}
 
-	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String group){
-		this(id, name, definition, created, due, status);
+	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
+		this(id, name, definition, created, due, status, notes);
 		this.group = group;
 	}
 	
@@ -45,15 +51,25 @@ public class JobDefinition {
 			final Date created = new Date(job.getLong("created"));
 			final Date due = new Date(job.getLong("due"));
 			final String status = job.getString("status");
-
+			String notes = null;
+			if(job.has("notes")){
+				notes = job.getString("notes");
+			}
+			
 			JobDefinition jobDefinition;
 			if(job.has("groupname") && !job.getString("groupname").equals("null")){
 				final String group = job.getString("groupname");
-				jobDefinition = new JobDefinition(id, name, definition, created, due, status, group);
+				jobDefinition = new JobDefinition(id, name, definition, created, due, status, notes, group);
 			}else{
-				jobDefinition = new JobDefinition(id, name, definition, created, due, status); 
+				jobDefinition = new JobDefinition(id, name, definition, created, due, status, notes); 
 			}
 			
+			if(job.has("dataItems")){
+				JSONArray diArray = job.getJSONArray("dataItems");
+				for(int i = 0; i < diArray.length(); i++){
+					jobDefinition.getDataItems().add(DataItem.valueOf(diArray.getJSONObject(i)));
+				}
+			}
 			return jobDefinition;
 			
 		} catch (final Exception e){
@@ -92,6 +108,14 @@ public class JobDefinition {
 
 	public String getGroup() {
 		return group;
+	}
+	
+	public String getNotes() {
+		return notes;
+	}
+
+	public Set<DataItem> getDataItems() {
+		return dataItems;
 	}
 
 	@Override

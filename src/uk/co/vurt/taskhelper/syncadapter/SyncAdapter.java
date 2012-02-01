@@ -28,6 +28,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -82,6 +83,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		}
 	}
 	
+	private void storeDataItem(ContentProviderClient provider, DataItem dataItem, JobDefinition job){
+		Log.d(TAG, "Storing a dataitem for a job.");
+		ContentValues values = new ContentValues();
+		values.put(Dataitem.Definitions.JOB_ID, job.getId());
+		values.put(Dataitem.Definitions.PAGENAME, dataItem.getPageName());
+		values.put(Dataitem.Definitions.NAME, dataItem.getName());
+		values.put(Dataitem.Definitions.TYPE, dataItem.getType());
+		values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
+		
+		//TODO: handle updating as well as inserting
+		try{
+			provider.insert(Dataitem.Definitions.CONTENT_URI, values);
+		}catch(RemoteException re){
+			Log.e(TAG, "RemoteException", re);
+		}
+	}
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
@@ -166,6 +183,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				values.put(Job.Definitions.CREATED, job.getCreated().getTime());
 				values.put(Job.Definitions.DUE, job.getDue().getTime());
 				values.put(Job.Definitions.STATUS, job.getStatus());
+				values.put(Job.Definitions.NOTES, "null".equals(job.getNotes()) ? "" : job.getNotes());
 				if(job.getGroup() != null){
 					values.put(Job.Definitions.GROUP, job.getGroup());
 				}
@@ -190,6 +208,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					cursor = null;
 				} catch(RemoteException re){
 					Log.e(TAG, "RemoteException", re);
+				}
+				
+				for(DataItem item: job.getDataItems()){
+					storeDataItem(provider, item, job);
 				}
 			}
 			

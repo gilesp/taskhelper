@@ -38,6 +38,7 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 			holder.name = (TextView) convertView.findViewById(R.id.joblist_entry_name);
 			holder.duedate = (TextView) convertView.findViewById(R.id.joblist_entry_duedate);
 			holder.status = (ImageView) convertView.findViewById(R.id.joblist_entry_completed);
+			holder.notes = (TextView) convertView.findViewById(R.id.joblist_entry_notes);
 			
 			convertView.setTag(holder);
 			
@@ -49,6 +50,7 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 		String group = cursor.getString(cursor.getColumnIndex(Job.Definitions.GROUP)); //looking up column positions like this is porbably jsut as inefficient as when you do it with JDBC
 		String name = cursor.getString(cursor.getColumnIndex(Job.Definitions.NAME));
 		String status = cursor.getString(cursor.getColumnIndex(Job.Definitions.STATUS));
+		String notes = cursor.getString(cursor.getColumnIndex(Job.Definitions.NOTES));
 		long duedate = cursor.getLong(cursor.getColumnIndex(Job.Definitions.DUE));
 		
 		String previousGroup = null;
@@ -70,6 +72,7 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 		}
 		
 		holder.name.setText(name);
+		holder.notes.setText("Notes: " + notes);
 		
 		//format the date for display
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
@@ -95,5 +98,6 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 		TextView name;
 		TextView duedate;
 		ImageView status;
+		TextView notes;
 	}
 }

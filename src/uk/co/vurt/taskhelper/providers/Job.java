@@ -29,6 +29,7 @@ public class Job {
 		public static final String DUE = "due";
 		public static final String STATUS = "status";
 		public static final String GROUP = "groupname";
+		public static final String NOTES = "notes";
 		
 		public static final String DEFAULT_SORT_ORDER = GROUP + ", " + DUE + " ASC";
 		
@@ -39,7 +40,8 @@ public class Job {
 			CREATED,
 			DUE,
 			STATUS,
-			GROUP
+			GROUP,
+			NOTES
 		};
 	}
 	

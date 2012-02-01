@@ -31,7 +31,8 @@ public class JobList extends ListActivity {
 		Job.Definitions.NAME, //1
 		Job.Definitions.DUE, //2
 		Job.Definitions.STATUS, //3
-		Job.Definitions.GROUP //4
+		Job.Definitions.GROUP, //4
+		Job.Definitions.NOTES //5
 	};
 	
 	private SimpleCursorAdapter adapter;

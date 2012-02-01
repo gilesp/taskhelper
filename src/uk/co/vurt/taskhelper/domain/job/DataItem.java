@@ -3,8 +3,12 @@ package uk.co.vurt.taskhelper.domain.job;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class DataItem {
 
+	private final static String TAG = "DataItem";
+	
 	String name;
 	String type;
 	String value;
@@ -59,5 +63,19 @@ public class DataItem {
 		}
 		
 		return data;
+	}
+	
+	public static DataItem valueOf(JSONObject dataItem){
+		DataItem item = null;
+		try{
+			final String pageName = dataItem.getString("pageName");
+			final String name = dataItem.getString("name");
+			final String type = dataItem.getString("type");
+			final String value = dataItem.getString("value") == null || dataItem.getString("value").equals("null") ? "" : dataItem.getString("value");
+			item = new DataItem(pageName, name, type, value);
+		} catch (final Exception e){
+			Log.i(TAG, "Unable to parse JSON Job object: " + e.toString());
+		}
+		return item;
 	}
 }

@@ -53,7 +53,8 @@ public class RunJob extends Activity {
 		Job.Definitions.TASK_DEFINITION_ID,
 		Job.Definitions.CREATED,
 		Job.Definitions.DUE,
-		Job.Definitions.STATUS
+		Job.Definitions.STATUS,
+		Job.Definitions.NOTES
 	};
 	
 	private static final int COLUMN_INDEX_JOB_ID = 0;
@@ -62,6 +63,7 @@ public class RunJob extends Activity {
 	private static final int COLUMN_INDEX_JOB_CREATED = 3;
 	private static final int COLUMN_INDEX_JOB_DUE = 4;
 	private static final int COLUMN_INDEX_JOB_STATUS = 5;
+	private static final int COLUMN_INDEX_JOB_NOTES = 6;
 	
 	private static final String[] DEFINITION_PROJECTION = new String[] {
 		Task.Definitions._ID,
@@ -256,6 +258,7 @@ public class RunJob extends Activity {
 				Date jobCreated = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_CREATED));
 				Date jobDue = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_DUE));
 				String jobStatus = jobCursor.getString(COLUMN_INDEX_JOB_STATUS);
+				String notes = jobCursor.getString(COLUMN_INDEX_JOB_NOTES);
 				
 				Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, definitionId);
 				Log.d(TAG, "Definition URI: " + definitionUri.toString());
@@ -265,7 +268,7 @@ public class RunJob extends Activity {
 					taskDefinition = new Gson().fromJson(definitionCursor.getString(COLUMN_INDEX_TASKDEFINITION_JSON), TaskDefinition.class);
 					definitionCursor.close();
 				}
-				job = new JobDefinition(jobId, jobName, taskDefinition, jobCreated, jobDue, jobStatus);
+				job = new JobDefinition(jobId, jobName, taskDefinition, jobCreated, jobDue, jobStatus, notes);
 				
 				setTitle("Running " + taskDefinition.getName());
 				
@@ -276,7 +279,7 @@ public class RunJob extends Activity {
 				//TODO: handle tasks with no pages
 				final Page currentPage = pages.get(currentPageId);
 				Log.d(TAG, "Current page: " + currentPage);
-				setTitle(taskDefinition.getName() + ": " + currentPage.getName());
+				setTitle(/*taskDefinition.getDescription() + ": " + */currentPage.getTitle());
 				
 				List<PageItem> items = currentPage.getItems();
 				if(items != null){
