@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_uk_co_vurt_taskhelper_server_domain_job_Submission" items="${submissions}" z="ZcQrc4/rwLXUGa+0buhH6lFv2JQ=">
+        <table:table data="${submissions}" id="l_uk_co_vurt_taskhelper_server_domain_job_Submission" path="/submissions" z="wlyaZkPy713viOQUrdA2vQlwfOM=">
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_job_Submission_username" property="username" z="MYLzbVaex8eCnNFp8L3VBCf/cjY="/>
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_job_Submission_jobId" property="jobId" z="lJUd4wPesyMlUFrU+UjO724FQ6o="/>
+        </table:table>
+    </page:list>
+</div>

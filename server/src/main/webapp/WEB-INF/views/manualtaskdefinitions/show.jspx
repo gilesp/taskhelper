@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_uk_co_vurt_taskhelper_server_domain_definition_ManualTaskDefinition" object="${manualtaskdefinition}" path="/manualtaskdefinitions" z="WHOfHZ3NHTT0YJYv4LPiXE+GfK0=">
+        <field:display field="name" id="s_uk_co_vurt_taskhelper_server_domain_definition_ManualTaskDefinition_name" object="${manualtaskdefinition}" z="q72qC2P/AtxC+UwkDGhl2lzTwfI="/>
+        <field:display field="jsonDefinition" id="s_uk_co_vurt_taskhelper_server_domain_definition_ManualTaskDefinition_jsonDefinition" object="${manualtaskdefinition}" z="Tj9yGMlfPuVO68jIpnl/3PFntvk="/>
+    </page:show>
+</div>

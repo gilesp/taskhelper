@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_uk_co_vurt_taskhelper_server_domain_job_Job" modelAttribute="job" path="/jobs" render="${empty dependencies}" z="YnPuC/QDEXkrbQMGoFEYXYKfThM=">
+        <field:select field="person" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_person" itemValue="id" items="${people}" path="/people" required="true" z="vAB7tSj8DGm8IM9pXqqapbMR8NI="/>
+        <field:datetime dateTimePattern="${job_created_date_format}" field="created" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_created" z="CknhDCRuM7WzDbo/GUSts71ij6w="/>
+        <field:datetime dateTimePattern="${job_due_date_format}" field="due" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_due" z="M2mp9AL96NBDxvpglXOAJGo2zO4="/>
+        <field:select field="status" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_status" items="${statuses}" path="statuses" z="GmsWcpOfzOkUNvQJ8j3IlM02xQ4="/>
+        <field:input field="groupname" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_groupname" z="GgsOjDyL1GcPQLQ0l+yq1M37UTk="/>
+        <field:select field="manualTask" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_manualTask" itemValue="id" items="${manualtaskdefinitions}" path="/manualtaskdefinitions" z="LRxTYV14QwBfLfunMH0IXhKKiHg="/>
+        <field:select field="autoTask" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_autoTask" itemValue="id" items="${autotaskdefinitions}" path="/taskdefinitions" z="S6ictUXdIDWPmrm45oUxeo/E9pk="/>
+        <field:textarea field="name" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_name" z="32K+ZCIsjVmy/4tLZ9VKag4Sl2Y="/>
+        <field:textarea field="notes" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_notes" z="lNFtUN87g5ZoTjUAK42ON6MBOaw="/>
+        <field:simple field="dataItems" id="c_uk_co_vurt_taskhelper_server_domain_job_Job_dataItems" messageCode="entity_reference_not_managed" messageCodeAttribute="Data Item" z="TKwsdVDdYlaVipEapBuNVYKO7TM="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_uk_co_vurt_taskhelper_server_domain_job_Job" render="${not empty dependencies}" z="6aTmCkFdpSa/K05daFzeMEFl3y4="/>
+</div>

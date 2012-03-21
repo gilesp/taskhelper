@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_uk_co_vurt_taskhelper_server_domain_definition_PageItem" object="${pageitem}" path="/pageitems" z="kunJeKl7xEfvqvwOeDnLFz867RE=">
+        <field:display field="name" id="s_uk_co_vurt_taskhelper_server_domain_definition_PageItem_name" object="${pageitem}" z="dZb6VNfRH53W2s1tcJgHL/X/BPc="/>
+        <field:display field="label" id="s_uk_co_vurt_taskhelper_server_domain_definition_PageItem_label" object="${pageitem}" z="qU1U/l/XZo5tOUN0mGbp1iHq498="/>
+        <field:display field="value" id="s_uk_co_vurt_taskhelper_server_domain_definition_PageItem_value" object="${pageitem}" z="C7Wks4NfTS4om/3+65ofktcJltk="/>
+        <field:display field="type" id="s_uk_co_vurt_taskhelper_server_domain_definition_PageItem_type" object="${pageitem}" z="QZZfirzhHc0I0CaLTpIG6AArLbw="/>
+    </page:show>
+</div>

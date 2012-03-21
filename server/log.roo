@@ -1,0 +1,227 @@
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 16:20:19
+project --topLevelPackage uk.co.vurt.taskhelper.server --projectName taskhelper_server --java 6
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-07 16:20:19
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 16:20:24
+hint
+jpa setup --provider HIBERNATE --database POSTGRES 
+hint
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-07 16:25:06
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 16:25:39
+hint
+entity jpa --class ~.domain.definition.Page
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 16:27:16
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-07 16:27:22
+hint
+field string --fieldName name --notNull
+// [failed] entity jpa --class ~.domain.definition.Input
+entity jpa --class ~.domain.definition.PageInput
+field string --fieldName name --notNull
+field string --fieldName label --notNull
+field string --fieldName type --notNull
+focus --class ~.domain.definition.Page
+field set --fieldName inputs --type ~.domain.definition.PageInput
+entity jpa --class ~.domain.definition.TaskDefinition
+field string --fieldName name --notNull
+field string --fieldName description --notNull
+field set --fieldName pages --type ~.domain.definition.Page
+focus --class ~.domain.definition.PageInput
+enum type --class ~.domain.definition.InputTypes
+enum constant --name TEXT 
+// [failed] enum constant --name NUMBER
+// [failed] enum constant --name NUMERIC
+enum constant --name DIGITS
+// [failed] enum constant --name DATE
+enum constant --name DATETIME
+focus --class ~.domain.definition.PageInput
+// [failed] field enum --fieldName type --type ~.domain.definition.InputTypes
+field enum --fieldName type --type ~.domain.definition.InputTypes
+web mvc setup
+web mvc all --package ~.web
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 16:44:54
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-07 17:01:42
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 17:48:18
+hint
+help
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-07 17:49:27
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-07 17:53:11
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 11:09:36
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 11:09:37
+hint
+hint
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 11:15:13
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 11:15:35
+web mvc all --package ~.web
+// [failed] entity jpa --class ~.domain.user.User 
+entity jpa --class ~.domain.user.Person
+field string --fieldName firstName --notNull 
+field string --fieldName lastName --notNull 
+field string --fieldName username --notNull 
+help field embedded
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 11:23:04
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 11:23:18
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 11:23:48
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 11:24:00
+entity jpa --class ~.domain.job.Job
+field reference --fieldName person --type ~.domain.user.Person
+field reference --fieldName task --type ~.domain.definition.TaskDefinition
+focus --class ~.domain.user.Person
+field string --fieldName password --notNull 
+web mvc controller --class ~.domain.user.Person 
+web mvc controller --class ~.domain.job.Job
+web mvc scaffold --class ~.web.PersonController --backingType ~.domain.user.Person 
+web mvc scaffold --class ~.web.JobController --backingType ~.domain.job.Job 
+field set --fieldName jobs --type ~.domain.definition.TaskDefinition --cardinality MANY_TO_MANY 
+focus --class ~.domain.job.Job
+field date --fieldName created --type java.util.Date 
+field date --fieldName due --type java.util.Date 
+enum type --class ~.domain.job.Status 
+focus --class ~.domain.job.Job
+field enum --fieldName status --type ~.domain.job.Status 
+json add
+focus --class ~.domain.job.Status
+json add
+focus --class ~.domain.definition.InputTypes
+json add
+focus --class ~.domain.definition.PageInput
+json add
+focus --class ~.domain.definition.TaskDefinition
+json add
+focus --class ~.domain.definition.TaskPage
+json add
+help
+help web mvc json setup
+hint
+hint json
+hint web mvc json
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 14:19:51
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 14:20:04
+web mvc json all 
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 14:34:11
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 14:35:03
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 14:48:46
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 14:48:56
+focus --class ~.domain.user.Person
+finder list
+finder add --finderName findPeopleByUsernameLike
+!
+help !
+! less
+! ls
+! less src/main/java/uk/co/vurt/taskhelper/server/domain/user/Person_Roo_Finder.aj
+focus --class ~.domain.job.Job
+finder list
+finder add --finderName findJobsByPerson
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 15:15:44
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 15:15:52
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 15:45:15
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 15:45:30
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-08 16:14:29
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-08 17:08:13
+web mvc controller --class ~.web.AuthController --preferredMapping /auth
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-09 09:53:52
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-09 10:32:19
+hint
+focus --class ~.domain.job.Job
+finder list
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-09 17:25:43
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-13 11:23:39
+hint
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-13 11:31:13
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-13 12:05:26
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-13 12:17:26
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log opened at 2011-12-13 12:20:11
+quit
+// Spring Roo 1.1.5.RELEASE [rev d3a68c3] log closed at 2011-12-13 12:31:25
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-13 12:31:36
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-13 12:32:13
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-14 12:25:37
+web mvc controller --class ~.web.PageItemController 
+web mvc scaffold --class ~.web.PageItemController --backingType ~.domain.definitino.PageItem
+web mvc all --package ~.web
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-14 13:37:05
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-14 13:37:16
+web mvc all --package ~.web
+web mvc all --package ~.web
+web mvc all --package ~.web
+web mvc update tags 
+hint
+entity jpa --class ~.domain.job.Submission 
+entity jpa --class ~.domain.job.DataItem
+web mvc scaffold --class ~.domain.job.DataItem
+web mvc scaffold --class ~.web.DataItemController 
+web mvc scaffold --class ~.web.SubmissionController 
+focus --class ~.domain.job.Submission
+web mvc scaffold --class ~.web.SubmissionController 
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-15 11:07:33
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-15 14:45:56
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-15 17:08:56
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-22 10:26:03
+focus --class ~.domain.job.Job
+finder list
+finder add --finderName findJobsByStatus
+exit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-22 11:49:19
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2011-12-22 11:49:32
+perform package
+perform package
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2011-12-22 13:14:07
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-18 13:03:10
+exit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-01-20 13:54:35
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-20 13:54:48
+hint
+web mvc all --package uk.co.vurt.taskhelper.server.web
+// [failed] focus --class ~.definition.ManualTaskDefinition
+hint
+// [failed] field string --fieldName testing --sizeMax 4000
+focus --class ~.domain.definition.ManualTaskDefinition
+field string --fieldName testing --sizeMax 4000
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-20 15:13:08
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-01-20 16:16:31
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-20 16:16:46
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-01-20 17:49:15
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-24 11:02:10
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-01-24 16:09:11
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-01-31 10:57:53
+focus --class ~.domain.definition.AutoTaskDefinition
+hint
+hint finders
+finder list
+finder add --finderName findAutoTaskDefinitionsByNameLike
+focus --class ~.domain.definition.ManualTaskDefinition
+finder list
+finder add findManualTaskDefinitionsByNameLike
+focus --class ~.domain.job.Job
+hint finders
+finder list
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-01-31 17:17:13
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-02-01 10:04:06
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-02-01 17:58:06
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log opened at 2012-03-20 12:02:05
+quit
+// Spring Roo 1.2.0.RC1 [rev dcaa483] log closed at 2012-03-20 17:21:18
