@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:menu="urn:jsptagdir:/WEB-INF/tags/menu" id="menu" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <menu:menu id="_menu" z="nZaf43BjUg1iM0v70HJVEsXDopc=">
+        <menu:category id="c_taskdefinition" z="EUyGgxlWug4Df8OVsW1FK9++8kM=">
+            <menu:item id="i_taskdefinition_new" messageCode="global_menu_new" url="/taskdefinitions?form" z="tQ3RFiyeyzphIkO0GOu67fbQuPM="/>
+            <menu:item id="i_taskdefinition_list" messageCode="global_menu_list" url="/taskdefinitions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oHXjz+mel7+kAfKC0tCID/mNCP0="/>
+        </menu:category>
+        <menu:category id="c_taskpage" z="2awh/w/8eQgAO7dD+f/KuyYxgTs=">
+            <menu:item id="i_taskpage_new" messageCode="global_menu_new" url="/taskpages?form" z="z3/1JDuNltTydmN9oOzeWDxYnRc="/>
+            <menu:item id="i_taskpage_list" messageCode="global_menu_list" url="/taskpages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="N0C78Tz5LOT4MYoHjXYb+b3LYAo="/>
+        </menu:category>
+        <menu:category id="c_controller" z="nj8Dm3hojIyIEyPkwE1UMDIs+K8=">
+            <menu:item id="i_controller__personindex_id" messageCode="global_generic" url="/person/index" z="BwVZlJqpvIjucUQyfOe36PIx6pI="/>
+            <menu:item id="i_controller__jobindex_id" messageCode="global_generic" url="/job/index" z="ibdLT7+mA7/IwIlDgHETVzw8Xl0="/>
+            <menu:item id="i_controller__authindex_id" messageCode="global_generic" url="/auth/index" z="byRnTjIECw7p6qg91qjriuuVNsg="/>
+            <menu:item id="i_controller__pageitemindex_id" messageCode="global_generic" url="/pageitem/index" z="rqDbqrYLbBFW4gbPWRbpfiKVscs="/>
+        </menu:category>
+        <menu:category id="c_person" z="Cz66KzcF6GdyygpbYfiE+EkFFFA=">
+            <menu:item id="i_person_new" messageCode="global_menu_new" url="/people?form" z="IlD8NFD64X8egaRrgHbQeWKT68I="/>
+            <menu:item id="i_person_list" messageCode="global_menu_list" url="/people?page=1&amp;size=${empty param.size ? 10 : param.size}" z="MFjeqYeiMgVzk2P/OWfFpXZhhS4="/>
+        </menu:category>
+        <menu:category id="c_job" z="Spq9e4Ex4B3IMcYI5WfoQsLFC30=">
+            <menu:item id="i_job_new" messageCode="global_menu_new" url="/jobs?form" z="LPLNOdNVR7SU3S6Mm86Cya2uODg="/>
+            <menu:item id="i_job_list" messageCode="global_menu_list" url="/jobs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="40TPkqDKrJpvrpVeIfIWHa+/lZU="/>
+        </menu:category>
+        <menu:category id="c_pageitem" z="WoBjW+GFcNOl5KTLAVLH0IEwZLs=">
+            <menu:item id="i_pageitem_new" messageCode="global_menu_new" url="/pageitems?form" z="/kj/j2iYtHKZOIwRIAhf1OwD9zA="/>
+            <menu:item id="i_pageitem_list" messageCode="global_menu_list" url="/pageitems?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+/qK1nnC52oCnxHVm0oHW2kqVqU="/>
+        </menu:category>
+        <menu:category id="c_dataitem" z="8M1CViZOacW1lpmmKPwPantiXwM=">
+            <menu:item id="i_dataitem_new" messageCode="global_menu_new" url="/dataitems?form" z="AxwciroD7rTzEIHNZuTRiwDtEFc="/>
+            <menu:item id="i_dataitem_list" messageCode="global_menu_list" url="/dataitems?page=1&amp;size=${empty param.size ? 10 : param.size}" z="AFLw24ChakW78b0VOhBKf0GGDi4="/>
+        </menu:category>
+        <menu:category id="c_submission" z="KwdMJt25yr1e/ULkRf2GwsK9QUM=">
+            <menu:item id="i_submission_new" messageCode="global_menu_new" url="/submissions?form" z="vc1OtxknSMW02sx3CCfEjtYvT48="/>
+            <menu:item id="i_submission_list" messageCode="global_menu_list" url="/submissions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="nxMu5oVh44UEzX2hVeQL+/lfpeE="/>
+        </menu:category>
+        <menu:category id="c_manualtaskdefinition" z="UOuVzFwYJjMFbPcv97U7KFd+hgI=">
+            <menu:item id="i_manualtaskdefinition_new" messageCode="global_menu_new" url="/manualtaskdefinitions?form" z="ukwYNtofSfDcj+J5WmRiXNpU9Q0="/>
+            <menu:item id="i_manualtaskdefinition_list" messageCode="global_menu_list" url="/manualtaskdefinitions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="vWe6/iYEo810iJd/FP4UBmjphO8="/>
+        </menu:category>
+        <menu:category id="c_autotaskdefinition" z="74Lqwk6XNe0KMf64MHUgWDNaqwQ=">
+            <menu:item id="i_autotaskdefinition_new" messageCode="global_menu_new" url="/taskdefinitions?form" z="I4ibMH154i+KHpzE2YHlA12ePOY="/>
+            <menu:item id="i_autotaskdefinition_list" messageCode="global_menu_list" url="/taskdefinitions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oszV3iOmMMZ9Pehia29nA3BzsGs="/>
+        </menu:category>
+    </menu:menu>
+</div>

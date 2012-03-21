@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_uk_co_vurt_taskhelper_server_domain_user_Person" items="${people}" z="AB5lwdFMySzaD46kKctPvCm9a74=">
+        <table:table data="${people}" id="l_uk_co_vurt_taskhelper_server_domain_user_Person" path="/people" z="k++nZhsVn0mYrKXPvRnBTsuc0mI=">
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_user_Person_firstName" property="firstName" z="ANo+PwZg52vQQjxo7+RUAX24CfU="/>
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_user_Person_lastName" property="lastName" z="0B8Mn53+H0yk19woES+RkGcOYrw="/>
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_user_Person_username" property="username" z="p3uBuNEQMBAHzqLf9hsAXnC2Feo="/>
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_user_Person_password" property="password" z="mBmSpFG0ZdfWcuBWxG9eN5UwdyU="/>
+            <table:column id="c_uk_co_vurt_taskhelper_server_domain_user_Person_taskgroup" property="taskgroup" z="/eKcwssUHk5RiiD59UgxFiaWsMo="/>
+        </table:table>
+    </page:list>
+</div>
