@@ -1,0 +1,126 @@
+Gabba REST API Specification
+============================
+
+Authentication
+==============
+
+TBD
+
+OAuth two-legged approach?
+http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentication/
+http://spring-security-oauth.codehaus.org/twolegged.html
+
+Base
+====
+
+Method: GET
+
+URI: /
+
+Returns:
+
+[
+  "Jobs": "/jobs/for/{username}",
+  "Tasks": "/tasks"
+]
+
+Jobs
+====
+
+/jobs
+
+List for user
+-------------
+
+Method: GET
+
+URI: /jobs/for/{username}
+
+URI: /jobs/for/{username}/since/{timestamp}
+
+Returns:
+
+{
+  "id": 1,
+  "name": "job_1",
+  "person": {...},
+  "created": "2012-01-01 09:00",
+  "due": "2012-01-30 17:00",
+  "status": "",
+  "groupname": "",
+  "notes": "",
+  "task": []
+}
+
+task can either be a full task definition or the url for a task
+
+Specific job
+------------
+
+Method: GET
+
+URI: /jobs/{id}
+
+
+Tasks
+=====
+
+URI: /tasks
+
+Specific task
+-------------
+
+Method: GET
+
+URI: /tasks/{id}
+or
+URI: /tasks/{name}
+
+Sample:
+
+{
+  "id": 1,
+  "name": "test_task"
+  "description": "Test Task",
+  "pages": [
+    {
+      "name": "page_1",
+      "title": "Page 1",
+      "items": [
+        {
+          "name": "item1",
+          "label": "An Item",
+          "type": "TEXT"
+        }
+      ]
+    }
+  ]
+}
+
+Alternative:
+(but this wouldn't be good for mobile use due to reliance on having a
+network connection)
+
+{
+  "id": 1,
+  "name": "test_task"
+  "description": "Test Task",
+  "pages": [
+    "/tasks/test_task/pages/page_1",
+    "/tasks/test_task/pages/page_2"
+  ]
+}
+
+Could use HTTP "Accept:" headers to choose between the forms? 
+
+Submissions
+===========
+
+URI: /submissions
+
+Submit job
+----------
+
+Method: POST
+
+URI: /submissions/job
