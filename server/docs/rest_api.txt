@@ -38,6 +38,14 @@ URI: /jobs/for/{username}
 
 URI: /jobs/for/{username}/since/{timestamp}
 
+Authenticated Form:
+
+URI: /jobs/for/{username}/{hmac}/since/{timestamp}/
+
+{hmac} should be the hmacSHA1 hashed form of the string:
+
+timestamp={timestamp}&username={username}
+
 Returns:
 
 {
@@ -124,6 +132,14 @@ Submit job
 Method: POST
 
 URI: /submissions/job
+
+Authenticate Form:
+
+URI: /submissions/job/{username}/{hmac}
+
+{hmac} should be the hmacSHA1 hashed form of the string:
+
+username={username}
 
 {
   "username": "some.user",
