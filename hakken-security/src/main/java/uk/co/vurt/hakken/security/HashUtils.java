@@ -20,7 +20,7 @@ public class HashUtils {
 	// generated using https://www.grc.com/passwords.htm
 	//In the real world, we should be generating this on a per app/user basis and storing that in a database of some sort
 	//then if it ever gets compromised, we could issue a new one.
-	private final static String SHARED_SECRET = "38A4E84BFDC2E785C289E43A35F4A4EED64380C70D3C3A688183D50C88A760F7";
+	public final static String SHARED_SECRET = "38A4E84BFDC2E785C289E43A35F4A4EED64380C70D3C3A688183D50C88A760F7";
 	private final static String HASH_TYPE = "HmacSHA1";
 
 	/**
