@@ -70,6 +70,18 @@ public class HashUtils {
 
 		return hmacSHA1(createValueString(parameterMap));
 	}
+
+	/**
+	 * Utility method to be used by server to confirm that values received match the hashedValue sent
+	 * 
+	 * @param parameterMap
+	 * @param hashedValue
+	 * @return
+	 */
+	public static boolean validate(Map<String, String> parameterMap, String hashedValue){
+		return hash(parameterMap).equals(hashedValue);
+	}
+	
 	
 	/*
 	 * Send to the server:
