@@ -24,5 +24,8 @@
 	<context:component-scan base-package="uk.co.vurt" />
 	
 	
+	<beans:bean name="authenticator" class="uk.co.vurt.hakken.security.auth.LdapAuthenticator">
+	   <beans:property name="server" value="ldap://ldap.wmfs.net:389/"/>
+	</beans:bean>
 	
 </beans:beans>
