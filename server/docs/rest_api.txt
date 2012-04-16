@@ -24,6 +24,36 @@ Returns:
   "Tasks": "/tasks"
 ]
 
+Authentication
+==============
+
+MUST be accessed via https
+
+Method: POST
+
+URI: /auth/login
+
+Params:
+
+    username
+    password
+
+Returns:
+
+(Successful login response)
+
+{
+    "success": true,
+    "token": "123456abcdef"
+}
+
+(Unsuccessful login response)
+
+{
+    "success": false,
+    "reason": "The reason login failed."
+}
+
 Jobs
 ====
 
@@ -140,6 +170,8 @@ URI: /submissions/job/{username}/{hmac}
 {hmac} should be the hmacSHA1 hashed form of the string:
 
 username={username}
+
+Submitted data:
 
 {
   "username": "some.user",

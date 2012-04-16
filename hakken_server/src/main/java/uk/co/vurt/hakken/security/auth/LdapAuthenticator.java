@@ -16,7 +16,10 @@ public class LdapAuthenticator implements Authenticator {
 
 	private static final Logger logger = LoggerFactory.getLogger(LdapAuthenticator.class);
 			
-	Hashtable<String, String> environment;
+	private Hashtable<String, String> environment;
+	
+	private String errorMessage = "";
+	private Exception exception = null;
 	
 	public LdapAuthenticator(){
 		environment = new Hashtable<String, String>();
@@ -27,6 +30,9 @@ public class LdapAuthenticator implements Authenticator {
 	
 	@Override
 	public boolean authenticate(String username, String password) {
+		errorMessage = "";
+		exception = null;
+		
 		environment.put(Context.SECURITY_PRINCIPAL, username);
 		environment.put(Context.SECURITY_CREDENTIALS, password);
 		
@@ -40,9 +46,17 @@ public class LdapAuthenticator implements Authenticator {
 			return true;
 		} catch (NamingException e) {
 			logger.debug("Authentication failed", e);
+			errorMessage = "Authentication failed. " + e.getMessage();
+			exception = e;
 		}
 		
 		return false;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	
 }

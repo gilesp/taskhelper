@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.co.vurt.hakken.security.HashUtils;
 import uk.co.vurt.hakken.security.auth.Authenticator;
+import uk.co.vurt.hakken.security.model.LoginResponse;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthenticationController {
 
 	Authenticator authenticator;
@@ -23,20 +25,21 @@ public class AuthenticationController {
 	 * @param password
 	 * @return
 	 */
-	@RequestMapping(value = "/auth", method = RequestMethod.POST)
-	@ResponseBody
-	public Object authenticate(	@RequestParam(value = "username", required = true) String username, 
-								@RequestParam(value = "password", required = true) String password){
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public @ResponseBody LoginResponse authenticate(@RequestParam(value = "username", required = true) String username, 
+													@RequestParam(value = "password", required = true) String password){
+		LoginResponse response = new LoginResponse();
 		if(username != null && password != null){
 			//Perform LDAP lookup using username & password to bind.
 			//if authentication is successful, retrieve the user's shared secret from the database and send that to them as the response.
-			if(authenticator.authenticate(username, password)){
+			response.setSuccess(authenticator.authenticate(username, password));
+			if(response.isSuccess()){
 				//TODO: Retrieve shared secret
-				return HashUtils.SHARED_SECRET;
+				response.setToken(HashUtils.SHARED_SECRET);
 			} else {
-				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+				response.setReason(authenticator.getErrorMessage());
 			}
 		}
-		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		return response;
 	}
 }
