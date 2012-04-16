@@ -1,6 +1,5 @@
 package uk.co.vurt.hakken.security.auth;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -23,9 +22,8 @@ public class LdapAuthenticator implements Authenticator {
 	
 	public LdapAuthenticator(){
 		environment = new Hashtable<String, String>();
-		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory"); //TODO: Parameterise this
-		environment.put(Context.PROVIDER_URL, "ldap://ldap.wmfs.net:389/"); //TODO: Parameterise this
-		environment.put(Context.SECURITY_AUTHENTICATION, "simple"); //TODO: Parameterise this
+		environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		environment.put(Context.SECURITY_AUTHENTICATION, "simple");
 	}
 	
 	@Override
@@ -45,8 +43,15 @@ public class LdapAuthenticator implements Authenticator {
 			context = null;
 			return true;
 		} catch (NamingException e) {
+			//TODO: Handle more exceptions, as per the LDAP error codes:
+			//http://docs.oracle.com/javase/tutorial/jndi/ldap/exceptions.html
+			
 			logger.debug("Authentication failed", e);
-			errorMessage = "Authentication failed. " + e.getMessage();
+			if(e.getMessage().contains("error code 49")){
+				errorMessage = "Authentication failed: Invalid credentials";
+			}else {
+				errorMessage = "Authentication failed. " + e.getMessage();
+			}
 			exception = e;
 		}
 		
@@ -58,5 +63,17 @@ public class LdapAuthenticator implements Authenticator {
 		return errorMessage;
 	}
 
+	public void setContextFactory(String contextFactory){
+		//"com.sun.jndi.ldap.LdapCtxFactory"
+		environment.put(Context.INITIAL_CONTEXT_FACTORY, contextFactory);
+	}
+	
+	public void setServer(String serverUrl){
+		environment.put(Context.PROVIDER_URL, serverUrl); 
+	}
+	
+	public void setAuthenticationType(String authType){
+		environment.put(Context.SECURITY_AUTHENTICATION, authType);
+	}
 	
 }

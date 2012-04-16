@@ -1,7 +1,6 @@
 package uk.co.vurt.hakken.server;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +15,8 @@ import uk.co.vurt.hakken.security.model.LoginResponse;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-	Authenticator authenticator;
+	@Autowired
+	private Authenticator authenticator;
 	
 	/**
 	 * This method should only ever be accessed over SSL!
@@ -42,4 +42,9 @@ public class AuthenticationController {
 		}
 		return response;
 	}
+
+	public void setAuthenticator(Authenticator authenticator) {
+		this.authenticator = authenticator;
+	}
+	
 }
