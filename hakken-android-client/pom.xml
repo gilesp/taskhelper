@@ -3,21 +3,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>uk.co.vurt.android</groupId>
-	<artifactId>taskhelper</artifactId>
+	<artifactId>hakken-android-client</artifactId>
 	<packaging>apk</packaging>
 	<name>taskhelper</name>
 
-    <parent>
-        <groupId>uk.co.vurt.hakken</groupId>
-        <artifactId>hakken-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-    
+	<parent>
+		<groupId>uk.co.vurt.hakken</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.6</java.version>
 		<!-- <android.platform>8</android.platform> Android 2.2 -->
 		<android.version>2.3.3</android.version>
 		<android.platform>10</android.platform> <!-- Android 2.3.3 -->
@@ -25,22 +21,45 @@
 	</properties>
 
 	<dependencies>
+		<!-- Hakken modules -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hakken-security</artifactId>
+			<version>${project.version}</version>
+			<exclusions>
+		        <exclusion>
+		              <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+		        </exclusion>
+		        <exclusion>
+                      <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion><exclusion>
+                      <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                      <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions> 
+		</dependency>
+
 		<!-- <dependency> -->
 		<!-- <groupId>com.google.android</groupId> -->
 		<!-- <artifactId>android</artifactId> -->
 		<!-- <version>2.2.1</version> -->
 		<!-- <scope>runtime</scope> -->
 		<!-- </dependency> -->
-		
+
 		<!-- Eclipse won't build if this is enabled -->
-		<!-- 
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android</artifactId>
-			<version>${android.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		 -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.google.android</groupId> -->
+<!-- 			<artifactId>android</artifactId> -->
+<!-- 			<version>${android.version}</version> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
+		
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android-support</artifactId>
@@ -58,10 +77,10 @@
 		<plugins>
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-<!-- 				<artifactId>android-maven-plugin</artifactId> -->
-<!-- 				<version>3.0.0-alpha-11</version> -->
-                <artifactId>maven-android-plugin</artifactId>
-				<version>2.9.0-beta-5</version>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>3.1.1</version>
+<!-- 				<artifactId>maven-android-plugin</artifactId> -->
+<!-- 				<version>2.9.0-beta-5</version> -->
 				<configuration>
 					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
@@ -80,8 +99,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -123,9 +142,9 @@
 		</profile>
 	</profiles>
 	<repositories>
-	   <repository>
-		    <id>mvn-ext-libs</id>
-		    <url>http://mvn-repo.googlecode.com/svn/repository</url>
+		<repository>
+			<id>mvn-ext-libs</id>
+			<url>http://mvn-repo.googlecode.com/svn/repository</url>
 		</repository>
 	</repositories>
 </project>

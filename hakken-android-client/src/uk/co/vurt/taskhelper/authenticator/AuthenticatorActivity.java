@@ -1,10 +1,10 @@
 package uk.co.vurt.taskhelper.authenticator;
 
+import uk.co.vurt.hakken.security.model.LoginResponse;
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.activities.DispatcherActivity;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
-import uk.co.vurt.taskhelper.providers.Task;
 import uk.co.vurt.taskhelper.providers.TaskProvider;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -266,10 +265,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
      * Represents an asynchronous task used to authenticate a user against the
      * SampleSync Service
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+    public class UserLoginTask extends AsyncTask<Void, Void, LoginResponse> {
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected LoginResponse doInBackground(Void... params) {
             // We do the actual work of authenticating the user
             // in the NetworkUtilities class.
             try {
@@ -282,9 +281,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         }
 
         @Override
-        protected void onPostExecute(final String authToken) {
+        protected void onPostExecute(final LoginResponse response) {
             // On a successful authentication, call back into the Activity to
             // communicate the authToken (or null for an error).
+        	String authToken = null;
+        	if(response.isSuccess()){
+        		authToken = response.getToken();
+        	}
             onAuthenticationResult(authToken);
         }
 
