@@ -16,6 +16,7 @@
 
 package uk.co.vurt.taskhelper.authenticator;
 
+import uk.co.vurt.hakken.security.model.LoginResponse;
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
@@ -79,13 +80,9 @@ class Authenticator extends AbstractAccountAuthenticator {
         Account account, Bundle options) {
         if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
             final String password = options.getString(AccountManager.KEY_PASSWORD);
-            final String authToken = NetworkUtilities.authenticate(context, account.name, password);
-            boolean verified = false;
-            if((authToken != null) && (authToken.length() > 0)){
-            	verified = true;
-            }
+            final LoginResponse loginResponse = NetworkUtilities.authenticate(context, account.name, password);
             final Bundle result = new Bundle();
-            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified);
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, loginResponse.isSuccess());
             return result;
         }
         // Launch AuthenticatorActivity to confirm credentials
@@ -124,12 +121,13 @@ class Authenticator extends AbstractAccountAuthenticator {
         final AccountManager am = AccountManager.get(context);
         final String password = am.getPassword(account);
         if (password != null) {
-        	final String authToken = NetworkUtilities.authenticate(context, account.name, password);
-            if (authToken != null && authToken.length() > 0) {
+        	final LoginResponse loginResponse = NetworkUtilities.authenticate(context, account.name, password);
+        	
+            if (loginResponse.isSuccess()) {
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
                 result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-                result.putString(AccountManager.KEY_AUTHTOKEN, password);
+                result.putString(AccountManager.KEY_AUTHTOKEN, loginResponse.getToken());
                 return result;
             }
         }

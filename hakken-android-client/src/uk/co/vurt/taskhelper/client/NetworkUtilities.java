@@ -1,9 +1,6 @@
 package uk.co.vurt.taskhelper.client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +25,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import uk.co.vurt.hakken.security.model.LoginResponse;
 import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
 import uk.co.vurt.taskhelper.domain.job.JobDefinition;
 import uk.co.vurt.taskhelper.domain.job.Submission;
@@ -122,35 +121,63 @@ final public class NetworkUtilities {
 	        post.setEntity(entity);
 	        String authToken = null;
 	        
+	        LoginResponse response = new LoginResponse();
+	        
 	        try {
 	            resp = getHttpClient().execute(post);
 	            
 	            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	            	InputStream inputStream = (resp.getEntity() != null) ? resp.getEntity().getContent() : null;
-	            	if(inputStream != null){
-	            		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-	            		authToken = reader.readLine().trim();
-	            	}
+
+            		JSONObject loginJson;
+					try {
+						loginJson = new JSONObject(EntityUtils.toString(resp.getEntity()));
+						
+						response.setSuccess(loginJson.getBoolean("success"));
+	            		if(loginJson.has("reason")){
+	            			response.setReason(loginJson.getString("reason"));
+	            		}
+	            		if(loginJson.has("token")){
+	            			response.setToken(loginJson.getString("token"));
+	            		}
+					} catch (org.apache.http.ParseException e) {
+						response.setSuccess(false);
+						response.setReason(e.getMessage());
+						Log.e(TAG, "Unable to parse login response", e);
+					} catch (JSONException e) {
+						response.setSuccess(false);
+						response.setReason(e.getMessage());
+						Log.e(TAG, "Unable to parse login response", e);
+					}
+            		
+//	            	InputStream inputStream = (resp.getEntity() != null) ? resp.getEntity().getContent() : null;
+//	            	if(inputStream != null){
+//	            		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//	            		authToken = reader.readLine().trim();
+//	            	}
 	            }
-	            if((authToken != null) && (authToken.length() > 0)){
-	            	if (Log.isLoggable(TAG, Log.INFO)) {
-	                    Log.i(TAG, "Successful authentication: " + authToken);
-	                }
-	            } else {
-	                if (Log.isLoggable(TAG, Log.INFO)) {
-	                	Log.i(TAG, "Error authenticating" + resp.getStatusLine());
-	                }
+//	            if((authToken != null) && (authToken.length() > 0)){
+//	            	if (Log.isLoggable(TAG, Log.INFO)) {
+//	                    Log.i(TAG, "Successful authentication: " + authToken);
+//	                }
+//	            } else {
+//	                if (Log.isLoggable(TAG, Log.INFO)) {
+//	                	Log.i(TAG, "Error authenticating" + resp.getStatusLine());
+//	                }
+//	            }
+	            if(Log.isLoggable(TAG, Log.INFO)){
+	            	Log.i(TAG, "Login Response: " + response);
 	            }
 	        } catch (final IOException e) {
 	            if (Log.isLoggable(TAG, Log.INFO)) {
 	            	Log.i(TAG, "IOException when getting authtoken", e);
 	            }
+	            response.setReason(e.getMessage());
 	        } finally {
 	            if (Log.isLoggable(TAG, Log.VERBOSE)) {
 	                Log.v(TAG, "getAuthtoken completing");
 	            }
 	        }
-	        return authToken;
+	        return response;
 	    }
 
 	    /**
