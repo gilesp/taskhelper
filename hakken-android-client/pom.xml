@@ -1,150 +1,137 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>hakken-android-client</artifactId>
-	<packaging>apk</packaging>
-	<name>taskhelper</name>
-
-	<parent>
-		<groupId>uk.co.vurt.hakken</groupId>
-		<artifactId>parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</parent>
-
-	<properties>
-		<!-- <android.platform>8</android.platform> Android 2.2 -->
-		<android.version>2.3.3</android.version>
-		<android.platform>10</android.platform> <!-- Android 2.3.3 -->
-		<android.support.version>4v</android.support.version>
-	</properties>
-
-	<dependencies>
-		<!-- Hakken modules -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>hakken-security</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-		        <exclusion>
-		              <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-		        </exclusion>
-		        <exclusion>
-                      <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion><exclusion>
-                      <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                      <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions> 
-		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>com.google.android</groupId> -->
-		<!-- <artifactId>android</artifactId> -->
-		<!-- <version>2.2.1</version> -->
-		<!-- <scope>runtime</scope> -->
-		<!-- </dependency> -->
-
-		<!-- Eclipse won't build if this is enabled -->
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android</artifactId>
-			<version>${android.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android-support</artifactId>
-			<version>${android.support.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>1.7.1</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-				<artifactId>android-maven-plugin</artifactId>
-				<version>3.1.1</version>
-<!-- 				<artifactId>maven-android-plugin</artifactId> -->
-<!-- 				<version>2.9.0-beta-5</version> -->
-				<configuration>
-					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
-					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
-					<resourceDirectory>${project.basedir}/res</resourceDirectory>
-					<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
-					<sdk>
-						<platform>${android.platform}</platform>
-					</sdk>
-					<deleteConflictingFiles>true</deleteConflictingFiles>
-					<undeployBeforeDeploy>true</undeployBeforeDeploy>
-				</configuration>
-				<extensions>true</extensions>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<profiles>
-		<profile>
-			<id>release</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-						<artifactId>maven-android-plugin</artifactId>
-						<inherited>true</inherited>
-						<configuration>
-							<zipalign>
-								<inputApk>${project.build.directory}/${project.build.finalName}.apk</inputApk>
-								<outputApk>${project.build.directory}/${project.artifactId}.apk</outputApk>
-							</zipalign>
-						</configuration>
-						<executions>
-							<execution>
-								<id>alignApk</id>
-								<phase>package</phase>
-								<goals>
-									<goal>zipalign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-	<repositories>
-		<repository>
-			<id>mvn-ext-libs</id>
-			<url>http://mvn-repo.googlecode.com/svn/repository</url>
-		</repository>
-	</repositories>
+  <artifactId>hakken-android-client</artifactId>
+  <packaging>apk</packaging>
+  <name>hakken</name>
+  
+  <parent>
+    <groupId>uk.co.vurt.hakken</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  
+  <properties>
+    <android.version>2.3.3</android.version>
+    <android.platform>10</android.platform>
+    <android.support.version>r6</android.support.version>
+    <android.emulator.name>HTCDesire</android.emulator.name>
+    <maven.android.plugin.version>3.1.1</maven.android.plugin.version>
+    <parent.dir>${project.basedir}/../</parent.dir>
+  </properties>
+  
+  <dependencies>
+    <!-- Android gubbins -->
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android</artifactId>
+      <version>${android.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android-test</artifactId>
+      <version>${android.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>support-v4</artifactId>
+      <version>${android.support.version}</version>
+    </dependency>
+    
+    <!-- hakken modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>hakken-security</artifactId>
+      <version>${project.version}</version>
+      <!--  have to exclude logging stuff as they use non-android-supported APIs -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions> 
+    </dependency>
+    
+    <!-- Json parser -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>1.7.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>hakken</finalName>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+          <artifactId>android-maven-plugin</artifactId>
+          <version>${maven.android.plugin.version}</version>
+          <configuration>
+            <sdk>
+              <platform>${android.platform}</platform> 
+            </sdk>
+            <emulator>
+              <avd>${android.emulator.name}</avd>
+            </emulator>
+	    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+	    <assetsDirectory>${project.basedir}/assets</assetsDirectory>
+	    <resourceDirectory>${project.basedir}/res</resourceDirectory>
+	    <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+	    <sdk>
+	      <platform>${android.platform}</platform>
+	    </sdk>
+	    <deleteConflictingFiles>true</deleteConflictingFiles>
+	    <undeployBeforeDeploy>true</undeployBeforeDeploy>
+	  </configuration>
+          <executions>
+            <execution>
+              <id>alignApk</id>
+              <phase>package</phase>
+              <goals>
+                <goal>zipalign</goal>
+              </goals>
+            </execution>
+            <execution>
+              <goals>
+                <goal>deploy</goal>
+              </goals>
+            </execution>
+          </executions>
+          <extensions>true</extensions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+        <artifactId>android-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
