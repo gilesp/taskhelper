@@ -9,13 +9,12 @@ import java.util.TreeSet;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.codec.binary.Base64;
 
 public class HashUtils {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(HashUtils.class);
+//	private static final Logger logger = LoggerFactory
+//			.getLogger(HashUtils.class);
 
 	// generated using https://www.grc.com/passwords.htm
 	//In the real world, we should be generating this on a per app/user basis and storing that in a database of some sort
@@ -36,11 +35,11 @@ public class HashUtils {
 					HASH_TYPE);
 			mac.init(secret);
 			byte[] digest = mac.doFinal(value.getBytes());
-			encodedValue = new String(digest);
+			encodedValue = new String(Base64.encodeBase64(digest));
 		} catch (NoSuchAlgorithmException nsae) {
-			logger.error("Unable to use algorithm " + HASH_TYPE, nsae);
+//			logger.error("Unable to use algorithm " + HASH_TYPE, nsae);
 		} catch (InvalidKeyException ike) {
-			logger.error("Invalid Key", ike);
+//			logger.error("Invalid Key", ike);
 		}
 		return encodedValue;
 	}

@@ -16,7 +16,8 @@ public class LdapAuthenticator implements Authenticator {
 	private static final Logger logger = LoggerFactory.getLogger(LdapAuthenticator.class);
 			
 	private Hashtable<String, String> environment;
-	
+	private String prefix = null;
+	private String suffix = null;
 	private String errorMessage = "";
 	private Exception exception = null;
 	
@@ -31,7 +32,15 @@ public class LdapAuthenticator implements Authenticator {
 		errorMessage = "";
 		exception = null;
 		
-		environment.put(Context.SECURITY_PRINCIPAL, username);
+		StringBuffer userCredentials = new StringBuffer();
+		if(prefix != null){
+			userCredentials.append(prefix);
+		}
+		userCredentials.append(username);
+		if(suffix != null){
+			userCredentials.append(suffix);
+		}
+		environment.put(Context.SECURITY_PRINCIPAL, userCredentials.toString());
 		environment.put(Context.SECURITY_CREDENTIALS, password);
 		
 		try {
@@ -74,6 +83,14 @@ public class LdapAuthenticator implements Authenticator {
 	
 	public void setAuthenticationType(String authType){
 		environment.put(Context.SECURITY_AUTHENTICATION, authType);
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
 	}
 	
 }
