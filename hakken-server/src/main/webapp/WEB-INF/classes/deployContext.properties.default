@@ -1,0 +1,10 @@
+# Database configuration
+db.driverClassName=org.postgresql.Driver
+db.persistence.dialect=org.hibernate.dialect.PostgreSQLDialect 
+db.url=jdbc:postgresql://localhost/taskhelper
+db.username=taskhelper
+db.password=taskhelper
+db.hibernate.show_sql=true
+db.jpa.generateDdl=true
+
+
