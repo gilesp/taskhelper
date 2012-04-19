@@ -8,20 +8,20 @@ import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import uk.co.vurt.taskhelper.server.domain.definition.ManualTaskDefinition;
+import uk.co.vurt.taskhelper.server.domain.definition.StaticTaskDefinition;
 
 privileged aspect ManualTaskDefinition_Roo_Json {
     
-    public static ManualTaskDefinition ManualTaskDefinition.fromJsonToManualTaskDefinition(java.lang.String json) {
-        return new JSONDeserializer<ManualTaskDefinition>().use(null, ManualTaskDefinition.class).deserialize(json);
+    public static StaticTaskDefinition ManualTaskDefinition.fromJsonToManualTaskDefinition(java.lang.String json) {
+        return new JSONDeserializer<StaticTaskDefinition>().use(null, StaticTaskDefinition.class).deserialize(json);
     }
     
-    public static java.lang.String ManualTaskDefinition.toJsonArray(Collection<ManualTaskDefinition> collection) {
+    public static java.lang.String ManualTaskDefinition.toJsonArray(Collection<StaticTaskDefinition> collection) {
         return new JSONSerializer().exclude("*.class").serialize(collection);
     }
     
-    public static Collection<ManualTaskDefinition> ManualTaskDefinition.fromJsonArrayToManualTaskDefinitions(java.lang.String json) {
-        return new JSONDeserializer<List<ManualTaskDefinition>>().use(null, ArrayList.class).use("values", ManualTaskDefinition.class).deserialize(json);
+    public static Collection<StaticTaskDefinition> ManualTaskDefinition.fromJsonArrayToManualTaskDefinitions(java.lang.String json) {
+        return new JSONDeserializer<List<StaticTaskDefinition>>().use(null, ArrayList.class).use("values", StaticTaskDefinition.class).deserialize(json);
     }
     
 }
