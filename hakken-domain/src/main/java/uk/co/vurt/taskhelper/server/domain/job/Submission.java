@@ -2,17 +2,6 @@ package uk.co.vurt.taskhelper.server.domain.job;
 
 import java.util.Set;
 
-import javax.persistence.OneToMany;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
-
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
 public class Submission {
 	
 
@@ -20,7 +9,31 @@ public class Submission {
 	
 	private int jobId;
 	
-	@OneToMany
 	private Set<DataItem> dataitems;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public int getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(int jobId) {
+		this.jobId = jobId;
+	}
+
+	public Set<DataItem> getDataitems() {
+		return dataitems;
+	}
+
+	public void setDataitems(Set<DataItem> dataitems) {
+		this.dataitems = dataitems;
+	}
+	
 	
 }

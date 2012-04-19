@@ -5,11 +5,11 @@ package uk.co.vurt.taskhelper.server.domain.definition;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import uk.co.vurt.taskhelper.server.domain.definition.ManualTaskDefinition;
+import uk.co.vurt.taskhelper.server.domain.definition.StaticTaskDefinition;
 
 privileged aspect ManualTaskDefinition_Roo_Finder {
     
-    public static TypedQuery<ManualTaskDefinition> ManualTaskDefinition.findManualTaskDefinitionsByNameLike(java.lang.String name) {
+    public static TypedQuery<StaticTaskDefinition> ManualTaskDefinition.findManualTaskDefinitionsByNameLike(java.lang.String name) {
         if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
         name = name.replace('*', '%');
         if (name.charAt(0) != '%') {
@@ -18,8 +18,8 @@ privileged aspect ManualTaskDefinition_Roo_Finder {
         if (name.charAt(name.length() - 1) != '%') {
             name = name + "%";
         }
-        EntityManager em = ManualTaskDefinition.entityManager();
-        TypedQuery<ManualTaskDefinition> q = em.createQuery("SELECT o FROM ManualTaskDefinition AS o WHERE LOWER(o.name) LIKE LOWER(:name)", ManualTaskDefinition.class);
+        EntityManager em = StaticTaskDefinition.entityManager();
+        TypedQuery<StaticTaskDefinition> q = em.createQuery("SELECT o FROM ManualTaskDefinition AS o WHERE LOWER(o.name) LIKE LOWER(:name)", StaticTaskDefinition.class);
         q.setParameter("name", name);
         return q;
     }

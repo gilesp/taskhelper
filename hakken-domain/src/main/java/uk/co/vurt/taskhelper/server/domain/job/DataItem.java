@@ -1,17 +1,5 @@
 package uk.co.vurt.taskhelper.server.domain.job;
 
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
-
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord
-@RooJson
 public class DataItem {
 	
 	private String pageName;
@@ -20,10 +8,49 @@ public class DataItem {
 	
 	private String type;
 	
-	@Size(max = 4000)
 	private String value;
 	
-	@ManyToOne
 	private Job job;
+
+	public String getPageName() {
+		return pageName;
+	}
+
+	public void setPageName(String pageName) {
+		this.pageName = pageName;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Job getJob() {
+		return job;
+	}
+
+	public void setJob(Job job) {
+		this.job = job;
+	}
+	
 	
 }
