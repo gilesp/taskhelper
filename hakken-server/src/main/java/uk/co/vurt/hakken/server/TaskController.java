@@ -6,23 +6,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import uk.co.vurt.hakken.server.model.Task;
+import uk.co.vurt.taskhelper.server.domain.definition.StaticTaskDefinition;
+
 
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
 
 	@RequestMapping(value="{id}", method=RequestMethod.GET)
-	public @ResponseBody Task getTaskById(@PathVariable int id){
-		//TODO: implement job functionality
-		Task task = new Task();
-		
-		return task;
+	public @ResponseBody StaticTaskDefinition getTaskById(@PathVariable int id){
+		StaticTaskDefinition definition = new StaticTaskDefinition();
+		return definition;
 	}
 	
 	@RequestMapping(value="{name}", method=RequestMethod.GET)
-	public @ResponseBody Task getTaskByName(@PathVariable String name){
-		Task task = new Task();
-		return task;
+	public @ResponseBody StaticTaskDefinition getTaskByName(@PathVariable String name){
+		StaticTaskDefinition definition = new StaticTaskDefinition();
+		return definition;
 	}
 }

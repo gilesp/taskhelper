@@ -20,7 +20,12 @@
 			<artifactId>hakken-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+		<dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>hakken-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -39,7 +44,27 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-orm</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
 
+		<!--  Persistence -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-entitymanager</artifactId>
+		    <version>3.6.9.Final</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901.jdbc4</version>
+            <scope>runtime</scope>
+        </dependency>
+		
 		<!-- Jackson JSON library -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
