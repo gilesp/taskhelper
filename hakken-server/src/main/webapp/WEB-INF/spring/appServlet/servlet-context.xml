@@ -33,10 +33,12 @@
 	   <beans:property name="prefix" value="WMFS\"/>
 	</beans:bean>
 	
+	<beans:bean name="jobService" class="uk.co.vurt.hakken.server.service.JobServiceImpl"/>
+	    
 	<!-- database configuration -->
 	<beans:bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <beans:property name="dataSource" ref="dataSource" />
-        <beans:property name="packagesToScan" value="org.rest" />
+        <beans:property name="packagesToScan" value="uk.co.vurt.hakken.server.persistence" />
         <beans:property name="jpaVendorAdapter">
             <beans:bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <beans:property name="showSql" value="${db.hibernate.show_sql}" />
@@ -50,7 +52,7 @@
         <beans:property name="driverClassName" value="${db.driverClassName}" />
         <beans:property name="url" value="${db.url}" />
         <beans:property name="username" value="${db.username}" />
-        <beans:property name="password" value="£{db.password}" />
+        <beans:property name="password" value="${db.password}" />
     </beans:bean>
 
     <beans:bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
