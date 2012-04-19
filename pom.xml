@@ -22,6 +22,7 @@
 		<module>hakken-security</module>
 		<module>hakken-android-client</module>
 		<module>hakken-server</module>
+		<module>hakken-domain</module>
 	</modules>
 
 	<build>
