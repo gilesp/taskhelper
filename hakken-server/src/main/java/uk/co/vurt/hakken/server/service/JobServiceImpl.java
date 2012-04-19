@@ -28,6 +28,11 @@ public class JobServiceImpl implements JobService{
 	public List<Job> getForUserSince(String username, String timestamp) {
 //		return dao.getByUserAndDate(username, timestamp);
 		//TODO: Implement a mechanism for mapping task definitions to sources of job instances
+		
+		//find out which task definitions the user has access to
+		
+		//for each task definition, lookup instance provider/data connector and invoke.
+		
 		return new ArrayList<Job>();
 	}
 }

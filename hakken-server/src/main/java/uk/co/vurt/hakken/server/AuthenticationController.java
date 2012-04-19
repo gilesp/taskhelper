@@ -17,7 +17,7 @@ public class AuthenticationController {
 
 	@Autowired
 	private Authenticator authenticator;
-	
+
 	/**
 	 * This method should only ever be accessed over SSL!
 	 * 
@@ -26,15 +26,18 @@ public class AuthenticationController {
 	 * @return
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public @ResponseBody LoginResponse authenticate(@RequestParam(value = "username", required = true) String username, 
-													@RequestParam(value = "password", required = true) String password){
+	public @ResponseBody
+	LoginResponse authenticate(
+			@RequestParam(value = "username", required = true) String username,
+			@RequestParam(value = "password", required = true) String password) {
 		LoginResponse response = new LoginResponse();
-		if(username != null && password != null){
-			//Perform LDAP lookup using username & password to bind.
-			//if authentication is successful, retrieve the user's shared secret from the database and send that to them as the response.
+		if (username != null && password != null) {
+			// Perform LDAP lookup using username & password to bind.
+			// if authentication is successful, retrieve the user's shared
+			// secret from the database and send that to them as the response.
 			response.setSuccess(authenticator.authenticate(username, password));
-			if(response.isSuccess()){
-				//TODO: Retrieve shared secret
+			if (response.isSuccess()) {
+				// TODO: Retrieve shared secret
 				response.setToken(HashUtils.SHARED_SECRET);
 			} else {
 				response.setReason(authenticator.getErrorMessage());
@@ -46,5 +49,5 @@ public class AuthenticationController {
 	public void setAuthenticator(Authenticator authenticator) {
 		this.authenticator = authenticator;
 	}
-	
+
 }
