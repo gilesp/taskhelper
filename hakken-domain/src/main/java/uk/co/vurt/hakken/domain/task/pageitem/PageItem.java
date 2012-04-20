@@ -11,23 +11,22 @@ public class PageItem {
 	String value;
 	List<LabelledValue> values;
 	
-//	Map<String, String> attributes;
-	Map attributes;
+	Map<String, String> attributes;
 	
-//	public PageItem(){}
-//	
-//	public PageItem(String name, String label, String type, String value) {
-//		super();
-//		this.name = name;
-//		this.label = label;
-//		this.type = type;
-//		this.value = value;
-//	}
-//	
-//	public PageItem(String name, String label, String type, String value, Map attributes) {
-//		this(name, label, type, value);
-//		this.attributes = attributes;
-//	}
+	public PageItem(){}
+	
+	public PageItem(String name, String label, String type, String value) {
+		super();
+		this.name = name;
+		this.label = label;
+		this.type = type;
+		this.value = value;
+	}
+	
+	public PageItem(String name, String label, String type, String value, Map<String, String> attributes) {
+		this(name, label, type, value);
+		this.attributes = attributes;
+	}
 
 	public String getName() {
 		return name;
@@ -61,11 +60,11 @@ public class PageItem {
 		this.value = value;
 	}
 	
-	public Map getAttributes() {
+	public Map<String, String> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(Map attributes) {
+	public void setAttributes(Map<String, String> attributes) {
 		this.attributes = attributes;
 	}
 
