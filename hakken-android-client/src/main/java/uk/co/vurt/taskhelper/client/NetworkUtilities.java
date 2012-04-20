@@ -37,6 +37,7 @@ import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.security.HashUtils;
 import uk.co.vurt.hakken.security.model.LoginResponse;
+import uk.co.vurt.taskhelper.domain.JSONUtil;
 import android.accounts.Account;
 import android.content.Context;
 import android.net.ParseException;
@@ -219,7 +220,7 @@ final public class NetworkUtilities {
 
 		StringEntity stringEntity;
 		try {
-			stringEntity = new StringEntity(submission.toJSON().toString());
+			stringEntity = new StringEntity(JSONUtil.getInstance().toJson(submission));
 			final HttpPost post = new HttpPost(getBaseUrl(context)
 					+ SUBMIT_JOB_DATA_URI);
 			post.setEntity(stringEntity);
@@ -270,7 +271,7 @@ final public class NetworkUtilities {
 		final JSONArray jobs = new JSONArray(data);
 
 		for (int i = 0; i < jobs.length(); i++) {
-			jobList.add(JobDefinition.valueOf(jobs.getJSONObject(i)));
+			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(1).toString()));
 		}
 		return jobList;
 	}

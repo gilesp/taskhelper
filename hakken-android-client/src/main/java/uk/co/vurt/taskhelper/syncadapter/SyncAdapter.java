@@ -14,6 +14,7 @@ import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
+import uk.co.vurt.taskhelper.domain.JSONUtil;
 import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
@@ -28,7 +29,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -59,7 +59,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			values.put(Task.Definitions.DESCRIPTION, definition.getDescription());
 			
 			//Serialise the object as json, rather than individually storing pages etc.
-			values.put(Task.Definitions.JSON, definition.toJson());
+			values.put(Task.Definitions.JSON, JSONUtil.getInstance().toJson(definition));
 			
 			//We need to see if the definition already exists, if it does do an update otherwise do an insert
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, definition.getId());

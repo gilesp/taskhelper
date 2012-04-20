@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.security.HashUtils;
-import uk.co.vurt.taskhelper.server.domain.job.Submission;
 
 @Controller
 @RequestMapping("/submissions")
