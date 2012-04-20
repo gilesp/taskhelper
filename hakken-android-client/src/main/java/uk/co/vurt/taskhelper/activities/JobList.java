@@ -1,7 +1,7 @@
 package uk.co.vurt.taskhelper.activities;
 
+import uk.co.vurt.hakken.domain.job.JobDomainAdapter;
 import uk.co.vurt.taskhelper.R;
-import uk.co.vurt.taskhelper.domain.job.JobDomainAdapter;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.TaskProvider;
 import android.app.ListActivity;

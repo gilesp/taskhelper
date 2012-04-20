@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.vurt.hakken.domain.job.DataItem;
+import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.task.Page;
+import uk.co.vurt.hakken.domain.task.PageItem;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.taskhelper.R;
-import uk.co.vurt.taskhelper.domain.definition.Page;
-import uk.co.vurt.taskhelper.domain.definition.PageItem;
-import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
-import uk.co.vurt.taskhelper.domain.job.DataItem;
-import uk.co.vurt.taskhelper.domain.job.JobDefinition;
 import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;

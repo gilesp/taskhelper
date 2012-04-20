@@ -1,11 +1,11 @@
-package uk.co.vurt.taskhelper.domain.job;
+package uk.co.vurt.hakken.domain.job;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
 
 public class Submission {
 
@@ -52,20 +52,20 @@ public class Submission {
 		this.dataItems.add(dataItem);
 	}
 	
-	public JSONObject toJSON(){
-		JSONObject data = new JSONObject();
-		try {
-			data.put("username", username);
-			data.put("jobId", jobId);
-			JSONArray diArray = new JSONArray();
-			for(DataItem dataItem: dataItems){
-				diArray.put(dataItem.toJSON());
-			}
-			data.put("dataitems", diArray);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		return data;
-	}
+//	public JSONObject toJSON(){
+//		JSONObject data = new JSONObject();
+//		try {
+//			data.put("username", username);
+//			data.put("jobId", jobId);
+//			JSONArray diArray = new JSONArray();
+//			for(DataItem dataItem: dataItems){
+//				diArray.put(dataItem.toJSON());
+//			}
+//			data.put("dataitems", diArray);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		return data;
+//	}
 }

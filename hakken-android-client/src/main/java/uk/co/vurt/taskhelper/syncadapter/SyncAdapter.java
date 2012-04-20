@@ -8,12 +8,12 @@ import java.util.List;
 import org.apache.http.auth.AuthenticationException;
 import org.json.JSONException;
 
+import uk.co.vurt.hakken.domain.job.DataItem;
+import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.taskhelper.Constants;
 import uk.co.vurt.taskhelper.client.NetworkUtilities;
-import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
-import uk.co.vurt.taskhelper.domain.job.DataItem;
-import uk.co.vurt.taskhelper.domain.job.JobDefinition;
-import uk.co.vurt.taskhelper.domain.job.Submission;
 import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;

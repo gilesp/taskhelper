@@ -1,4 +1,4 @@
-package uk.co.vurt.taskhelper.domain.definition;
+package uk.co.vurt.hakken.domain.task;
 
 public enum PageItemType {
 	

@@ -67,6 +67,12 @@
       </exclusions> 
     </dependency>
     
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>hakken-domain</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
     <!-- Json parser -->
     <dependency>
       <groupId>com.google.code.gson</groupId>

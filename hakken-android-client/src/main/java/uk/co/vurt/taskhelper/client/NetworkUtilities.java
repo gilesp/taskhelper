@@ -32,11 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.security.HashUtils;
 import uk.co.vurt.hakken.security.model.LoginResponse;
-import uk.co.vurt.taskhelper.domain.definition.TaskDefinition;
-import uk.co.vurt.taskhelper.domain.job.JobDefinition;
-import uk.co.vurt.taskhelper.domain.job.Submission;
 import android.accounts.Account;
 import android.content.Context;
 import android.net.ParseException;
