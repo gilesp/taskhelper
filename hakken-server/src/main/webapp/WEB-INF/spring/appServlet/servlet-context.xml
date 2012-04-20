@@ -33,7 +33,11 @@
 	   <beans:property name="prefix" value="WMFS\"/>
 	</beans:bean>
 	
-	<beans:bean name="jobService" class="uk.co.vurt.hakken.server.service.JobServiceImpl"/>
+	<beans:bean name="taskSource" class="uk.co.vurt.hakken.server.task.TaskFileSourceService">
+	   <beans:property name="taskDirectoryPaths" value="${taskdefinition.src.dirs}"/>    
+	</beans:bean>
+	
+<!-- 	<beans:bean name="jobService" class="uk.co.vurt.hakken.server.service.JobServiceImpl"/> -->
 	    
 	<!-- database configuration -->
 	<beans:bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

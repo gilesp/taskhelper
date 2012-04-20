@@ -1,20 +1,18 @@
 package uk.co.vurt.hakken.domain.task;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
-//import org.json.JSONArray;
-//import org.json.JSONObject;
-//
-//import uk.co.vurt.taskhelper.providers.Task;
-//
-//import android.util.Log;
+import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 
 public class Page {
-	private final static String TAG = "Page";
-	private final String name;
-	private final String title;
-	private final List<PageItem> items;
+	private String name;
+	private String title;
+	private List<PageItem> items;
+	
+	public Page(){
+		items = new ArrayList<PageItem>();
+	}
 	
 	public Page(String name, String title, List<PageItem> items) {
 		super();
@@ -26,36 +24,36 @@ public class Page {
 	public String getName() {
 		return name;
 	}
-	
-	
-	public List<PageItem> getItems() {
-		return items;
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	
 	public String getTitle() {
 		return title;
 	}
 
-//	public static Page valueOf(JSONObject page){
-//		try{
-//			final String name = page.getString("name");
-//			final String title;
-//			if(page.has("title")){
-//				title = page.getString("title");
-//			}else{
-//				title = "";
-//			}
-//			
-//			JSONArray pageItemArray = page.getJSONArray(Task.Definitions.PAGE_ITEMS);
-//			ArrayList<PageItem> pageItems = new ArrayList<PageItem>();
-//			for(int i = 0; i < pageItemArray.length(); i++){
-//				pageItems.add(PageItem.valueOf(pageItemArray.getJSONObject(i)));
-//			}
-//			return new Page(name, title, pageItems);
-//		}catch(final Exception e){
-//			Log.i(TAG, "Unable to parse JSON Page object: " + e.toString());
-//		}
-//		return null;
-//	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public List<PageItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<PageItem> items) {
+		this.items = items;
+	}
+
+	public void addItem(PageItem item){
+		this.items.add(item);
+	}
+
+	@Override
+	public String toString() {
+		return "Page [name=" + name + ", title=" + title + ", items=" + items
+				+ "]";
+	}
+	
+	
 }

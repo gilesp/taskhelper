@@ -7,4 +7,5 @@ db.password=taskhelper
 db.hibernate.show_sql=true
 db.jpa.generateDdl=true
 
-
+#Directories containing task definitions, comma separated
+taskdefinition.src.dirs=
