@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import uk.co.vurt.taskhelper.server.domain.definition.StaticTaskDefinition;
+import uk.co.vurt.hakken.domain.task.StaticTaskDefinition;
 
 
 @Controller

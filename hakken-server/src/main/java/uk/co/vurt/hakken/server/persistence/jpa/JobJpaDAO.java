@@ -6,17 +6,17 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
-import uk.co.vurt.taskhelper.server.domain.job.Job;
 
 @Repository
-public class JobJpaDAO extends GenericJpaDAO<Long, Job> implements JobDAO {
+public class JobJpaDAO extends GenericJpaDAO<Long, JobDefinition> implements JobDAO {
 
 	@Override
-	public Job getByName(String name) {
+	public JobDefinition getByName(String name) {
 		Query query = entityManager.createQuery("from " + clazz.getName() + " where name = :name");
 		query.setParameter("name", name);
-		List<Job> jobs = query.getResultList();
+		List<JobDefinition> jobs = query.getResultList();
 		if(jobs.size() > 0){
 			return jobs.get(0);
 		}else{

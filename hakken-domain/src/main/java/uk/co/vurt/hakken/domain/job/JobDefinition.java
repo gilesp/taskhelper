@@ -1,18 +1,15 @@
 package uk.co.vurt.hakken.domain.job;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
-//import java.util.Iterator;
 import java.util.Set;
-
-//import org.json.JSONArray;
-//import org.json.JSONObject;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 //import android.util.Log;
 
-public class JobDefinition {
+public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
 	
