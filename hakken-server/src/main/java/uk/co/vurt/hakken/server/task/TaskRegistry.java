@@ -17,10 +17,13 @@ public class TaskRegistry {
 	TaskSourceService taskSource;
 	
 	//In memory storage for task definitions
-	Map<String, TaskDefinition> tasks;
+	Map<Long, TaskDefinition> tasks;
+	Map<String, Long> nameMap;
 	
 	private TaskRegistry(){
-		tasks = new HashMap<String, TaskDefinition>();
+		tasks = new HashMap<Long, TaskDefinition>();
+		nameMap = new HashMap<String, Long>();
+		
 		for(TaskDefinition definition: taskSource.getTaskDefinitions()){
 			register(definition);
 		}
@@ -35,11 +38,16 @@ public class TaskRegistry {
 	}
 	
 	public TaskDefinition getTask(String name){
-		return tasks.get(name);
+		return getTask(nameMap.get(name));
+	}
+	
+	public TaskDefinition getTask(Long id){
+		return tasks.get(id);
 	}
 	
 	public void register(TaskDefinition task){
 		logger.debug("Registering task " + task);
-		tasks.put(task.getName(), task);
+		tasks.put(task.getId(), task);
+		nameMap.put(task.getName(), task.getId());
 	}
 }

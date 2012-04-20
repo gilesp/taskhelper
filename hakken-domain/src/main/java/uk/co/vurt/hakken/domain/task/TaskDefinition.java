@@ -4,14 +4,14 @@ import java.util.List;
 
 public final class TaskDefinition {
 
-	private int id;
+	private long id;
 	private String name;
 	private String description;
 	private List<Page> pages;
 
 	public TaskDefinition(){}
 	
-	public TaskDefinition(int id, String name, String description, List<Page> pages) {
+	public TaskDefinition(long id, String name, String description, List<Page> pages) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -19,11 +19,11 @@ public final class TaskDefinition {
 		this.pages = pages;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
