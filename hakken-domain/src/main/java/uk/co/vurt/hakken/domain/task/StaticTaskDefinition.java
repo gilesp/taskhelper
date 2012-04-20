@@ -1,17 +1,10 @@
-package uk.co.vurt.taskhelper.server.domain.definition;
+package uk.co.vurt.hakken.domain.task;
 
-import java.io.Serializable;
-
-
-public class StaticTaskDefinition extends TaskDefinition implements Serializable{
+public class StaticTaskDefinition {
 
 	private static final long serialVersionUID = 7397304484991310361L;
 
     private String jsonDefinition;
-
-    public String jsonify() {
-        return jsonDefinition;
-    }
 
 	public String getJsonDefinition() {
 		return jsonDefinition;
@@ -20,6 +13,5 @@ public class StaticTaskDefinition extends TaskDefinition implements Serializable
 	public void setJsonDefinition(String jsonDefinition) {
 		this.jsonDefinition = jsonDefinition;
 	}
-
     
 }

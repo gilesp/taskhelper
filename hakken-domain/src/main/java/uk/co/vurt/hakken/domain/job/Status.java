@@ -1,4 +1,4 @@
-package uk.co.vurt.taskhelper.server.domain.job;
+package uk.co.vurt.hakken.domain.job;
 
 public enum Status {
 
