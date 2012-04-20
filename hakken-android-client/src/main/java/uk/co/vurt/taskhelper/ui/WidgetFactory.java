@@ -8,10 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.vurt.hakken.domain.job.DataItem;
+import uk.co.vurt.hakken.domain.task.PageItem;
 import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.domain.NameValue;
-import uk.co.vurt.taskhelper.domain.definition.PageItem;
-import uk.co.vurt.taskhelper.domain.job.DataItem;
 import uk.co.vurt.taskhelper.ui.widget.LabelledCheckBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
