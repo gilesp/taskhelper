@@ -14,7 +14,8 @@
     </parent>
     
 	<properties>
-	    <jackson.version>2.0.0</jackson.version>
+<!-- 	    <jackson.version>2.0.0</jackson.version> -->
+	    <jackson.version>1.9.6</jackson.version>
 	</properties>
 	
 	<dependencies>
@@ -56,6 +57,12 @@
 
 		<!--  Persistence -->
 		<dependency>
+		    <groupId>javax.persistence</groupId>
+		    <artifactId>persistence-api</artifactId>
+		    <version>1.0</version>
+		</dependency>
+		
+		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-entitymanager</artifactId>
 		    <version>3.6.9.Final</version>
@@ -70,21 +77,21 @@
         </dependency>
 		
 		<!-- Jackson JSON library -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.codehaus.jackson</groupId> -->
-<!-- 			<artifactId>jackson-mapper-asl</artifactId> -->
-<!-- 			<version>1.9.6</version> -->
-<!-- 		</dependency> -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-core</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-databind</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
         
 		<!-- AspectJ -->
 		<dependency>

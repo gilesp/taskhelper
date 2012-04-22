@@ -1,21 +1,25 @@
 package uk.co.vurt.hakken.server.task;
 
 import java.io.File;
+
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.core.JsonParseException;
+//import com.fasterxml.jackson.databind.DeserializationFeature;
+//import com.fasterxml.jackson.databind.JsonMappingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TaskFileSourceService implements TaskSourceService, InitializingBean{
 
@@ -29,10 +33,14 @@ public class TaskFileSourceService implements TaskSourceService, InitializingBea
 	
 	public TaskFileSourceService(){
 		mapper = new ObjectMapper();
+		
+		//had to remove the below properties as not valid in this form 
+		//in Jackson 1.9.6
+		
 		// to prevent exception when encountering unknown property:
-		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		// to allow coercion of JSON empty String ("") to null Object value:
-		mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+//		mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 	}
 	
 	public TaskDefinition load(File file){
