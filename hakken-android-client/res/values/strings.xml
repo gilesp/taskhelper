@@ -65,4 +65,6 @@
 	
 	<string name="settings_sync_server_label">Sync Server</string>
 	<string name="settings_sync_server_prompt">Specify the server to sync with.</string>
+	
+	<string name="preferences_ok_button">OK</string>
 </resources>
