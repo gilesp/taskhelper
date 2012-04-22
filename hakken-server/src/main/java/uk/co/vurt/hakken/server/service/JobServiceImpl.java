@@ -1,11 +1,16 @@
 package uk.co.vurt.hakken.server.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.task.Page;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
+import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.hakken.server.persistence.GenericDAO;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
 
@@ -34,7 +39,11 @@ public class JobServiceImpl implements JobService{
 		
 		//for each task definition, lookup instance provider/data connector and invoke.
 		
-		return new ArrayList<JobDefinition>();
+		return Arrays.asList(new JobDefinition(1, "Test Job", new TaskDefinition(
+				1, "Test Task", "Test Task", Arrays.asList(new Page("Page 1", 
+				"Page 1", Arrays.asList(new PageItem("Item 1", "Item 1", 
+				"DATETIME", null))))), new Date(), new Date(), "AWAITING", 
+				"Test Job"));
 	}
 
 	@Override

@@ -39,21 +39,6 @@ public class JobController {
 		
 		boolean validRequest = HashUtils.validate(parameterMap, hmac);
 		if(validRequest){
-//			List<Job> jobs = new ArrayList<Job>();
-//			//TODO: Actually retrieve job list
-//			logger.debug("Valid request received.");
-//			
-//			Job testJob = new Job();
-//			testJob.setId(1);
-//			testJob.setCreated(new Date());
-//			testJob.setName("Test");
-//			testJob.setNotes("This is a test Job");
-//			testJob.setDue(new Date());
-//			
-//			jobs.add(testJob);
-//			
-//			return jobs;
-			
 			return service.getForUserSince(username, timestamp);
 		}else {
 			//TODO: handle invalid request/send error response
