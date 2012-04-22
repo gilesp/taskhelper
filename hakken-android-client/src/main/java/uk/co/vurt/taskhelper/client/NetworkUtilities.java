@@ -75,7 +75,7 @@ final public class NetworkUtilities {
 
 	public static final String AUTH_URI = "/auth/login";
 
-	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/[hmac]/since/[timestamp]";
+	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/since/[timestamp]?hmac=[hmac]";
 	
 	//getBaseUrl(context) + FETCH_JOBS_URI + "/"
 	//+ parameterMap.get("username") + "/"
@@ -259,7 +259,7 @@ final public class NetworkUtilities {
 		parameterMap.put("timestamp", dateFormatter.format(lastUpdated));
 
 		String hmac = HashUtils.hash(parameterMap);
-		parameterMap.put("hmac", hmac);
+		parameterMap.put("hmac", URLUtils.encode(hmac));
 		
 		String data = fetchData(replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap)/*, null, null, null*/);
 //				getBaseUrl(context) + FETCH_JOBS_URI + "/"
@@ -271,7 +271,7 @@ final public class NetworkUtilities {
 		final JSONArray jobs = new JSONArray(data);
 
 		for (int i = 0; i < jobs.length(); i++) {
-			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(1).toString()));
+			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
 		}
 		return jobList;
 	}
