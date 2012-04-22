@@ -75,7 +75,7 @@ final public class NetworkUtilities {
 
 	public static final String AUTH_URI = "/auth/login";
 
-	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/[hmac]/since/[timestamp]";
+	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/since/[timestamp]?hmac=[hmac]";
 	
 	//getBaseUrl(context) + FETCH_JOBS_URI + "/"
 	//+ parameterMap.get("username") + "/"

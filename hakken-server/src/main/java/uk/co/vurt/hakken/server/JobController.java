@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
@@ -31,8 +32,8 @@ public class JobController {
 		return service.get(id);
 	}
 	
-	@RequestMapping(value="for/{username}/{hmac}/since/{timestamp}", method=RequestMethod.GET)
-	public @ResponseBody List<JobDefinition> getJobsForUserSince(@PathVariable String username, @PathVariable String hmac, @PathVariable String timestamp){
+	@RequestMapping(value="for/{username}/since/{timestamp}", method=RequestMethod.GET)
+	public @ResponseBody List<JobDefinition> getJobsForUserSince(@PathVariable String username, @RequestParam String hmac, @PathVariable String timestamp){
 		Map<String, String>parameterMap = new HashMap<String, String>();
 		parameterMap.put("username", username);
 		parameterMap.put("timestamp", timestamp);
