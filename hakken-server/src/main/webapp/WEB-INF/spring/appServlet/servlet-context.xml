@@ -28,11 +28,6 @@
 	<context:component-scan base-package="uk.co.vurt" />
 	
 	
-	<beans:bean name="authenticator" class="uk.co.vurt.hakken.security.auth.LdapAuthenticator">
-	   <beans:property name="server" value="ldap://ldap.wmfs.net:389/"/>
-	   <beans:property name="prefix" value="WMFS\"/>
-	</beans:bean>
-	
 	<beans:bean name="taskSource" class="uk.co.vurt.hakken.server.task.TaskFileSourceService">
 	   <beans:property name="taskDirectoryPaths" value="${taskdefinition.src.dirs}"/>    
 	</beans:bean>
