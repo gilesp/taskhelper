@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<!--bean name="authenticator" class="uk.co.vurt.hakken.security.auth.LdapAuthenticator">
+	   <property name="server" value="ldap://ldap.wmfs.net:389/"/>
+	   <property name="prefix" value="WMFS\"/>
+	</bean-->
+	
+	<bean name="authenticator" class="uk.co.vurt.hakken.security.auth.AllowAlwaysAuthenticator"/>
+		
+</beans>
