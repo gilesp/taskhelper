@@ -259,7 +259,7 @@ final public class NetworkUtilities {
 		parameterMap.put("timestamp", dateFormatter.format(lastUpdated));
 
 		String hmac = HashUtils.hash(parameterMap);
-		parameterMap.put("hmac", hmac);
+		parameterMap.put("hmac", URLUtils.encode(hmac));
 		
 		String data = fetchData(replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap)/*, null, null, null*/);
 //				getBaseUrl(context) + FETCH_JOBS_URI + "/"
