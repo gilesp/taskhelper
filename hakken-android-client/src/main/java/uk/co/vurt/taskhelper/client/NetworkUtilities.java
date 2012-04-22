@@ -271,7 +271,7 @@ final public class NetworkUtilities {
 		final JSONArray jobs = new JSONArray(data);
 
 		for (int i = 0; i < jobs.length(); i++) {
-			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(1).toString()));
+			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
 		}
 		return jobList;
 	}
