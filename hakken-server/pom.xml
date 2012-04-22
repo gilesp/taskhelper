@@ -14,7 +14,8 @@
     </parent>
     
 	<properties>
-	    <jackson.version>2.0.0</jackson.version>
+<!-- 	    <jackson.version>2.0.0</jackson.version> -->
+	    <jackson.version>1.9.6</jackson.version>
 	</properties>
 	
 	<dependencies>
@@ -70,21 +71,21 @@
         </dependency>
 		
 		<!-- Jackson JSON library -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.codehaus.jackson</groupId> -->
-<!-- 			<artifactId>jackson-mapper-asl</artifactId> -->
-<!-- 			<version>1.9.6</version> -->
-<!-- 		</dependency> -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-core</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
+<!--             <artifactId>jackson-databind</artifactId> -->
+<!--             <version>${jackson.version}</version> -->
+<!--         </dependency> -->
         
 		<!-- AspectJ -->
 		<dependency>
