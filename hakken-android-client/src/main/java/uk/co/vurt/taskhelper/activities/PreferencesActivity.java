@@ -11,14 +11,14 @@ public class PreferencesActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		boolean returnToStart = getIntent().getBooleanExtra(DispatcherActivity.RETURN_TO_START_KEY, false);
+//		boolean returnToStart = getIntent().getBooleanExtra(DispatcherActivity.RETURN_TO_START_KEY, false);
 		
 		addPreferencesFromResource(R.xml.preferences);
 		
-		if(returnToStart){
-			startActivity(new Intent(this, DispatcherActivity.class));
-			finish();
-		}
+//		if(returnToStart){
+//			startActivity(new Intent(this, DispatcherActivity.class));
+//			finish();
+//		}
 	}
 	
 	
