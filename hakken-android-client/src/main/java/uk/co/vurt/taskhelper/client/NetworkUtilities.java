@@ -85,7 +85,10 @@ final public class NetworkUtilities {
 	// public static final String FETCH_TASK_DEFINITIONS_URI =
 	// "/taskdefinitions";
 
-	public static final String SUBMIT_JOB_DATA_URI = "/submissions/job/";
+	/*
+	 * The trailing slash after the username is required (due to idosyncrasies in the Spring MVC implementation of the server)
+	 */
+	public static final String SUBMIT_JOB_DATA_URI = "/submissions/from/[username]/?hmac=[hmac]";
 
 	private NetworkUtilities() {
 	}
@@ -221,8 +224,17 @@ final public class NetworkUtilities {
 		StringEntity stringEntity;
 		try {
 			stringEntity = new StringEntity(JSONUtil.getInstance().toJson(submission));
-			final HttpPost post = new HttpPost(getBaseUrl(context)
-					+ SUBMIT_JOB_DATA_URI);
+			
+			Map<String, String> parameterMap = new HashMap<String, String>();
+			parameterMap.put("username", account.name);
+			
+			String hmac = HashUtils.hash(parameterMap);
+			parameterMap.put("hmac", URLUtils.encode(hmac));
+			
+			final HttpPost post = new HttpPost(replaceTokens(getBaseUrl(context) + SUBMIT_JOB_DATA_URI, parameterMap));
+			Log.d(TAG, "username: " + account.name);
+			Log.d(TAG, "hmac: " + hmac);
+			
 			post.setEntity(stringEntity);
 			post.setHeader("Accept", "application/json");
 			post.setHeader("Content-type", "application/json");
@@ -230,6 +242,7 @@ final public class NetworkUtilities {
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 				return true;
 			} else {
+				//TODO: Find a way of displaying this error to the user.
 				Log.e(TAG, "Data submission failed: "
 						+ httpResponse.getStatusLine().getStatusCode());
 				return false;
@@ -282,24 +295,9 @@ final public class NetworkUtilities {
 			AuthenticationException {
 		Log.d(TAG, "Fetching data from: " + url);
 		String data = null;
-//		if (params == null) {
-//			params = new ArrayList<NameValuePair>();
-//		}
-//		if (account != null) {
-//			params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-//			params.add(new BasicNameValuePair(PARAM_AUTHTOKEN, authToken));
-//		}
-
-//		Log.i(TAG, params.toString());
-//		HttpEntity entity = new UrlEncodedFormEntity(params);
-
-//		final HttpPost post = new HttpPost(url);
-//		post.addHeader(entity.getContentType());
-//		post.setEntity(entity);
 
 		final HttpGet get = new HttpGet(url);
 
-//		final HttpResponse httpResponse = getHttpClient().execute(post);
 		final HttpResponse httpResponse = getHttpClient().execute(get);
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			data = EntityUtils.toString(httpResponse.getEntity());

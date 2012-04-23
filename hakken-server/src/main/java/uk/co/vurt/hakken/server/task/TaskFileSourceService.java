@@ -30,7 +30,7 @@ public class TaskFileSourceService implements TaskSourceService, InitializingBea
 	private ObjectMapper mapper;
 	
 	private List<TaskDefinition> taskDefinitions;
-	
+
 	public TaskFileSourceService(){
 		mapper = new ObjectMapper();
 		
@@ -81,6 +81,9 @@ public class TaskFileSourceService implements TaskSourceService, InitializingBea
 				}
 			}
 		}
+		
+		
+		logger.info("Loaded " + taskDefinitions.size() + " definitions");
 	}
 	
 	@Override
