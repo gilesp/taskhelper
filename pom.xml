@@ -8,6 +8,39 @@
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>Hakken parent project</name>
+    <url>https://github.com/gilesp/taskhelper/</url>
+    
+	<issueManagement>
+        <url>https://github.com/gilesp/taskhelper/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+	<scm>
+        <url>https://github.com/gilesp/taskhelper</url>
+        <connection>scm:git:github.com/gilesp/taskhelper.git</connection>
+        <developerConnection>scm:git:git@github.com:gilesp/taskhelper.git</developerConnection>
+    </scm>
+
+	<licenses>
+        <license>
+            <name>GNU General Public License, version 3</name>
+            <url>http://www.opensource.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+
+	<developers>
+        <developer>
+            <email>giles@vurt.co.uk</email>
+            <name>Giles Paterson</name>
+            <url>https://github.com/gilesp</url>
+            <id>gilesp</id>
+        </developer>
+        <developer>
+            <name>Ryan Pickett</name>
+            <url>https://github.com/hdpe</url>
+            <id>hdpe</id>
+        </developer>
+    </developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
