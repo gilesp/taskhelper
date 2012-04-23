@@ -13,7 +13,7 @@ import uk.co.vurt.hakken.security.model.LoginResponse;
 
 @Controller
 @RequestMapping("/auth")
-public class AuthenticationController {
+public class AuthenticationController extends RESTController{
 
 	@Autowired
 	private Authenticator authenticator;

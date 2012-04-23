@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.security.HashUtils;
+import uk.co.vurt.hakken.server.exception.HakkenException;
 import uk.co.vurt.hakken.server.service.JobService;
 
 @Controller
 @RequestMapping("/jobs")
-public class JobController {
+public class JobController extends RESTController{
 
 	@Autowired
 	private JobService service;
@@ -33,7 +34,7 @@ public class JobController {
 	}
 	
 	@RequestMapping(value="for/{username}/since/{timestamp}", method=RequestMethod.GET)
-	public @ResponseBody List<JobDefinition> getJobsForUserSince(@PathVariable String username, @RequestParam String hmac, @PathVariable String timestamp){
+	public @ResponseBody List<JobDefinition> getJobsForUserSince(@PathVariable String username, @RequestParam String hmac, @PathVariable String timestamp) throws HakkenException{
 		Map<String, String>parameterMap = new HashMap<String, String>();
 		parameterMap.put("username", username);
 		parameterMap.put("timestamp", timestamp);
@@ -42,9 +43,8 @@ public class JobController {
 		if(validRequest){
 			return service.getForUserSince(username, timestamp);
 		}else {
-			//TODO: handle invalid request/send error response
 			logger.warn("Woop Woop! Invalid request received!");
-			return null;
+			throw new HakkenException("Invalid request received");
 		}
 	}
 }
