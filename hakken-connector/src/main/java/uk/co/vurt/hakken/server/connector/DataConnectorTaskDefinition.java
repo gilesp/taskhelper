@@ -1,5 +1,6 @@
 package uk.co.vurt.hakken.server.connector;
 
+
 import java.util.Map;
 
 public abstract class DataConnectorTaskDefinition {

@@ -23,6 +23,7 @@
 		<module>hakken-android-client</module>
 		<module>hakken-server</module>
 		<module>hakken-domain</module>
+		<module>hakken-connector</module>		
 		<!--module>hakken-task-definition</module-->
 	</modules>
 
