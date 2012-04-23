@@ -70,7 +70,7 @@ URI: /jobs/for/{username}/since/{timestamp}
 
 Authenticated Form:
 
-URI: /jobs/for/{username}/{hmac}/since/{timestamp}/
+URI: /jobs/for/{username}/since/{timestamp}?hmac={hmac}
 
 {hmac} should be the hmacSHA1 hashed form of the string:
 
@@ -165,7 +165,7 @@ URI: /submissions/job
 
 Authenticate Form:
 
-URI: /submissions/job/{username}/{hmac}
+URI: /submissions/job/{username}?hmac={hmac}
 
 {hmac} should be the hmacSHA1 hashed form of the string:
 
