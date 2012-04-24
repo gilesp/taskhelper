@@ -1,9 +1,4 @@
 package uk.co.vurt.hakken.domain.job;
-//
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//
-//import android.util.Log;
 
 public class DataItem {
 
@@ -50,32 +45,12 @@ public class DataItem {
 	public void setPageName(String pageName) {
 		this.pageName = pageName;
 	}
+
+	@Override
+	public String toString() {
+		return "DataItem [name=" + name + ", type=" + type + ", value=" + value
+				+ ", pageName=" + pageName + "]";
+	}
 	
-//	public JSONObject toJSON(){
-//		JSONObject data = new JSONObject();
-//		try {
-//			data.put("pageName", pageName);
-//			data.put("name", name);
-//			data.put("type", type);
-//			data.put("value", value);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return data;
-//	}
-//	
-//	public static DataItem valueOf(JSONObject dataItem){
-//		DataItem item = null;
-//		try{
-//			final String pageName = dataItem.getString("pageName");
-//			final String name = dataItem.getString("name");
-//			final String type = dataItem.getString("type");
-//			final String value = dataItem.getString("value") == null || dataItem.getString("value").equals("null") ? "" : dataItem.getString("value");
-//			item = new DataItem(pageName, name, type, value);
-//		} catch (final Exception e){
-//			Log.i(TAG, "Unable to parse JSON Job object: " + e.toString());
-//		}
-//		return item;
-//	}
+	
 }

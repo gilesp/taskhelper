@@ -9,9 +9,10 @@ import java.util.Map;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.Page;
-import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.taskhelper.R;
+import uk.co.vurt.taskhelper.processor.JobProcessor;
+import uk.co.vurt.taskhelper.processor.TaskProcessor;
 import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
@@ -30,7 +31,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,37 +41,35 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
 public class RunJob extends Activity {
 
 	private static final String TAG = "RunJob";
 	
-	private static final String[] JOB_PROJECTION = new String[] {
-		Job.Definitions._ID,
-		Job.Definitions.NAME,
-		Job.Definitions.TASK_DEFINITION_ID,
-		Job.Definitions.CREATED,
-		Job.Definitions.DUE,
-		Job.Definitions.STATUS,
-		Job.Definitions.NOTES
-	};
-	
-	private static final int COLUMN_INDEX_JOB_ID = 0;
-	private static final int COLUMN_INDEX_JOB_NAME = 1;
-	private static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 2;
-	private static final int COLUMN_INDEX_JOB_CREATED = 3;
-	private static final int COLUMN_INDEX_JOB_DUE = 4;
-	private static final int COLUMN_INDEX_JOB_STATUS = 5;
-	private static final int COLUMN_INDEX_JOB_NOTES = 6;
-	
-	private static final String[] DEFINITION_PROJECTION = new String[] {
-		Task.Definitions._ID,
-		Task.Definitions.JSON
-	};
-	
-	private static final int COLUMN_INDEX_TASKDEFINITION_ID = 0;
-	private static final int COLUMN_INDEX_TASKDEFINITION_JSON = 1;
+//	private static final String[] JOB_PROJECTION = new String[] {
+//		Job.Definitions._ID,
+//		Job.Definitions.NAME,
+//		Job.Definitions.TASK_DEFINITION_ID,
+//		Job.Definitions.CREATED,
+//		Job.Definitions.DUE,
+//		Job.Definitions.STATUS,
+//		Job.Definitions.NOTES
+//	};
+//	
+//	private static final int COLUMN_INDEX_JOB_ID = 0;
+//	private static final int COLUMN_INDEX_JOB_NAME = 1;
+//	private static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 2;
+//	private static final int COLUMN_INDEX_JOB_CREATED = 3;
+//	private static final int COLUMN_INDEX_JOB_DUE = 4;
+//	private static final int COLUMN_INDEX_JOB_STATUS = 5;
+//	private static final int COLUMN_INDEX_JOB_NOTES = 6;
+//	
+//	private static final String[] DEFINITION_PROJECTION = new String[] {
+//		Task.Definitions._ID,
+//		Task.Definitions.JSON
+//	};
+//	
+//	private static final int COLUMN_INDEX_TASKDEFINITION_ID = 0;
+//	private static final int COLUMN_INDEX_TASKDEFINITION_JSON = 1;
 	
 	//Shouldn't this be an enum? does android support enums?
 	private static final int STATE_RUN = 0;
@@ -79,19 +77,25 @@ public class RunJob extends Activity {
 	private int state;
 	private Uri uri;
 	private Cursor jobCursor;
-	private Cursor definitionCursor;
-	private int currentPageId = 0;
+//	private Cursor definitionCursor;
+	
 	private ContentResolver contentResolver;
-	private int jobId;
+//	private int jobId;
 	
 	
 	private LinearLayout pageContent;
 	private LinearLayout buttonBar;
 	
-	private TaskDefinition taskDefinition;
-	private JobDefinition job;
+//	private TaskDefinition taskDefinition;
+	private JobProcessor jobProcessor;
+	
+//	private JobDefinition job;
 	
 	private Map<String, View> widgetMap;
+	
+	private Button finishButton;
+	private Button nextButton;
+	private Button previousButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +122,53 @@ public class RunJob extends Activity {
 		pageContent = (LinearLayout)findViewById(R.id.pageContent);
 		
 		Log.d(TAG, "Job URI: " + uri);
-		//Get the task definition
-		jobCursor = managedQuery(uri, JOB_PROJECTION, null, null, null);
-		
+		//Get the job definition
+		jobCursor = managedQuery(uri, JobProcessor.JOB_PROJECTION, null, null, null);
+		jobProcessor = new JobProcessor(jobCursor, contentResolver);
+
 		widgetMap = new HashMap<String, View>();
+		
+		//Setup buttons
+		previousButton = new Button(this);
+		previousButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		previousButton.setText("Previous");
+		previousButton.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View view) {
+				savePage(jobProcessor.getCurrentPage());
+				jobProcessor.previousPage();
+				drawPage();
+				return;
+			}
+			
+		});
+		
+		nextButton = new Button(this);
+		nextButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		nextButton.setText("Next");
+		nextButton.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View view) {
+				savePage(jobProcessor.getCurrentPage());
+				jobProcessor.nextPage();
+				drawPage();
+				return;
+			}
+			
+		});
+		
+		finishButton = new Button(this);
+		finishButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		finishButton.setText("Finish");
+		finishButton.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View view) {
+				savePage(jobProcessor.getCurrentPage());
+				finishJob();
+				return;
+			}
+			
+		});
 	}
 	
 	@Override
@@ -131,10 +178,7 @@ public class RunJob extends Activity {
 	}
 	
 	protected void finishJob(){
-		job.setStatus("COMPLETED");
-		ContentValues values = new ContentValues();
-		values.put(Job.Definitions.STATUS, job.getStatus());
-		contentResolver.update(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+job.getId()) , values, null, null);
+		jobProcessor.finish();
 		RunJob.this.finish();
 	}
 	
@@ -142,7 +186,7 @@ public class RunJob extends Activity {
 		Log.d(TAG, "Saving page: " + currentPage);
 		List<PageItem> items = currentPage.getItems();
 		for(PageItem item: items){
-			String widgetKey = createWidgetKey(currentPage, item);
+			String widgetKey = createWidgetKey(jobProcessor.getPageName(), item);
 			View widget = widgetMap.get(widgetKey);
 			
 			if(widget != null){
@@ -182,11 +226,12 @@ public class RunJob extends Activity {
 					//TODO: Do I need to bother with the dataitem class at all?
 					DataItem dataItem = new DataItem(currentPage.getName(), item.getName(), item.getType(), value);
 					ContentValues values = new ContentValues();
-					values.put(Dataitem.Definitions.JOB_ID, jobId);
+					values.put(Dataitem.Definitions.JOB_ID, jobProcessor.getJobId());
 					values.put(Dataitem.Definitions.PAGENAME, dataItem.getPageName());
 					values.put(Dataitem.Definitions.NAME, dataItem.getName());
 					values.put(Dataitem.Definitions.TYPE, dataItem.getType());
 					values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
+					
 					
 					Cursor cursor = contentResolver.query(Dataitem.Definitions.CONTENT_URI, 
 														  new String[]{Dataitem.Definitions._ID} /*projection*/,
@@ -194,19 +239,22 @@ public class RunJob extends Activity {
 														  + "AND " + Dataitem.Definitions.PAGENAME + "=? "
 														  + "AND " + Dataitem.Definitions.NAME + "=? " 
 														  + "AND " + Dataitem.Definitions.TYPE + "=?" /*where*/, 
-														  new String[]{""+jobId, dataItem.getPageName(), dataItem.getName(), dataItem.getType()}/*args*/, 
+														  new String[]{""+jobProcessor.getJobId(), dataItem.getPageName(), dataItem.getName(), dataItem.getType()}/*args*/, 
 														  null /*sort order*/);
 					int count = 0;
 					if(cursor != null){
 						cursor.moveToFirst();
 						if(cursor.getCount() > 0){
 							int dataItemId = cursor.getInt(0);
+							Log.d(TAG, "Updating dataitem: " + Uri.withAppendedPath(Dataitem.Definitions.CONTENT_URI, ""+dataItemId) + "     " + dataItem.getName() + ":" + dataItem.getValue());
 							count = contentResolver.update(Uri.withAppendedPath(Dataitem.Definitions.CONTENT_URI, ""+dataItemId), values, null, null);
 						}
 						cursor.close();
 					}
 					if(count <= 0){
+						Log.d(TAG, "Saving new dataitem: " + dataItem.getName() + ":" + dataItem.getValue());
 						Uri dataItemUri = contentResolver.insert(Dataitem.Definitions.CONTENT_URI, values);
+						Log.d(TAG, "Saved URI: " + dataItemUri);
 					}
 					//TODO: Do something with this uri?
 				}
@@ -239,61 +287,57 @@ public class RunJob extends Activity {
 		return dataitem;
 	}
 	
-	private String createWidgetKey(Page page, PageItem item){
-		return page.getName() + "_" + item.getName() + "_" + item.getType();
+	private String createWidgetKey(String pageName, PageItem item){
+		return pageName + "_" + item.getName() + "_" + item.getType();
 	}
 	
 	protected void drawPage(){
 		
-		
-		
-		Log.d(TAG, "Cursor: " + jobCursor);
-		if(jobCursor != null){
-			jobCursor.moveToFirst();
+	
+//		Log.d(TAG, "Cursor: " + jobCursor);
+//		if(jobCursor != null){
+//			jobCursor.moveToFirst();
 			Log.d(TAG, "state: " + state);
 			if(state == STATE_RUN){
-				jobId = jobCursor.getInt(COLUMN_INDEX_JOB_ID);
-				String jobName = jobCursor.getString(COLUMN_INDEX_JOB_NAME);
-				int definitionId = jobCursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID);
-				Date jobCreated = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_CREATED));
-				Date jobDue = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_DUE));
-				String jobStatus = jobCursor.getString(COLUMN_INDEX_JOB_STATUS);
-				String notes = jobCursor.getString(COLUMN_INDEX_JOB_NOTES);
+//				jobId = jobCursor.getInt(COLUMN_INDEX_JOB_ID);
+//				String jobName = jobCursor.getString(COLUMN_INDEX_JOB_NAME);
+//				int definitionId = jobCursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID);
+//				Date jobCreated = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_CREATED));
+//				Date jobDue = new Date(jobCursor.getLong(COLUMN_INDEX_JOB_DUE));
+//				String jobStatus = jobCursor.getString(COLUMN_INDEX_JOB_STATUS);
+//				String notes = jobCursor.getString(COLUMN_INDEX_JOB_NOTES);
 				
-				Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, definitionId);
-				Log.d(TAG, "Definition URI: " + definitionUri.toString());
-				definitionCursor = contentResolver.query(definitionUri, DEFINITION_PROJECTION, null, null, null);
-				if(definitionCursor != null){
-					definitionCursor.moveToFirst();
-					taskDefinition = new Gson().fromJson(definitionCursor.getString(COLUMN_INDEX_TASKDEFINITION_JSON), TaskDefinition.class);
-					definitionCursor.close();
-				}
-				job = new JobDefinition(jobId, jobName, taskDefinition, jobCreated, jobDue, jobStatus, notes);
+//				Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, definitionId);
 				
-				setTitle("Running " + taskDefinition.getName());
+//				definitionCursor = contentResolver.query(definitionUri, DEFINITION_PROJECTION, null, null, null);
+//				if(definitionCursor != null){
+//					definitionCursor.moveToFirst();
+//					taskDefinition = new Gson().fromJson(definitionCursor.getString(COLUMN_INDEX_TASKDEFINITION_JSON), TaskDefinition.class);
+//					definitionCursor.close();
+//				}
+//				job = new JobDefinition(jobId, jobName, taskDefinition, jobCreated, jobDue, jobStatus, notes);
+				
+//				setTitle("Running " + jobProcessor.getTaskName());
 				
 				pageContent.removeAllViewsInLayout();
 				
+				setTitle(jobProcessor.getPageName());
 				
-				List<Page> pages = taskDefinition.getPages();
-				//TODO: handle tasks with no pages
-				final Page currentPage = pages.get(currentPageId);
-				Log.d(TAG, "Current page: " + currentPage);
-				setTitle(/*taskDefinition.getDescription() + ": " + */currentPage.getTitle());
+				List<PageItem> items = jobProcessor.getPageItems();
 				
-				List<PageItem> items = currentPage.getItems();
 				if(items != null){
 					Log.d(TAG, "Items: " + items.size());
 					for(PageItem item: items){
 						Log.d(TAG, "Current item: " + item);
-						String widgetKey = createWidgetKey(currentPage, item);
+						String widgetKey = createWidgetKey(jobProcessor.getPageName(), item);
+
 						View widget = null;
 						if(widgetMap.containsKey(widgetKey)){
 							//retrieve widget from map
 							widget = widgetMap.get(widgetKey);
 						} else {
-							
-							widget = WidgetFactory.createWidget(this, item, retrieveDataItem(jobId, currentPage.getName(), item.getName(), item.getType()));
+							//new widget, so create it
+							widget = WidgetFactory.createWidget(this, item, retrieveDataItem(jobProcessor.getJobId(), jobProcessor.getPageName(), item.getName(), item.getType()));
 							
 							//TODO: Figure out better way of handling this, hopefully within the widget factory itself.
 							if("DATETIME".equals(item.getType())){
@@ -319,58 +363,21 @@ public class RunJob extends Activity {
 				}
 				
 				//define next/previous/finish buttons
-				buttonBar.removeAllViewsInLayout(); 
-				if(currentPageId > 0){
-					Button previousButton = new Button(this);
-					previousButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-					previousButton.setText("Previous");
-					previousButton.setOnClickListener(new Button.OnClickListener(){
-
-						public void onClick(View view) {
-							savePage(currentPage);
-							currentPageId--;
-							drawPage();
-							return;
-						}
-						
-					});
+				buttonBar.removeAllViewsInLayout();
+				
+				if(jobProcessor.previousPages()){
 					buttonBar.addView(previousButton);
 				}
-				if((currentPageId+1) < pages.size()){
-					Button nextButton = new Button(this);
-					nextButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-					nextButton.setText("Next");
-					nextButton.setOnClickListener(new Button.OnClickListener(){
-
-						public void onClick(View view) {
-							savePage(currentPage);
-							currentPageId++;
-							drawPage();
-							return;
-						}
-						
-					});
-
-					buttonBar.addView(nextButton);
-				} else if((currentPageId+1) == pages.size()){
-					Button finishButton = new Button(this);
-					finishButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-					finishButton.setText("Finish");
-					finishButton.setOnClickListener(new Button.OnClickListener(){
-
-						public void onClick(View view) {
-							savePage(currentPage);
-							currentPageId = 0;
-							finishJob();
-							return;
-						}
-						
-					});
-
-					buttonBar.addView(finishButton);
-				}
+				if(jobProcessor.morePages()){
+					if(jobProcessor.lastPage()){
+						buttonBar.addView(finishButton);
+					} else {
+						buttonBar.addView(nextButton);
+					}
+				} 
+				
 			}
-		}
+//		}
 	}
 	
 	static final int DATE_DIALOG_ID = 0;

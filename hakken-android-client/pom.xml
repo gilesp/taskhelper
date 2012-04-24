@@ -73,6 +73,13 @@
       <version>${project.version}</version>
     </dependency>
     
+    <!-- Coalesce QL Parser -->
+    <dependency>
+        <groupId>net.wmfs.coalesce</groupId>
+        <artifactId>net.wmfs.coalesce.csql</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    
     <!-- Json parser -->
     <dependency>
       <groupId>com.google.code.gson</groupId>

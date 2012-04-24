@@ -38,6 +38,7 @@ public class SubmissionController extends RESTController{
 		boolean validRequest = HashUtils.validate(parameterMap, hmac);
 		if(validRequest){
 			logger.info("Received submission from " + username);
+			logger.info(submission.toString());
 			//TODO: handle submissions
 		}else {
 			logger.warn("Woop Woop! Invalid request received!");
