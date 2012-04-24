@@ -1,12 +1,19 @@
 package uk.co.vurt.taskhelper.processor;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.wmfs.coalesce.csql.EvaluationVisitor;
+import net.wmfs.coalesce.csql.Expression;
+import net.wmfs.coalesce.csql.ExpressionException;
+import net.wmfs.coalesce.csql.ExpressionFactory;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
+import uk.co.vurt.taskhelper.processor.csql.HakkenEvaluationVisitor;
 import uk.co.vurt.taskhelper.providers.Dataitem;
 import uk.co.vurt.taskhelper.providers.Job;
 import uk.co.vurt.taskhelper.providers.Task;
@@ -43,9 +50,14 @@ public class JobProcessor {
 	private Cursor cursor;
 	private TaskProcessor taskProcessor;
 	private JobDefinition jobDefinition;
+	private ExpressionFactory expressionFactory = new ExpressionFactory();
+	private EvaluationVisitor expressionVisitor = new HakkenEvaluationVisitor();
 	
 	private List<Page> pages;
+	private Map<String, Page> pageCache;
+	
 	int currentPagePosition = 0;
+	int previousPagePosition = -1;
 	
 	public JobProcessor(ContentResolver contentResolver, Uri jobUri){
 		Log.d(TAG, "Instantiating with URI: " + jobUri);
@@ -104,14 +116,70 @@ public class JobProcessor {
 	}
 	
 	public void nextPage(){
-		if(morePages()){
-			currentPagePosition++;
+		//if current page has expression for next page, evaluate that
+		String nextPageExpression = getCurrentPage().getNextPageExpression();
+		previousPagePosition = currentPagePosition;
+		if(nextPageExpression != null){
+			try {
+				Expression expression = expressionFactory.createExpression(nextPageExpression);
+				Log.d(TAG, "Next page Expression is: [" + nextPageExpression + "]");
+				expressionVisitor.setExpression(expression);
+				String nextPage = (String)expressionVisitor.evaluateExpression();
+				
+				Log.d(TAG, "Next page name is " + nextPage);
+
+				currentPagePosition = getPagePosition(getPage(nextPage));
+				
+			} catch (ExpressionException e) {
+				Log.e(TAG, "Unable to evaluate next page expression", e);
+			} catch(ClassCastException cce){
+				Log.e(TAG, "Unable to convert expression value to String", cce);
+			}
+		}else {
+			//otherwise just get the next page in the list.
+			if(morePages()){
+				currentPagePosition++;
+			}
 		}
 	}
 	
+	private Page getPage(String name){
+		Page page = null;
+		if(pageCache == null){
+			pageCache = new HashMap<String, Page>();
+		}else if(pageCache.containsKey(name)){
+			page = pageCache.get(name);
+		}
+		
+		if(page == null){
+			//iterate through the list of pages
+			for(Page currentPage: pages){
+				if(currentPage.getName().equals(name)){
+					page = currentPage;
+					pageCache.put(name, page);
+				}
+			}
+		}
+		
+		return page;
+	}
+	
+	private int getPagePosition(Page page){
+		for(int i = 0; i < pages.size(); i++){
+			if(pages.get(i).equals(page)){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public void previousPage(){
-		if(previousPages()){
-			currentPagePosition--;
+		if(previousPagePosition == -1){
+			if(previousPages()){
+				currentPagePosition--;
+			}
+		}else{
+			currentPagePosition = previousPagePosition;
 		}
 	}
 	

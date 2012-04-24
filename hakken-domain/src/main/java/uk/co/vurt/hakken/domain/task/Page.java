@@ -22,6 +22,11 @@ public class Page {
 		this.items = items;
 	}
 
+	public Page(String name, String title, List<PageItem> items, String nextPageExpression){
+		this(name, title, items);
+		this.nextPageExpression = nextPageExpression;
+	}
+	
 	public String getName() {
 		return name;
 	}
