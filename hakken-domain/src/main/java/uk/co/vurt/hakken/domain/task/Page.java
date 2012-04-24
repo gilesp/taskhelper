@@ -9,6 +9,7 @@ public class Page {
 	private String name;
 	private String title;
 	private List<PageItem> items;
+	private String nextPageExpression;
 	
 	public Page(){
 		items = new ArrayList<PageItem>();
@@ -47,6 +48,14 @@ public class Page {
 
 	public void addItem(PageItem item){
 		this.items.add(item);
+	}
+
+	public String getNextPageExpression() {
+		return nextPageExpression;
+	}
+
+	public void setNextPageExpression(String nextPageExpression) {
+		this.nextPageExpression = nextPageExpression;
 	}
 
 	@Override

@@ -135,7 +135,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					if(diCursor != null){
 						diCursor.moveToFirst();
 						while(!diCursor.isAfterLast()){
-							submission.addDataItem(new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3)));
+							DataItem dataItem = new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3));
+							Log.d(TAG, "Adding DataItem: " + dataItem);
+							submission.addDataItem(dataItem);
 							diCursor.moveToNext();
 						}
 						diCursor.close();
@@ -145,7 +147,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					//if successful, delete completed job and dataitems.
 					boolean submitted = NetworkUtilities.submitData(context, account, authToken, submission);
 					if(submitted){
+						Log.d(TAG, "Deleting old dataitems");
 						provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
+						Log.d(TAG, "Deleting job: " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()));
 						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
 					}
 					jobCursor.moveToNext();
