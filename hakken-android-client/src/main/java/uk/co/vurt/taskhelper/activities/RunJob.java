@@ -1,5 +1,6 @@
 package uk.co.vurt.taskhelper.activities;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,14 @@ import uk.co.vurt.taskhelper.ui.widget.LabelledCheckBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledSpinner;
+import uk.co.vurt.taskhelper.ui.widget.WidgetWrapper;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,7 +49,7 @@ public class RunJob extends Activity {
 	private ContentResolver contentResolver;
 
 	private JobProcessor jobProcessor;
-	private Map<String, View> widgetMap;
+	private Map<String, WidgetWrapper> widgetWrapperMap;
 
 	private LinearLayout pageContent;
 	private LinearLayout buttonBar;
@@ -86,7 +89,7 @@ public class RunJob extends Activity {
 			jobProcessor = new JobProcessor(contentResolver, intent.getData());
 		}
 
-		widgetMap = new HashMap<String, View>();
+		widgetWrapperMap = new HashMap<String, WidgetWrapper>();
 
 		// Setup buttons
 		previousButton = new Button(this);
@@ -113,8 +116,9 @@ public class RunJob extends Activity {
 		nextButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
-				savePage(jobProcessor.getCurrentPage());
-				jobProcessor.nextPage();
+				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
+					jobProcessor.nextPage();
+				}
 				drawPage();
 				return;
 			}
@@ -129,8 +133,11 @@ public class RunJob extends Activity {
 		finishButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
-				savePage(jobProcessor.getCurrentPage());
-				finishJob();
+				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
+					finishJob();
+				}else{
+					drawPage();
+				}
 				return;
 			}
 
@@ -155,12 +162,39 @@ public class RunJob extends Activity {
 		RunJob.this.finish();
 	}
 
-	protected void savePage(Page page) {
+	private void showErrorPopUp(String errorMessage) {
+		Log.d(TAG, "Creating error dialog: " + errorMessage);
+		
+		AlertDialog.Builder errorBuilder = new AlertDialog.Builder(this);
+		errorBuilder.setTitle("Error"); //ugh
+		errorBuilder.setMessage(errorMessage);
+		errorBuilder.setPositiveButton("Ok",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				// 	Do nothing but close the dialog
+			}
+		});
+
+		AlertDialog errorDialog = errorBuilder.create();
+		errorDialog.show();
+	}
+	
+	protected void savePage(Page page){
+		//simply ignore the validation status returned
+		saveAndValidatePage(page);
+	}
+	private List<String> missingValues;
+	
+	protected boolean saveAndValidatePage(Page page) {
+		boolean valid = true;
+		missingValues = new ArrayList<String>();
+		
 		Log.d(TAG, "Saving page: " + page);
 		List<PageItem> items = page.getItems();
 		for (PageItem item : items) {
 			String widgetKey = createWidgetKey(jobProcessor.getPageName(), item);
-			View widget = widgetMap.get(widgetKey);
+			WidgetWrapper wrapper = widgetWrapperMap.get(widgetKey);
+			View widget = wrapper.getWidget();
 
 			if (widget != null) {
 				String value = null;
@@ -201,11 +235,21 @@ public class RunJob extends Activity {
 					Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
 					Log.d(TAG, "Stored dataitem: " + dataItemUri);
 				}
+				
+				if(wrapper.isRequired()){
+					if(value == null | value.length() <= 0){
+						missingValues.add(item.getLabel());
+						valid = false;
+					}
+//					valid = valid & (value != null);
+				}
+				
 			} else {
 				Log.e(TAG, "Unable to retrieve widget with key: " + widgetKey);
 			}
 		}
-
+		Log.d(TAG, "page valid: " + valid);
+		return valid;
 	}
 
 	private DataItem retrieveDataItem(String pageName, String name, String type) {
@@ -234,13 +278,13 @@ public class RunJob extends Activity {
 					String widgetKey = createWidgetKey(
 							jobProcessor.getPageName(), item);
 
-					View widget = null;
-					if (widgetMap.containsKey(widgetKey)) {
+					WidgetWrapper wrapper = null;
+					if (widgetWrapperMap.containsKey(widgetKey)) {
 						// retrieve widget from map
-						widget = widgetMap.get(widgetKey);
+						wrapper = widgetWrapperMap.get(widgetKey);
 					} else {
 						// new widget, so create it
-						widget = WidgetFactory.createWidget(
+						wrapper = WidgetFactory.createWidget(
 								this,
 								item,
 								retrieveDataItem(jobProcessor.getPageName(),
@@ -250,7 +294,7 @@ public class RunJob extends Activity {
 						// TODO: Figure out better way of handling this,
 						// hopefully within the widget factory itself.
 						if ("DATETIME".equals(item.getType())) {
-							final LabelledDatePicker datePicker = ((LabelledDatePicker) widget);
+							final LabelledDatePicker datePicker = ((LabelledDatePicker) wrapper.getWidget());
 							datePicker
 									.setOnClickListener(new View.OnClickListener() {
 										@Override
@@ -259,11 +303,9 @@ public class RunJob extends Activity {
 										}
 									});
 						}
-
-						widgetMap.put(widgetKey, widget);
+						widgetWrapperMap.put(widgetKey, wrapper);
 					}
-
-					pageContent.addView(widget);
+					pageContent.addView(wrapper.getWidget());
 				}
 			} else {
 				TextView errorLabel = new TextView(this);
@@ -286,6 +328,16 @@ public class RunJob extends Activity {
 				}
 			}
 
+			//display error message if validation errors exists
+			if(missingValues != null && missingValues.size() > 0){
+				StringBuffer errorBuffer = new StringBuffer("The following fields require a value:\n");
+				for(String missingField: missingValues){
+					errorBuffer.append(" ");
+					errorBuffer.append(missingField);
+					errorBuffer.append("\n");
+				}
+				showErrorPopUp(errorBuffer.toString());
+			}
 		}
 	}
 

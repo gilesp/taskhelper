@@ -8,13 +8,11 @@ import android.widget.ArrayAdapter;
 
 public class NameValueAdapter extends ArrayAdapter<NameValue> {
 
-	private Context context;
 	private List<NameValue> values;
 	
 	public NameValueAdapter(Context context, int textViewResourceId,
 			List<NameValue> values) {
 		super(context, textViewResourceId, values);
-		this.context = context;
 		this.values = values;
 	}
 	

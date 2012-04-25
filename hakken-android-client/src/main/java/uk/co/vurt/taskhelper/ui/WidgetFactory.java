@@ -10,25 +10,29 @@ import org.json.JSONObject;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
-import uk.co.vurt.taskhelper.R;
 import uk.co.vurt.taskhelper.domain.NameValue;
 import uk.co.vurt.taskhelper.ui.widget.LabelledCheckBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledDatePicker;
 import uk.co.vurt.taskhelper.ui.widget.LabelledEditBox;
 import uk.co.vurt.taskhelper.ui.widget.LabelledSpinner;
-import uk.co.vurt.taskhelper.ui.widget.NameValueAdapter;
+import uk.co.vurt.taskhelper.ui.widget.WidgetWrapper;
 import android.content.Context;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+/**
+ * This class is messy. Needs reimplementing with a nice map of individual widget creators
+ * keyed on the item type, or something like that.
+ * 
+ *
+ */
 public class WidgetFactory {
 
 	private static final String TAG = "WidgetFactory";
 	
-	public static View createWidget(Context context, PageItem item,
+	public static WidgetWrapper createWidget(Context context, PageItem item,
 			DataItem dataItem) {
 
 		View widget = null;
@@ -68,12 +72,6 @@ public class WidgetFactory {
 			final LabelledDatePicker datePicker = new LabelledDatePicker(
 					context, item.getLabel(),
 					dataItem != null ? dataItem.getValue() : item.getValue());
-			// datePicker.setOnClickListener(new View.OnClickListener() {
-			// @Override
-			// public void onClick(View v) {
-			// showDatePickerDialog(datePicker);
-			// }
-			// });
 			widget = datePicker;
 		} else if ("YESNO".equals(item.getType())) {
 			LabelledCheckBox checkBox = new LabelledCheckBox(
@@ -117,12 +115,9 @@ public class WidgetFactory {
 					}
 				}
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(TAG, "Unable to parse options.", e);
 			}
 			spinner.setItems(spinnerArray);
-//			NameValueAdapter arrayAdapter = new NameValueAdapter(context, R.layout.spinner_item, spinnerArray);
-//			spinner.setAdapter(arrayAdapter);
 			for(NameValue selectedValue: selected){
 				spinner.setSelected(selectedValue);
 			}
@@ -133,6 +128,12 @@ public class WidgetFactory {
 			widget = errorLabel;
 		}
 
-		return widget;
+		boolean required = false;
+		if(item.getAttributes() != null && item.getAttributes().containsKey("required")){
+			required = Boolean.parseBoolean(item.getAttributes().get("required"));
+			Log.i(TAG, "required: " + required);
+		}
+		
+		return new WidgetWrapper(widget, required);
 	}
 }
