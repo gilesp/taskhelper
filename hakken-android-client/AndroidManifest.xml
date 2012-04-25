@@ -96,7 +96,8 @@
               <data android:mimeType="vnd.android.cursor.item/vnd.vurt.taskhelper.task.definition" />
 		  </intent-filter>
 		</activity>
-		<activity android:name=".activities.RunJob" android:label="@string/run_activity_title">
+		<activity android:name=".activities.RunJob" 
+		          android:label="@string/run_activity_title">
           <intent-filter>
               <action android:name="android.intent.action.RUN"/>
               <category android:name="android.intent.category.DEFAULT" />

@@ -23,12 +23,15 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 public class JobProcessor {
 
 	private static final String TAG = "JobProcessor";
-		
+	private static final String CURRENT_PAGE_KEY = TAG + "-current_page";
+	private static final String PREVIOUS_PAGE_KEY = TAG + "-previous_page";
+	
 	public static final String[] JOB_PROJECTION = new String[] {
 		Job.Definitions._ID,
 		Job.Definitions.NAME,
@@ -86,6 +89,14 @@ public class JobProcessor {
 		}
 	}
 	
+	public JobProcessor(ContentResolver contentResolver, Uri jobUri, Bundle savedState){
+		this(contentResolver, jobUri);
+		if(savedState != null){
+			this.currentPagePosition = savedState.getInt(CURRENT_PAGE_KEY);
+			this.previousPagePosition = savedState.getInt(PREVIOUS_PAGE_KEY);
+		}
+	}
+	
 	public String getTaskName(){
 		return taskProcessor.getTaskName();
 	}
@@ -98,12 +109,16 @@ public class JobProcessor {
 		}
 	}
 	
+	public void saveInstanceState(Bundle outState){
+		outState.putInt(CURRENT_PAGE_KEY, currentPagePosition);
+		outState.putInt(PREVIOUS_PAGE_KEY, previousPagePosition);
+	}
+	
 	public String getPageName(){
 		return getCurrentPage().getName();
 	}
 	
 	public boolean previousPages(){
-		//(currentPageId+1) < pages.size()
 		return currentPagePosition > 0;
 	}
 	
@@ -112,7 +127,6 @@ public class JobProcessor {
 	}
 	
 	public boolean lastPage(){
-		//(currentPageId+1) == pages.size()
 		return currentPagePosition + 1 == pages.size();
 	}
 	
@@ -153,31 +167,6 @@ public class JobProcessor {
 				currentPagePosition++;
 			}
 		}
-		
-//		String nextPageExpression = getCurrentPage().getNextPageExpression();
-//		previousPagePosition = currentPagePosition;
-//		if(nextPageExpression != null){
-//			try {
-//				Expression expression = expressionFactory.createExpression(nextPageExpression);
-//				Log.d(TAG, "Next page Expression is: [" + nextPageExpression + "]");
-//				expressionVisitor.setExpression(expression);
-//				String nextPage = (String)expressionVisitor.evaluateExpression();
-//				
-//				Log.d(TAG, "Next page name is " + nextPage);
-//
-//				currentPagePosition = getPagePosition(getPage(nextPage));
-//				
-//			} catch (ExpressionException e) {
-//				Log.e(TAG, "Unable to evaluate next page expression", e);
-//			} catch(ClassCastException cce){
-//				Log.e(TAG, "Unable to convert expression value to String", cce);
-//			}
-//		}else {
-//			//otherwise just get the next page in the list.
-//			if(morePages()){
-//				currentPagePosition++;
-//			}
-//		}
 	}
 	
 	private Page getPage(String name){
@@ -222,7 +211,6 @@ public class JobProcessor {
 	
 	public Page getCurrentPage(){
 		if(pages != null){
-//			Log.d(TAG, "Currnet page: " + pages.get(currentPagePosition));
 			return pages.get(currentPagePosition); 
 		}else {
 			return null;
