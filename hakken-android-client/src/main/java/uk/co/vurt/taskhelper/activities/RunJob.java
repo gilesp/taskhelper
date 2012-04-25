@@ -20,6 +20,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +36,8 @@ import android.widget.TextView;
 public class RunJob extends Activity {
 
 	private static final String TAG = "RunJob";
-
+	
+	
 	// Shouldn't this be an enum?
 	private static final int STATE_RUN = 0;
 
@@ -77,9 +79,12 @@ public class RunJob extends Activity {
 		buttonBar = (LinearLayout) findViewById(R.id.buttonBar);
 		pageContent = (LinearLayout) findViewById(R.id.pageContent);
 
-		
 		// Get the job definition
-		jobProcessor = new JobProcessor(contentResolver, intent.getData());
+		if(savedInstanceState != null){
+			jobProcessor = new JobProcessor(contentResolver, intent.getData(), savedInstanceState);
+		}else {
+			jobProcessor = new JobProcessor(contentResolver, intent.getData());
+		}
 
 		widgetMap = new HashMap<String, View>();
 
@@ -136,6 +141,13 @@ public class RunJob extends Activity {
 	protected void onResume() {
 		super.onResume();
 		drawPage();
+	}
+
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		jobProcessor.saveInstanceState(outState);
 	}
 
 	protected void finishJob() {
