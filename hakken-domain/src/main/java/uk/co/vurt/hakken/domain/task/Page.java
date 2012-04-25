@@ -9,7 +9,8 @@ public class Page {
 	private String name;
 	private String title;
 	private List<PageItem> items;
-	private String nextPageExpression;
+	private List<PageSelector> nextPages;
+	
 	
 	public Page(){
 		items = new ArrayList<PageItem>();
@@ -22,9 +23,9 @@ public class Page {
 		this.items = items;
 	}
 
-	public Page(String name, String title, List<PageItem> items, String nextPageExpression){
+	public Page(String name, String title, List<PageItem> items, List<PageSelector> nextPages){
 		this(name, title, items);
-		this.nextPageExpression = nextPageExpression;
+		this.nextPages = nextPages;
 	}
 	
 	public String getName() {
@@ -55,19 +56,18 @@ public class Page {
 		this.items.add(item);
 	}
 
-	public String getNextPageExpression() {
-		return nextPageExpression;
+	public List<PageSelector> getNextPages() {
+		return nextPages;
 	}
 
-	public void setNextPageExpression(String nextPageExpression) {
-		this.nextPageExpression = nextPageExpression;
+	public void setNextPages(List<PageSelector> nextPages) {
+		this.nextPages = nextPages;
 	}
 
 	@Override
 	public String toString() {
 		return "Page [name=" + name + ", title=" + title + ", items=" + items
-				+ "]";
+				+ ", nextPages=" + nextPages + "]";
 	}
-	
 	
 }

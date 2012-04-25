@@ -12,6 +12,7 @@ import net.wmfs.coalesce.csql.ExpressionFactory;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.Page;
+import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.taskhelper.processor.csql.HakkenEvaluationVisitor;
 import uk.co.vurt.taskhelper.providers.Dataitem;
@@ -116,31 +117,67 @@ public class JobProcessor {
 	}
 	
 	public void nextPage(){
-		//if current page has expression for next page, evaluate that
-		String nextPageExpression = getCurrentPage().getNextPageExpression();
+		String nextPageName = null;
 		previousPagePosition = currentPagePosition;
-		if(nextPageExpression != null){
-			try {
-				Expression expression = expressionFactory.createExpression(nextPageExpression);
-				Log.d(TAG, "Next page Expression is: [" + nextPageExpression + "]");
-				expressionVisitor.setExpression(expression);
-				String nextPage = (String)expressionVisitor.evaluateExpression();
-				
-				Log.d(TAG, "Next page name is " + nextPage);
-
-				currentPagePosition = getPagePosition(getPage(nextPage));
-				
-			} catch (ExpressionException e) {
-				Log.e(TAG, "Unable to evaluate next page expression", e);
-			} catch(ClassCastException cce){
-				Log.e(TAG, "Unable to convert expression value to String", cce);
+		List<PageSelector> nextPages = getCurrentPage().getNextPages();
+		Log.d(TAG, "NextPages size: " + nextPages.size());
+		if(nextPages != null && nextPages.size() > 0 ){
+			//evaluate page selectors in turn, to find one that matches
+			for(int i = 0; i < nextPages.size() && nextPageName == null; i++){
+				PageSelector selector = nextPages.get(i);
+				Log.d(TAG, "Testing pageselector " + i);
+				if(selector.getCondition() != null){
+					Log.d(TAG, "PageSelector has condition");
+					try{
+						Expression expression = expressionFactory.createCondition(selector.getCondition());
+						expressionVisitor.setExpression(expression);
+						if(expressionVisitor.evaluateCondition()){
+							Log.d(TAG, "condition was true");
+							nextPageName = selector.getPageName();
+						}
+					}catch(ExpressionException ee){
+						Log.e(TAG, "Unable to evaluate page selector condition", ee);
+					}
+				} else {
+					Log.d(TAG, "No condition on page selector");
+					nextPageName = selector.getPageName();
+				}
 			}
+			Log.d(TAG, "Next page name: " + nextPageName);
+			
+			currentPagePosition = getPagePosition(getPage(nextPageName));
+			Log.d(TAG, "Setting currentPagePosition to " + currentPagePosition);
 		}else {
 			//otherwise just get the next page in the list.
 			if(morePages()){
 				currentPagePosition++;
 			}
 		}
+		
+//		String nextPageExpression = getCurrentPage().getNextPageExpression();
+//		previousPagePosition = currentPagePosition;
+//		if(nextPageExpression != null){
+//			try {
+//				Expression expression = expressionFactory.createExpression(nextPageExpression);
+//				Log.d(TAG, "Next page Expression is: [" + nextPageExpression + "]");
+//				expressionVisitor.setExpression(expression);
+//				String nextPage = (String)expressionVisitor.evaluateExpression();
+//				
+//				Log.d(TAG, "Next page name is " + nextPage);
+//
+//				currentPagePosition = getPagePosition(getPage(nextPage));
+//				
+//			} catch (ExpressionException e) {
+//				Log.e(TAG, "Unable to evaluate next page expression", e);
+//			} catch(ClassCastException cce){
+//				Log.e(TAG, "Unable to convert expression value to String", cce);
+//			}
+//		}else {
+//			//otherwise just get the next page in the list.
+//			if(morePages()){
+//				currentPagePosition++;
+//			}
+//		}
 	}
 	
 	private Page getPage(String name){
@@ -185,6 +222,7 @@ public class JobProcessor {
 	
 	public Page getCurrentPage(){
 		if(pages != null){
+//			Log.d(TAG, "Currnet page: " + pages.get(currentPagePosition));
 			return pages.get(currentPagePosition); 
 		}else {
 			return null;

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.Page;
+import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.hakken.server.persistence.GenericDAO;
@@ -38,7 +39,8 @@ public class JobServiceImpl implements JobService{
 		
 		//for each task definition, lookup instance provider/data connector and invoke.
 
-		Page page1 = new Page("Page 1", "Page 1", Arrays.asList(new PageItem("Item 1", "Item 1", "TEXT", "This is page 1. The next page should be Page 3")), "'Page 3'");
+		
+		Page page1 = new Page("Page 1", "Page 1", Arrays.asList(new PageItem("Item 1", "Item 1", "TEXT", "This is page 1. The next page should be Page 3")), Arrays.asList(new PageSelector("Page 3")));
 		Page page2 = new Page("Page 2", "Page 2", Arrays.asList(new PageItem("Item 2", "Item 2", "TEXT", "This is page 2. You shouldn't be here.")));
 		Page page3 = new Page("Page 3", "Page 3", Arrays.asList(new PageItem("Item 3", "Item 3", "TEXT", "This is page 3.")));
 		
