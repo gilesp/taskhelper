@@ -1,0 +1,46 @@
+{
+  "id": 2,
+  "description":"Three Page Test",
+  "name":"three_page",
+  "pages":[
+    {
+      "name":"page1",
+      "title":"Page 1",
+      "items":[
+        {
+	  "name":"label",
+	  "label":"This is page 1. The next page should be page 3.",
+	  "type":"LABEL"
+	}
+      ],
+      "nextPages":[
+        {
+	  "pageName":"page3",
+	  "condition":""
+	}
+      ]
+    },
+    {
+      "name":"page2",
+      "title":"Page 3",
+      "items":[
+        {
+	  "name":"label",
+	  "label":"This is page 2. You should never see this page.",
+	  "type":"LABEL"
+	}
+      ]
+    },
+    {
+      "name":"page3",
+      "title":"Page 3",
+      "items":[
+        {
+	  "name":"label",
+	  "label":"This is page 3. The previous page should be page 1.",
+	  "type":"LABEL"
+	}
+      ]
+    }
+  ]
+}
