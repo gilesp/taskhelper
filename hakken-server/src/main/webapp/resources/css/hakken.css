@@ -1,0 +1,63 @@
+#hd { 
+    background: #d4e4ef; /* Old browsers */
+    background: -moz-linear-gradient(top,  #d4e4ef 0%, #86aecc 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d4e4ef), color-stop(100%,#86aecc)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* IE10+ */
+    background: linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4e4ef', endColorstr='#86aecc',GradientType=0 ); /* IE6-9 */
+}	
+
+#hd h1 {
+	color: #1E5799;
+}
+#navigation {
+	height: 2px;
+	margin-top: 0px;
+	background-color: #262626; 
+}
+
+.block .hd { 
+	background: #d4e4ef; /* Old browsers */
+    background: -moz-linear-gradient(top,  #d4e4ef 0%, #86aecc 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d4e4ef), color-stop(100%,#86aecc)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* IE10+ */
+    background: linear-gradient(top,  #d4e4ef 0%,#86aecc 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4e4ef', endColorstr='#86aecc',GradientType=0 ); /* IE6-9 */
+	color:#1E5799; 
+	border-bottom:2px solid #262626; 
+}
+.block .hd {
+	border-top-left-radius: 20px 10px;
+    border-top-right-radius: 20px 10px;
+}
+.block .bd h2 { color:#187a32; }
+.block .bd h3 { color:#187a32; }
+.spaces .hd { background-color:transparent; }
+.spaces .hd ul li { background-color:#187a32; }
+a { color:#187a32; }
+
+ul.task {
+    list-style-type: circle;
+/*     margin-left: 15px; */
+}
+
+ul.task li {
+	list-style: circle inside;
+	margin-left: 15px;
+}
+
+li.page {
+	
+	border: 1px solid black;
+	margin-bottom: 5px;
+	padding-left: 5px;
+}
+
+ul.selectors {
+	border: 1px dashed #999;
+	background-color: #ccc;
+}

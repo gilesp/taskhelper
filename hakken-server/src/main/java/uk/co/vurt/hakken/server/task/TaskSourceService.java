@@ -7,4 +7,6 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 public interface TaskSourceService {
 
 	List<TaskDefinition> getTaskDefinitions();
+	
+	void reload();
 }

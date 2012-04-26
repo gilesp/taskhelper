@@ -1,7 +1,6 @@
 package uk.co.vurt.hakken.server.task;
 
 import java.io.File;
-
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
