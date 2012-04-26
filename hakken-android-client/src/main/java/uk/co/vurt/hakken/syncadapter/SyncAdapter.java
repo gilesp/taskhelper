@@ -36,7 +36,7 @@ import android.util.Log;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private static final String TAG = "SyncAdapter";
-	private static final String LAST_UPDATED_KEY = "uk.co.vurt.taskhelper.syncadapter.lastUpdated";
+	private static final String LAST_UPDATED_KEY = "uk.co.vurt.hakken.syncadapter.lastUpdated";
 	private static final boolean NOTIFY_AUTH_FAILURE = true;
 	
 	private final AccountManager accountManager;

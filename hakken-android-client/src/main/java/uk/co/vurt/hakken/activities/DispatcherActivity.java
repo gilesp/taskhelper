@@ -12,11 +12,11 @@ import android.preference.PreferenceManager;
 
 public class DispatcherActivity extends Activity {
 
-	public final static String RETURN_TO_START_KEY = "uk.co.vurt.taskhelper.activities.ReturnToStart";
+	public final static String RETURN_TO_START_KEY = "uk.co.vurt.hakken.activities.ReturnToStart";
 	protected AccountManager accountManager;
 	
 	/**
-	 * Check to see if there is an existing TaskHelper account registered.
+	 * Check to see if there is an existing Hakken account registered.
 	 * If so, use that account.
 	 * If not, invoke the account setup activity
 	 */
@@ -26,7 +26,7 @@ public class DispatcherActivity extends Activity {
 		//check for sync server setting
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		accountManager = AccountManager.get(this);
-		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE); //retrieve all TaskHelper accounts
+		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE); //retrieve all Hakken accounts
 		Intent intent;
 		if(preferences.getString("sync_server", null) == null){
 			intent = new Intent(this, PreferencesActivity.class);

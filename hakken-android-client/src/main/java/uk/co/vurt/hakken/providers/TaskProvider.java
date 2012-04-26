@@ -25,7 +25,7 @@ import android.util.Log;
  */
 public class TaskProvider extends ContentProvider {
 
-	public static final String AUTHORITY = "uk.co.vurt.taskhelper";
+	public static final String AUTHORITY = "uk.co.vurt.hakken";
 	
 	private static final String TAG = "TaskProvider";
 
