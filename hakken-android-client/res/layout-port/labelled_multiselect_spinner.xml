@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Housing type"/>
-    <uk.co.vurt.taskhelper.ui.widget.MultiSelectSpinner
+    <uk.co.vurt.hakken.ui.widget.MultiSelectSpinner
         android:id="@+id/labelled_spinner_value"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
