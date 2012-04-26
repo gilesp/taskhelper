@@ -72,5 +72,8 @@ public class TaskRegistry {
 	
 	public void reload(){
 		taskSource.reload();
+		tasks = null;
+		nameMap = null;
+		init();
 	}
 }
