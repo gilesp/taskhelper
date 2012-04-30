@@ -63,8 +63,8 @@
                                     </c:when>
                                     <c:otherwise>
                                         <ul>
-                                            <c:forEach var="task" items="${dataConnectors}" varStatus="status" >
-                                                <li>${status.count})</li>
+                                            <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
+                                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a>) ${entry.value} - ${entry.value.info}</li>
                                             </c:forEach>
                                         </ul>
                                     </c:otherwise>

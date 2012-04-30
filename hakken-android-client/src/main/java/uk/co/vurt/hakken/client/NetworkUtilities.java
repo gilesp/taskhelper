@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,6 +36,7 @@ import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.security.HashUtils;
 import uk.co.vurt.hakken.security.model.LoginResponse;
+import uk.co.vurt.hakken.util.StringUtils;
 import android.accounts.Account;
 import android.content.Context;
 import android.net.ParseException;
@@ -231,7 +230,7 @@ final public class NetworkUtilities {
 			String hmac = HashUtils.hash(parameterMap);
 			parameterMap.put("hmac", URLUtils.encode(hmac));
 			
-			final HttpPost post = new HttpPost(replaceTokens(getBaseUrl(context) + SUBMIT_JOB_DATA_URI, parameterMap));
+			final HttpPost post = new HttpPost(StringUtils.replaceTokens(getBaseUrl(context) + SUBMIT_JOB_DATA_URI, parameterMap));
 			Log.d(TAG, "username: " + account.name);
 			Log.d(TAG, "hmac: " + hmac);
 			
@@ -274,7 +273,7 @@ final public class NetworkUtilities {
 		String hmac = HashUtils.hash(parameterMap);
 		parameterMap.put("hmac", URLUtils.encode(hmac));
 		
-		String data = fetchData(replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap)/*, null, null, null*/);
+		String data = fetchData(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap)/*, null, null, null*/);
 //				getBaseUrl(context) + FETCH_JOBS_URI + "/"
 //						+ parameterMap.get("username") + "/"
 //						+ HashUtils.hash(parameterMap) + "/since/"
@@ -365,29 +364,6 @@ final public class NetworkUtilities {
 		// }
 
 		return definitionList;
-	}
-
-	/**
-	 * Utility method to replace named tokens in a string
-	 * 
-	 * @param text
-	 * @param replacements
-	 * @return
-	 */
-	public static String replaceTokens(String text,
-			Map<String, String> replacements) {
-		Pattern pattern = Pattern.compile("\\[(.+?)\\]");
-		Matcher matcher = pattern.matcher(text);
-		StringBuffer buffer = new StringBuffer();
-		while (matcher.find()) {
-			String replacement = replacements.get(matcher.group(1));
-			if (replacement != null) {
-				matcher.appendReplacement(buffer, "");
-				buffer.append(replacement);
-			}
-		}
-		matcher.appendTail(buffer);
-		return buffer.toString();
 	}
 
 }
