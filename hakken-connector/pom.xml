@@ -14,4 +14,11 @@
     <relativePath>..</relativePath>
   </parent>
 
+  <dependencies>
+      <dependency>
+	      <groupId>${project.groupId}</groupId>
+	      <artifactId>hakken-domain</artifactId>
+	      <version>${project.version}</version>
+	    </dependency>
+  </dependencies>
 </project>
