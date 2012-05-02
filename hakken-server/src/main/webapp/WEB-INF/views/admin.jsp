@@ -1,92 +1,60 @@
-<%@ include file="/WEB-INF/jsp/include.jsp" %>
-<html>
-<head>
-    <title>Task -Admin - Hakken</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
-    <link rel="stylesheet" href="../resources/css/yuiapp.css" type="text/css">
-    <link id="theme" rel="stylesheet" href="../resources/css/hakken.css" type="text/css">
-<!--     <script src="http://yui.yahooapis.com/3.5.0/build/yui/yui-min.js"></script> -->
-</head>
-<body>
-    <div id="doc3" class="yui-t6">
-        <div id="hd">
-            <h1>Hakken - admin - ${task.name}</h1>
-            <div id="navigation">
-                <ul id="primary-navigation">
-                    <li><a href="/hakken/">Home</a></li>
-                    <li><a href="/hakken/admin/">Admin</a></li>
-                </ul>
-                <ul id="user-navigation">
-                    <li><a href="login">Login</a></li>
-                </ul>
-                <div class="clear"></div>
-            </div>
+<jsp:root version="2.0"
+           xmlns:jsp="http://java.sun.com/JSP/Page"
+           xmlns:c="http://java.sun.com/jsp/jstl/core"
+           xmlns:h="urn:jsptagdir:/WEB-INF/tags/"
+           xmlns="http://www.w3.org/1999/xhtml">
+
+    <jsp:directive.page contentType="text/html" pageEncoding="UTF-8" />
+    <h:page section="admin" title="Admin" intro="This is where you configure and monitor the server from.">
+        <div class="holder_content">
+            <section class="group1">
+                <h3>Task Definitions</h3>
+                <c:choose>
+                    <c:when test="${empty taskDefinitions}">
+                        <p>No task definitions have been loaded</p>
+                    </c:when>
+                    <c:otherwise>
+                        <ul>
+                            <c:forEach var="task" items="${taskDefinitions}" varStatus="status" >
+                                <li>${status.count}) <a href="/hakken/admin/task/${task.name}">${task.name}</a> - ${task.description}</li>
+                            </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
+            </section>
+            <section class="group2">
+                <h3>Data Connectors</h3>
+                <c:choose>
+                    <c:when test="${empty dataConnectors}">
+                        <p>No data connectors have been defined</p>
+                    </c:when>
+                    <c:otherwise>
+                        <ul>
+                            <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
+                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a> ${entry.value.info}</li>
+                            </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
+            </section>
+            <section class="group3">
+                <h3>Mappings</h3>
+                <c:choose>
+                    <c:when test="${empty mappings}">
+                        <p>No mappings have been defined</p>
+                    </c:when>
+                    <c:otherwise>
+                    </c:otherwise>
+                </c:choose>
+            </section>
         </div>
-        
-        <div id="bd">
-            <div id="yui-main">
-                <div class="yui-b">
-                    <div class="yui-g">
-                        
-                        <!--  Task Definitions -->
-                        <div class="block">
-                            <div class="hd">
-                                <h2>Task Definitions</h2>
-                            </div>
-                            <div class="bd">
-                                <h3>Available task definitions</h3>
-                                <c:choose>
-                                    <c:when test="${empty taskDefinitions}">
-                                        <p>No task definitions have been loaded</p>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <ul>
-                                            <c:forEach var="task" items="${taskDefinitions}" varStatus="status" >
-                                                <li>${status.count}) <a href="/hakken/admin/task/${task.name}">${task.name}</a> - ${task.description}</li>
-                                            </c:forEach>
-                                        </ul>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
-                        
-                        <!-- Data Connectors -->
-                        <div class="block">
-                            <div class="hd">
-                                <h2>Data Connectors</h2>
-                            </div>
-                            <div class="bd">
-                                <h3>Available data connectors</h3>
-                                <c:choose>
-                                    <c:when test="${empty dataConnectors}">
-                                        <p>No data connectors have been defined</p>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <ul>
-                                            <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
-                                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a>) ${entry.value} - ${entry.value.info}</li>
-                                            </c:forEach>
-                                        </ul>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="sidebar" class="yui-b">
-	            <div class="block">
-	                <div class="hd">
-	                    <h2>Tools</h2>
-	                </div>
-	                <div class="bd">
-	                    <ul>
-	                       <li><a href="reloadTasks">Reload Task Definitions</a></li>
-	                    </ul>
-	                </div>
-	            </div>
-	        </div>
+        <div class="holder_content">
+            <section class="group1">
+                <h3>Tools</h3>
+                <ul>
+                   <li><a href="reloadTasks">Reload Task Definitions</a></li>
+                </ul>
+            </section>
         </div>
-    </div>
-</body>
-</html>
+    </h:page>               
+</jsp:root> 
