@@ -1,5 +1,9 @@
 package uk.co.vurt.hakken.server.mapping;
-
+/**
+ * @deprecated 
+ * @author giles.paterson
+ *
+ */
 public class MappingEntry {
 
 	String from;

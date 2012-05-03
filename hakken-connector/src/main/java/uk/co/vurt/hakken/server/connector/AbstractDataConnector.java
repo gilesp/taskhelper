@@ -4,6 +4,15 @@ package uk.co.vurt.hakken.server.connector;
 
 public abstract class AbstractDataConnector implements DataConnector {
 
+	private String name;
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getName(){
+		return name;
+	}
 //	@Override
 //	public String getInstances(DataConnectorTaskDefinition taskDefinition, String username){
 //		return null;

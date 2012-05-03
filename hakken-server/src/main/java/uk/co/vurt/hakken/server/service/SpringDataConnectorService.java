@@ -1,6 +1,7 @@
 package uk.co.vurt.hakken.server.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,11 @@ public class SpringDataConnectorService implements DataConnectorService, Applica
 	ApplicationContext context;
 	
 	public void findDataConnectors() {
-		dataConnectors = context.getBeansOfType(DataConnector.class);
+		dataConnectors = new HashMap<String, DataConnector>();
+		List<DataConnector> dcList = new ArrayList<DataConnector>(context.getBeansOfType(DataConnector.class).values());
+		for(DataConnector connector: dcList){
+			dataConnectors.put(connector.getName(), connector);
+		}
 	}
 
 	@Override

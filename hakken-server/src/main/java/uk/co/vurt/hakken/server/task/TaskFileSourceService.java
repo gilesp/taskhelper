@@ -12,14 +12,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
-
-//import com.fasterxml.jackson.core.JsonParseException;
-//import com.fasterxml.jackson.databind.DeserializationFeature;
-//import com.fasterxml.jackson.databind.JsonMappingException;
-//import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TaskFileSourceService implements TaskSourceService, InitializingBean{
 

@@ -8,7 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +74,7 @@ public class JDBCConnector extends AbstractDataConnector {
 	}
 	
 	@Override
-	public String getInstances(String username) {
+	public String getInstances(String username, Date lastUpdated) {
 		Connection conn = getConnection();
 		if(conn != null){
 			try{

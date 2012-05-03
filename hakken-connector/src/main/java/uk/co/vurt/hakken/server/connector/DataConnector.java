@@ -1,13 +1,13 @@
 package uk.co.vurt.hakken.server.connector;
 
 
+import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 public interface DataConnector {
 
 
-	public String getInstances(String username);
+	public String getInstances(String username, Date lastUpdated);
 	
 	public List<DataConnectorTaskDefinition> getDefinitions();
 	
@@ -17,6 +17,7 @@ public interface DataConnector {
 	
 	public boolean save();
 	
+	public String getName();
 	
 	
 	

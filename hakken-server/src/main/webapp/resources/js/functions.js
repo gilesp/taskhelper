@@ -7,6 +7,19 @@ $(document).ready(function (){
 
 	// your functions go here
 
+	//TODO: implement a function that removes the selected value from the other
+	//select boxes on the mapping screen
+	//	$('.mapping').change(function() {
+//		  
+//		  var selectName = $(this).name();
+//		  var selectedVal = $(this).val();
+//		  $('.mapping').each(function(){
+//			  if($(this).name() != selectName){
+//				  $(this).find('[value="' + selectedVal + '"]').remove();
+//			  }
+//		  });
+//	});
+
 });
 
 

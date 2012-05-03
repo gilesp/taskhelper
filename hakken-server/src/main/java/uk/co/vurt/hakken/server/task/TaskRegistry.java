@@ -32,6 +32,7 @@ public class TaskRegistry {
 	
 	private void init(){
 		if(tasks == null && nameMap == null){
+			logger.info("Initialising TaskRegistry");
 			tasks = new HashMap<Long, TaskDefinition>();
 			nameMap = new HashMap<String, Long>();
 			
@@ -56,16 +57,18 @@ public class TaskRegistry {
 	
 	public TaskDefinition getTask(String name){
 		init();
+		logger.info("Getting task with name: " + name);
 		return getTask(nameMap.get(name));
 	}
 	
 	public TaskDefinition getTask(Long id){
 		init();
+		logger.info("Getting task with id: " + id);
 		return tasks.get(id);
 	}
 	
 	public void register(TaskDefinition task){
-		logger.debug("Registering task " + task);
+		logger.info("Registering task " + task);
 		tasks.put(task.getId(), task);
 		nameMap.put(task.getName(), task.getId());
 	}
