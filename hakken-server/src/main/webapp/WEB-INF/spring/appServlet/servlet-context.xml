@@ -37,7 +37,7 @@
 	<!-- database configuration -->
 	<beans:bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <beans:property name="dataSource" ref="dataSource" />
-        <beans:property name="packagesToScan" value="uk.co.vurt.hakken.server.persistence" />
+        <beans:property name="packagesToScan" value="uk.co.vurt.hakken" />
         <beans:property name="jpaVendorAdapter">
             <beans:bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <beans:property name="showSql" value="${db.hibernate.show_sql}" />

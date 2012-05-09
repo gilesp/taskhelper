@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
@@ -13,7 +14,7 @@ import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
-import uk.co.vurt.hakken.server.persistence.GenericDAO;
+import uk.co.vurt.hakken.server.persistence.AbstractDAO;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
 
 @Service
@@ -21,15 +22,14 @@ public class JobServiceImpl implements JobService{
 
 	JobDAO dao;
 	
-
 	public JobDefinition getByName(String name){
 		return dao.getByName(name);
 	}
 
-	@Override
-	public void setDao(GenericDAO<Long, JobDefinition> dao) {
-		this.dao = (JobDAO) dao;
-		this.dao.setClazz(JobDefinition.class);
+	@Autowired
+	public void setDao(JobDAO dao) {
+		dao.setClazz(JobDefinition.class);
+		this.dao = dao;
 	}
 
 	@Override

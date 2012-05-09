@@ -9,3 +9,5 @@ db.jpa.generateDdl=true
 
 #Directories containing task definitions, comma separated
 taskdefinition.src.dirs=
+#Directories containing service mapping definitions, comma separated
+servicemapping.src.dirs=

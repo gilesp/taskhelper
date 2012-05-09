@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
-import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.hakken.server.connector.DataConnector;
-import uk.co.vurt.hakken.server.mapping.MappingEntry;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.service.DataConnectorService;
+import uk.co.vurt.hakken.server.service.MappingService;
 import uk.co.vurt.hakken.server.task.TaskRegistry;
 
 @Controller
@@ -33,6 +31,8 @@ public class AdminController {
 	TaskRegistry taskRegistry;
 	@Autowired
 	DataConnectorService dataConnectorService;
+	@Autowired
+	MappingService mappingService;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model){
@@ -108,9 +108,11 @@ public class AdminController {
 				}
 			}
 			logger.info("MAPPING: " + mapping.toString());
+			mappingService.save(mapping);
 		}
 		return("redirect:/admin/");
 	}
+	
 	@RequestMapping("/reloadTasks")
 	public String reloadTasks(Model model){
 		taskRegistry.reload();

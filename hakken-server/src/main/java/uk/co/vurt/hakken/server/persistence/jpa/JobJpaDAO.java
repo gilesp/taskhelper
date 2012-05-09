@@ -10,7 +10,7 @@ import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
 
 @Repository
-public class JobJpaDAO extends GenericJpaDAO<Long, JobDefinition> implements JobDAO {
+public class JobJpaDAO extends AbstractJpaDAO<Long, JobDefinition> implements JobDAO {
 
 	@Override
 	public JobDefinition getByName(String name) {
