@@ -44,6 +44,11 @@
                         <p>No mappings have been defined</p>
                     </c:when>
                     <c:otherwise>
+                        <ul>
+                        <c:forEach var="mapping" items="${mappings }" varStatus="status">
+                            <li><a href="/hakken/admin/mapping/${mapping.id}">${mapping.id} - Task: ${mapping.taskDefinitionName} - Connector: ${mapping.dataConnectorName}</a></li>
+                        </c:forEach>
+                        </ul>
                     </c:otherwise>
                 </c:choose>
             </section>

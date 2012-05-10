@@ -36,19 +36,23 @@ public abstract class AbstractJpaDAO<ID, T extends Serializable> implements Abst
 	public List<T> getAll(){
 		return entityManager.createQuery("from " + clazz.getName()).getResultList();
 	}
-	
+
+	@Transactional
 	public void save(final T entity){
 		entityManager.persist(entity);
 	}
 	
+	@Transactional
 	public void update(final T entity){
 		entityManager.merge(entity);
 	}
 	
+	@Transactional
 	public void delete(final T entity){
 		entityManager.remove(entity);
 	}
 	
+	@Transactional
 	public void deleteById(final ID entityId){
 		final T entity = get(entityId);
 		delete(entity);

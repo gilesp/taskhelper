@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,7 @@ public class AdminController {
 		model.addAttribute("taskDefinitions", taskRegistry.getAllTasks());
 //		model.addAttribute("dataConnectors", dataConnectorService.getConnectorNames());
 		model.addAttribute("dataConnectors", dataConnectorService.getDataConnectorsMap());
+		model.addAttribute("mappings", mappingService.getAll());
 		return "admin";
 	}
 	
@@ -70,12 +72,6 @@ public class AdminController {
 		
 		logger.info("TaskName: " + taskName + " connectorName: " + connectorName);
 		
-		Enumeration parameterNames = request.getParameterNames();
-//		while(parameterNames.hasMoreElements()){
-//			String paramName = (String)parameterNames.nextElement();
-//			logger.info(paramName + ":" + request.getParameter(paramName));
-//		}
-		
 		TaskDefinition task = taskRegistry.getTask(taskName);
 		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
 		logger.info("TASK : " + task);
@@ -85,32 +81,25 @@ public class AdminController {
 			ServiceMapping mapping = new ServiceMapping();
 			mapping.setTaskDefinition(task);
 			mapping.setDataConnector(connector);
-			
+
+			Enumeration parameterNames = request.getParameterNames();
 			while(parameterNames.hasMoreElements()){
 				String paramName = (String)parameterNames.nextElement();
 				if(paramName.contains("_")){
 					logger.info("Found page item parameter: " + paramName);
 					mapping.setMapping(request.getParameter(paramName), paramName);
-//					MappingEntry entry = new MappingEntry();
-//					entry.setFrom(request.getParameter(paramName));
-//					entry.setTo(paramName);
-					
-					//If we actually need to get the page item...
-//					int splitPos = paramName.indexOf("_");
-//					String pageName = paramName.substring(0, splitPos);
-//					String itemName = paramName.substring(splitPos + 1);
-//					Page page = task.getPage(pageName);
-//					if(page != null){
-//						PageItem item = page.getPageItem(itemName);
-//						
-//					}
-					
 				}
 			}
 			logger.info("MAPPING: " + mapping.toString());
 			mappingService.save(mapping);
 		}
 		return("redirect:/admin/");
+	}
+	
+	@RequestMapping(value="/mapping/{id}", method=RequestMethod.GET)
+	public String viewMapping(@PathVariable long id, Model model){
+		model.addAttribute("mapping", mappingService.get(id));
+		return ("mapping");
 	}
 	
 	@RequestMapping("/reloadTasks")

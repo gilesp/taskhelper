@@ -1,8 +1,11 @@
 package uk.co.vurt.hakken.server.mapping;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CollectionTable;
@@ -18,17 +21,19 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.server.connector.DataConnector;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 @Entity
 @Table(name="service_mappings")
 public class ServiceMapping implements Serializable{
 
+	private static final Logger logger = LoggerFactory.getLogger(ServiceMapping.class);
+	
 	private static final long serialVersionUID = -2494689555896279648L;
 	
 	@Id
@@ -50,11 +55,11 @@ public class ServiceMapping implements Serializable{
     @MapKeyColumn(name="connector_di")
     @Column(name="task_di")
     @CollectionTable(name="service_mapping_dataitems", joinColumns=@JoinColumn(name="mapping_id"))
-	Map<String, String> dataItemMappings;
+	Map<String, String> connectorToTaskMappings;
+
+	@Transient
+	Map<String, String> taskToConnectorMappings;
 	
-	public ServiceMapping(){
-		dataItemMappings = HashBiMap.<String, String>create();
-	}
 	
 	public DataConnector getDataConnector() {
 		return dataConnector;
@@ -67,7 +72,6 @@ public class ServiceMapping implements Serializable{
 	public String getDataConnectorName() {
 		return dataConnectorName;
 	}
-
 	public void setDataConnectorName(String dataConnectorName) {
 		this.dataConnectorName = dataConnectorName;
 	}
@@ -80,16 +84,36 @@ public class ServiceMapping implements Serializable{
 		setTaskDefinitionName(taskDefinition.getName());
 	}
 	
+	public Map<String,String> getTaskToConnectorMappings(){
+		return taskToConnectorMappings;
+	}
+	
+	public Map<String, String> getConnectorToTaskMappings(){
+		return connectorToTaskMappings;
+	}
+
+	public void setConnectorToTaskMappings(Map<String, String> mappings){
+		logger.info("setting Mappings");
+		connectorToTaskMappings = new HashMap<String, String>();
+		taskToConnectorMappings = new HashMap<String, String>();
+//		List<String> mappingKeys = new ArrayList<String>(mappings.keySet());
+//		for(String connectorKey: mappingKeys){
+//			setMapping(connectorKey, mappings.get(connectorKey));
+//		}
+	}
+	
 	public void setMapping(String connectorDataItem, String taskDataItem){
-		((BiMap<String,String>)dataItemMappings).forcePut(connectorDataItem, taskDataItem);
+		logger.info("Setting mapping: " + connectorDataItem + ":" + taskDataItem);
+		connectorToTaskMappings.put(connectorDataItem, taskDataItem);
+		taskToConnectorMappings.put(taskDataItem, connectorDataItem);
 	}
 	
 	public String getTaskDataItem(String connectorDataItem){
-		return dataItemMappings.get(connectorDataItem);
+		return connectorToTaskMappings.get(connectorDataItem);
 	}
 	
 	public String getServiceDataItem(DataItem dataItem){
-		return ((BiMap<String,String>)dataItemMappings).inverse().get(dataItem);
+		return taskToConnectorMappings.get(dataItem.getName());
 	}
 	
 	public String getTaskDefinitionName() {
@@ -117,8 +141,8 @@ public class ServiceMapping implements Serializable{
 		builder.append(", taskDefinition=");
 		builder.append(taskDefinition);
 		builder.append(", dataItemMappings=");
-		builder.append(dataItemMappings != null ? toString(
-				dataItemMappings.entrySet(), maxLen) : null);
+		builder.append(connectorToTaskMappings != null ? toString(
+				connectorToTaskMappings.entrySet(), maxLen) : null);
 		builder.append("]");
 		return builder.toString();
 	}

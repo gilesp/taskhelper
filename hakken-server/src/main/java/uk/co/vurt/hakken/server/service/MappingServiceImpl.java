@@ -1,12 +1,13 @@
 package uk.co.vurt.hakken.server.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
-import uk.co.vurt.hakken.server.persistence.AbstractDAO;
 import uk.co.vurt.hakken.server.persistence.ServiceMappingDAO;
 
 @Service
@@ -32,11 +33,19 @@ public class MappingServiceImpl implements MappingService {
 
 	@Override
 	public void save(ServiceMapping mapping) {
+		
 		if(get(mapping.getId()) != null){
+			logger.info("Updating mapping.");
 			dao.update(mapping);
 		} else {
+			logger.info("Saving new mapping.");
 			dao.save(mapping);
 		}
+	}
+
+	@Override
+	public List<ServiceMapping> getAll() {
+		return dao.getAll();
 	}
 
 }
