@@ -1,5 +1,6 @@
 package uk.co.vurt.hakken.server.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,13 +15,22 @@ import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
-import uk.co.vurt.hakken.server.persistence.AbstractDAO;
+import uk.co.vurt.hakken.server.connector.DataConnector;
+import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
+import uk.co.vurt.hakken.server.task.TaskRegistry;
 
 @Service
 public class JobServiceImpl implements JobService{
 
 	JobDAO dao;
+	
+	@Autowired
+	TaskRegistry taskRegistry;
+	@Autowired
+	MappingService mappingService;
+	@Autowired
+	DataConnectorService connectorService;
 	
 	public JobDefinition getByName(String name){
 		return dao.getByName(name);
@@ -33,14 +43,22 @@ public class JobServiceImpl implements JobService{
 	}
 
 	@Override
-	public List<JobDefinition> getForUserSince(String username, String timestamp) {
+	public List<JobDefinition> getForUserSince(String username, Date lastUpdated) {
 //		return dao.getByUserAndDate(username, timestamp);
-		//TODO: Implement a mechanism for mapping task definitions to sources of job instances
 		
-		//find out which task definitions the user has access to
+		//TODO: find out which task definitions the user has access to
 		
 		//for each task definition, lookup instance provider/data connector and invoke.
-
+		List<String> jobs = new ArrayList<String>(); //Should not be String, should be JobDefinition 
+		List<TaskDefinition> taskDefinitions = taskRegistry.getAllTasks();
+		for(TaskDefinition definition: taskDefinitions){
+			ServiceMapping mapping = mappingService.getMappingForTaskDefinition(definition.getName());
+			DataConnector connector = connectorService.getDataConnector(mapping.getDataConnectorName());
+			
+			//Mapping will be needed by connector to set initial data values, won't it?
+			jobs.addAll(connector.getInstances(username, lastUpdated));
+		}
+		
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put("required", "true");
 		

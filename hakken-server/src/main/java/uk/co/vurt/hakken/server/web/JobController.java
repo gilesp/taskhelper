@@ -1,5 +1,8 @@
-package uk.co.vurt.hakken.server;
+package uk.co.vurt.hakken.server.web;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +44,15 @@ public class JobController extends RESTController{
 		
 		boolean validRequest = HashUtils.validate(parameterMap, hmac);
 		if(validRequest){
-			return service.getForUserSince(username, timestamp);
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			Date since = null;
+			try {
+				since = dateFormatter.parse(timestamp);
+			} catch (ParseException e) {
+				logger.error("Invalid timestamp provided", e);
+				throw new HakkenException("Invalid timestamp provided.");
+			}
+			return service.getForUserSince(username, since);
 		}else {
 			logger.warn("Woop Woop! Invalid request received!");
 			throw new HakkenException("Invalid request received");

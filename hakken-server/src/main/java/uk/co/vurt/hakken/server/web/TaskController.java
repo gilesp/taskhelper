@@ -1,4 +1,4 @@
-package uk.co.vurt.hakken.server;
+package uk.co.vurt.hakken.server.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

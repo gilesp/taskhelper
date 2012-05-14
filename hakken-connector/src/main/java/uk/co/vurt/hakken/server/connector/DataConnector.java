@@ -7,7 +7,7 @@ import java.util.List;
 public interface DataConnector {
 
 
-	public String getInstances(String username, Date lastUpdated);
+	public List<String> getInstances(String username, Date lastUpdated);
 	
 	public List<DataConnectorTaskDefinition> getDefinitions();
 	

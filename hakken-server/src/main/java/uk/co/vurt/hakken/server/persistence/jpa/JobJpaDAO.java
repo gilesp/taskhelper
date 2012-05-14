@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
@@ -13,6 +14,7 @@ import uk.co.vurt.hakken.server.persistence.JobDAO;
 public class JobJpaDAO extends AbstractJpaDAO<Long, JobDefinition> implements JobDAO {
 
 	@Override
+	@Transactional(readOnly = true)
 	public JobDefinition getByName(String name) {
 		Query query = entityManager.createQuery("from " + clazz.getName() + " where name = :name");
 		query.setParameter("name", name);

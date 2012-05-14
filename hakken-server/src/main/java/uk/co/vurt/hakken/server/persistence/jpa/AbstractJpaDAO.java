@@ -39,7 +39,14 @@ public abstract class AbstractJpaDAO<ID, T extends Serializable> implements Abst
 
 	@Transactional
 	public void save(final T entity){
-		entityManager.persist(entity);
+		logger.info("About to save: " + entity);
+		try{
+			entityManager.persist(entity);
+			entityManager.persist(entity);
+		}catch(Throwable t){
+			logger.error("Unable to save: ", t);
+		}
+		logger.info("Saved.");
 	}
 	
 	@Transactional

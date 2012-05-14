@@ -1,6 +1,8 @@
 package uk.co.vurt.hakken.server.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ public class MappingServiceImpl implements MappingService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MappingServiceImpl.class);
 	
+	Map<String, Long> definitionNameCache = new HashMap<String, Long>();
 	
 	ServiceMappingDAO dao;
 	
@@ -46,6 +49,20 @@ public class MappingServiceImpl implements MappingService {
 	@Override
 	public List<ServiceMapping> getAll() {
 		return dao.getAll();
+	}
+
+	@Override
+	public ServiceMapping getMappingForTaskDefinition(String taskDefinitionName) {
+		if(!definitionNameCache.containsKey(taskDefinitionName) ){
+			for(ServiceMapping mapping: getAll()){
+				if(mapping.getTaskDefinitionName().equals(taskDefinitionName)){
+					definitionNameCache.put(taskDefinitionName, mapping.getId());
+					break; //ugh
+				}
+			}
+		}
+ 
+		return get(definitionNameCache.get(taskDefinitionName));
 	}
 
 }

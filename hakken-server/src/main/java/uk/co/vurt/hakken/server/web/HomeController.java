@@ -1,4 +1,4 @@
-package uk.co.vurt.hakken.server;
+package uk.co.vurt.hakken.server.web;
 
 import java.text.DateFormat;
 import java.util.Date;

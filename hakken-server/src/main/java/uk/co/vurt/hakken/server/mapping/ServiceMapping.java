@@ -38,7 +38,7 @@ public class ServiceMapping implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SERV_MAP_SEQ")
-	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ", allocationSize=10)
+	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ")
 	private long id;
 
 	@Transient
@@ -96,15 +96,21 @@ public class ServiceMapping implements Serializable{
 		logger.info("setting Mappings");
 		connectorToTaskMappings = new HashMap<String, String>();
 		taskToConnectorMappings = new HashMap<String, String>();
-//		List<String> mappingKeys = new ArrayList<String>(mappings.keySet());
-//		for(String connectorKey: mappingKeys){
-//			setMapping(connectorKey, mappings.get(connectorKey));
-//		}
+		List<String> mappingKeys = new ArrayList<String>(mappings.keySet());
+		for(String connectorKey: mappingKeys){
+			setMapping(connectorKey, mappings.get(connectorKey));
+		}
 	}
 	
 	public void setMapping(String connectorDataItem, String taskDataItem){
 		logger.info("Setting mapping: " + connectorDataItem + ":" + taskDataItem);
+		if(connectorToTaskMappings == null){
+			connectorToTaskMappings = new HashMap<String, String>();
+		}
 		connectorToTaskMappings.put(connectorDataItem, taskDataItem);
+		if(taskToConnectorMappings == null){
+			taskToConnectorMappings = new HashMap<String, String>();
+		}
 		taskToConnectorMappings.put(taskDataItem, connectorDataItem);
 	}
 	

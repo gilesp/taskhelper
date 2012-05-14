@@ -1,0 +1,20 @@
+{
+    "id": 4,
+    "description":"Another Hello world example",
+    "name":"hello_name",
+    "pages":[
+        {
+            "name":"page1",
+            "title":"Page 1",
+            "items":[
+                {
+                    "name":"label",
+                    "label":"Hello",
+                    "type":"TEXT",
+                    "value":"",
+                    "attributes":{"readonly":"true"}
+                }
+            ]
+        }
+    ]
+}

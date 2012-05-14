@@ -13,4 +13,7 @@ public interface MappingService extends Service<Long, ServiceMapping> {
 	
 	@Transactional(readOnly = true)
 	public List<ServiceMapping> getAll();
+	
+	public ServiceMapping getMappingForTaskDefinition(String taskDefinitionName);
+	
 }

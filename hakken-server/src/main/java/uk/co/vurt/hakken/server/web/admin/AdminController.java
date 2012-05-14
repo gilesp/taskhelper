@@ -1,4 +1,4 @@
-package uk.co.vurt.hakken.server.admin;
+package uk.co.vurt.hakken.server.web.admin;
 
 import java.util.Enumeration;
 

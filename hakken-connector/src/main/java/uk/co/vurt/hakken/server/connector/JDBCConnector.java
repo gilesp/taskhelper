@@ -74,7 +74,7 @@ public class JDBCConnector extends AbstractDataConnector {
 	}
 	
 	@Override
-	public String getInstances(String username, Date lastUpdated) {
+	public List<String> getInstances(String username, Date lastUpdated) {
 		Connection conn = getConnection();
 		if(conn != null){
 			try{
