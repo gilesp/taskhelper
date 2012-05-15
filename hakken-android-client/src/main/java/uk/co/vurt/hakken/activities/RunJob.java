@@ -196,56 +196,58 @@ public class RunJob extends Activity {
 			WidgetWrapper wrapper = widgetWrapperMap.get(widgetKey);
 			View widget = wrapper.getWidget();
 
-			if (widget != null) {
-				String value = null;
-				if ("TEXT".equals(item.getType())) {
-					LabelledEditBox editBox = (LabelledEditBox) widget;
-					value = editBox.getValue();
-				} else if ("DIGITS".equals(item.getType())) {
-					LabelledEditBox editBox = (LabelledEditBox) widget;
-					value = editBox.getValue();
-				} else if ("DATETIME".equals(item.getType())) {
-					LabelledDatePicker datePicker = (LabelledDatePicker) widget;
-					value = datePicker.getValue();
-				} else if ("YESNO".equals(item.getType())) {
-					LabelledCheckBox checkBox = (LabelledCheckBox) widget;
-					value = Boolean.toString(checkBox.getValue());
-				} else if ("SELECT".equals(item.getType())) {
-					LabelledSpinner spinner = (LabelledSpinner) widget;
-					if (spinner.isMultiSelect()) {
-						// serialise values to a comma separated list.
-						String[] values = spinner.getSelectedValues();
-						StringBuffer valueBuffer = new StringBuffer();
-						for (int i = 0; i < values.length; i++) {
-							valueBuffer.append(values[i]);
-							if (i < values.length - 1) {
-								valueBuffer.append(",");
+			if(!wrapper.isReadOnly()){
+				if (widget != null) {
+					String value = null;
+					if ("TEXT".equals(item.getType())) {
+						LabelledEditBox editBox = (LabelledEditBox) widget;
+						value = editBox.getValue();
+					} else if ("DIGITS".equals(item.getType())) {
+						LabelledEditBox editBox = (LabelledEditBox) widget;
+						value = editBox.getValue();
+					} else if ("DATETIME".equals(item.getType())) {
+						LabelledDatePicker datePicker = (LabelledDatePicker) widget;
+						value = datePicker.getValue();
+					} else if ("YESNO".equals(item.getType())) {
+						LabelledCheckBox checkBox = (LabelledCheckBox) widget;
+						value = Boolean.toString(checkBox.getValue());
+					} else if ("SELECT".equals(item.getType())) {
+						LabelledSpinner spinner = (LabelledSpinner) widget;
+						if (spinner.isMultiSelect()) {
+							// serialise values to a comma separated list.
+							String[] values = spinner.getSelectedValues();
+							StringBuffer valueBuffer = new StringBuffer();
+							for (int i = 0; i < values.length; i++) {
+								valueBuffer.append(values[i]);
+								if (i < values.length - 1) {
+									valueBuffer.append(",");
+								}
 							}
+							value = valueBuffer.toString();
+							valueBuffer = null;
+						} else {
+							value = spinner.getSelectedValue();
 						}
-						value = valueBuffer.toString();
-						valueBuffer = null;
-					} else {
-						value = spinner.getSelectedValue();
+	
 					}
-
-				}
-				if (value != null) {
-					DataItem dataItem = new DataItem(page.getName(),
-							item.getName(), item.getType(), value);
-					Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
-					Log.d(TAG, "Stored dataitem: " + dataItemUri);
-				}
-				
-				if(wrapper.isRequired()){
-					if(value == null | value.length() <= 0){
-						missingValues.add(item.getLabel());
-						valid = false;
+					if (value != null) {
+						DataItem dataItem = new DataItem(page.getName(),
+								item.getName(), item.getType(), value);
+						Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
+						Log.d(TAG, "Stored dataitem: " + dataItemUri);
 					}
-//					valid = valid & (value != null);
+					
+					if(wrapper.isRequired()){
+						if(value == null | value.length() <= 0){
+							missingValues.add(item.getLabel());
+							valid = false;
+						}
+	//					valid = valid & (value != null);
+					}
+					
+				} else {
+					Log.e(TAG, "Unable to retrieve widget with key: " + widgetKey);
 				}
-				
-			} else {
-				Log.e(TAG, "Unable to retrieve widget with key: " + widgetKey);
 			}
 		}
 		Log.d(TAG, "page valid: " + valid);
@@ -267,7 +269,7 @@ public class RunJob extends Activity {
 
 			pageContent.removeAllViewsInLayout();
 
-			setTitle(jobProcessor.getPageName());
+			setTitle(jobProcessor.getPageTitle());
 
 			List<PageItem> items = jobProcessor.getPageItems();
 

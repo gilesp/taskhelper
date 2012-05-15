@@ -2,6 +2,7 @@ package uk.co.vurt.hakken.processor;
 
 import java.util.List;
 
+import uk.co.vurt.hakken.domain.JSONUtil;
 import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.providers.Task;
@@ -9,8 +10,6 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-
-import com.google.gson.Gson;
 
 public class TaskProcessor {
 
@@ -39,7 +38,7 @@ public class TaskProcessor {
 	}
 	
 	public void init(String taskDefinitionJson){
-		setTaskDefinition(new Gson().fromJson(taskDefinitionJson, TaskDefinition.class));
+		setTaskDefinition(JSONUtil.getInstance().parseTaskDefinition(taskDefinitionJson));
 	}
 
 	public TaskDefinition getTaskDefinition() {

@@ -5,13 +5,13 @@
     "pages":[
         {
             "name":"page1",
-            "title":"Page 1",
+            "title":"Hello",
             "items":[
                 {
                     "name":"label",
-                    "label":"Hello",
+                    "label":"Howdy",
                     "type":"TEXT",
-                    "value":"",
+                    "value":"Stranger",
                     "attributes":{"readonly":"true"}
                 }
             ]

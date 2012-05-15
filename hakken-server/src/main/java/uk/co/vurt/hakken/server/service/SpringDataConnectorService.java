@@ -21,6 +21,7 @@ public class SpringDataConnectorService implements DataConnectorService, Applica
 	ApplicationContext context;
 	
 	public void findDataConnectors() {
+		logger.debug("Retrieving all Spring configured data connectors");
 		dataConnectors = new HashMap<String, DataConnector>();
 		List<DataConnector> dcList = new ArrayList<DataConnector>(context.getBeansOfType(DataConnector.class).values());
 		for(DataConnector connector: dcList){
@@ -53,12 +54,14 @@ public class SpringDataConnectorService implements DataConnectorService, Applica
 
 	@Override
 	public DataConnector getDataConnector(String connectorName) {
+		logger.debug("getDataConnector(" + connectorName + ")");
 		if(dataConnectors == null){
 			findDataConnectors();
 		}
 		DataConnector connector = null;
 		if(connectorName != null){
 			connector = dataConnectors.get(connectorName);
+			logger.debug("DataConnector: " + connector);
 		}
 		return connector;
 	}

@@ -34,21 +34,22 @@ public class WidgetFactory {
 	
 	public static WidgetWrapper createWidget(Context context, PageItem item,
 			DataItem dataItem) {
-
+		Log.d(TAG, "PageItem: " + item);
+		Log.d(TAG, "DataItem: " + dataItem);
 		View widget = null;
 
+		boolean readonly = false;
+		if(item.getAttributes() != null && item.getAttributes().containsKey("readonly")){
+			readonly = Boolean.parseBoolean(item.getAttributes().get("readonly"));
+			Log.d(TAG, "Readonly: " + readonly);
+		}
+		
 		// create new widget and add it to the map
 		if ("LABEL".equals(item.getType())) {
 			TextView label = new TextView(context);
 			label.setText(item.getLabel());
 			widget = label;
 		} else if ("TEXT".equals(item.getType())) {
-			boolean readonly = false;
-			if(item.getAttributes() != null && item.getAttributes().containsKey("readonly")){
-				readonly = Boolean.parseBoolean(item.getAttributes().get("readonly"));
-				Log.i(TAG, "Readonly: " + readonly);
-			}
-			
 			if(readonly){
 				TextView label = new TextView(context);
 				label.setText(item.getLabel() + ": " + (dataItem != null ? dataItem.getValue() : item.getValue()));
@@ -134,6 +135,6 @@ public class WidgetFactory {
 			Log.i(TAG, "required: " + required);
 		}
 		
-		return new WidgetWrapper(widget, required);
+		return new WidgetWrapper(widget, required, readonly);
 	}
 }

@@ -1,33 +1,35 @@
 package uk.co.vurt.hakken.domain;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
 public class JSONUtil {
 
-	Gson gson;
+	private ObjectMapper mapper;
+//	Gson gson;
 	
 	private JSONUtil(){
-		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-
-			public Date deserialize(JsonElement json, Type typeOfT,
-					JsonDeserializationContext context)
-					throws JsonParseException {
-				return new Date(json.getAsJsonPrimitive().getAsLong()); 
-			}
-		});
-		gson = builder.create();
+		mapper = new ObjectMapper();
+		
+//		GsonBuilder builder = new GsonBuilder();
+//		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+//
+//			public Date deserialize(JsonElement json, Type typeOfT,
+//					JsonDeserializationContext context)
+//					throws JsonParseException {
+//				return new Date(json.getAsJsonPrimitive().getAsLong()); 
+//			}
+//		});
+//		gson = builder.create();
 	}
 	
 	private static class JSONUtilHolder {
@@ -39,15 +41,58 @@ public class JSONUtil {
 	}
 	
 	public String toJson(Object pojo){
-		return gson.toJson(pojo);
+		String json = null;
+		
+		try {
+			json = mapper.writeValueAsString(pojo);
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return json;
+//		return gson.toJson(pojo);
 	}
 	
 	public TaskDefinition parseTaskDefinition(String json){
-		return gson.fromJson(json, TaskDefinition.class);
+		TaskDefinition task = null;
+		try {
+			task = mapper.readValue(json, TaskDefinition.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return task;
 	}
 	
 	public JobDefinition parseJobDefinition(String json){
-		return gson.fromJson(json, JobDefinition.class);
+		JobDefinition job = null;
+		try {
+			job = mapper.readValue(json, JobDefinition.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return job;
+//		return gson.fromJson(json, JobDefinition.class);
 	}
 	
 }

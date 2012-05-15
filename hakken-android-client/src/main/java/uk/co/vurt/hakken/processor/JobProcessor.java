@@ -118,6 +118,10 @@ public class JobProcessor {
 		return getCurrentPage().getName();
 	}
 	
+	public String getPageTitle(){
+		return getCurrentPage().getTitle();
+	}
+	
 	public boolean previousPages(){
 		return currentPagePosition > 0;
 	}
@@ -289,6 +293,8 @@ public class JobProcessor {
 	
 	
 	public DataItem retrieveDataItem(String pageName, String name, String type){
+		Log.d(TAG, "Retrieving DataItem: " + pageName + ":" + name + ":" + type);
+		
 		DataItem dataitem = null;
 		Cursor cursor = contentResolver.query(Dataitem.Definitions.CONTENT_URI,
 				new String[] { Dataitem.Definitions._ID,

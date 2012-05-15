@@ -32,17 +32,21 @@
 		<level value="info" />
 	</logger>
 
-	<logger name="org.hibernate">
-	    <level value="debug"/>
-	</logger>
+<!-- 	<logger name="org.hibernate"> -->
+<!-- 	    <level value="debug"/> -->
+<!-- 	</logger> -->
 	
-	<logger name="org.hibernate.type">
-	    <level value="ALL"/>
-	</logger>
+<!-- 	<logger name="org.hibernate.type"> -->
+<!-- 	    <level value="ALL"/> -->
+<!-- 	</logger> -->
 	
-	<logger name="org.hibernate.transaction.JDBCTransaction" level="DEBUG"/>
-    <logger name="org.hibernate.jdbc.ConnectionManager" level="DEBUG"/>
-    <logger name="org.springframework.orm.jpa.JpaTransactionManager" level="DEBUG"/>
+<!-- 	<logger name="org.hibernate.transaction.JDBCTransaction" level="DEBUG"/> -->
+<!--     <logger name="org.hibernate.jdbc.ConnectionManager" level="DEBUG"/> -->
+<!--     <logger name="org.springframework.orm.jpa.JpaTransactionManager" level="DEBUG"/> -->
+    
+    <logger name="jdbc.sqlonly" >
+        <level value="info"/>
+   </logger>
     
 	<!-- Root Logger -->
 	<root>

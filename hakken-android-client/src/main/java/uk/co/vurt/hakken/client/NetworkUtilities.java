@@ -283,6 +283,7 @@ final public class NetworkUtilities {
 		final JSONArray jobs = new JSONArray(data);
 
 		for (int i = 0; i < jobs.length(); i++) {
+			Log.d(TAG, "JobDefinition: " + jobs.getJSONObject(i).toString());
 			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
 		}
 		return jobList;

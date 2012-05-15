@@ -23,6 +23,7 @@ public class MappingServiceImpl implements MappingService {
 	
 	@Override
 	public ServiceMapping get(Long id) {
+		logger.debug("Getting mapping with id: " + id);
 		return dao.get(id);
 	}
 
@@ -53,16 +54,25 @@ public class MappingServiceImpl implements MappingService {
 
 	@Override
 	public ServiceMapping getMappingForTaskDefinition(String taskDefinitionName) {
-		if(!definitionNameCache.containsKey(taskDefinitionName) ){
+		logger.debug("Looking up mapping for " + taskDefinitionName);
+		if(!definitionNameCache.containsKey(taskDefinitionName)){
 			for(ServiceMapping mapping: getAll()){
+				logger.debug("Checking mapping: " + mapping.getTaskDefinitionName());
 				if(mapping.getTaskDefinitionName().equals(taskDefinitionName)){
+					logger.debug("Adding mapping to cache: " + taskDefinitionName + " " + mapping.getId());
 					definitionNameCache.put(taskDefinitionName, mapping.getId());
 					break; //ugh
 				}
 			}
+		}else {
+			logger.debug("Mapping is in cache");
 		}
- 
-		return get(definitionNameCache.get(taskDefinitionName));
+
+		if(definitionNameCache.containsKey(taskDefinitionName)){
+			return get(definitionNameCache.get(taskDefinitionName));
+		} else {
+			return null;
+		}
 	}
 
 }

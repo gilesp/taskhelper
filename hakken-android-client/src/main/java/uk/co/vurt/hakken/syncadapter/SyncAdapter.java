@@ -175,47 +175,49 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			ArrayList<Integer> newJobIds = new ArrayList<Integer>();
 			for(JobDefinition job: jobs){
-				newJobIds.add(job.getId());
-				
-				Log.d(TAG, "Adding a job to database: " + job);
-				storeTaskDefinition(provider, job.getDefinition());
-				
-				ContentValues values = new ContentValues();
-				values.put(Job.Definitions._ID, job.getId());
-				values.put(Job.Definitions.NAME, job.getName());
-				values.put(Job.Definitions.TASK_DEFINITION_ID, job.getDefinition().getId());
-				values.put(Job.Definitions.CREATED, job.getCreated().getTime());
-				values.put(Job.Definitions.DUE, job.getDue().getTime());
-				values.put(Job.Definitions.STATUS, job.getStatus());
-				values.put(Job.Definitions.NOTES, "null".equals(job.getNotes()) ? "" : job.getNotes());
-				if(job.getGroup() != null){
-					values.put(Job.Definitions.GROUP, job.getGroup());
-				}
-				
-				Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
-
-				//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
-				//This is because the job could have been completed on another device or by other means.
-				
-				//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
-				try{
-					Cursor cursor = provider.query(jobUri, null, null, null, null);
-					if(cursor.moveToFirst()){
-						Log.d(TAG, "Updating job " + job.getId());
-						values.remove(Job.Definitions.STATUS);
-						provider.update(jobUri, values, null, null);
-					} else {
-						Log.d(TAG, "Inserting new job " + job.getId());
-						provider.insert(Job.Definitions.CONTENT_URI, values);
+				if(job != null){
+					newJobIds.add(job.getId());
+					
+					Log.d(TAG, "Adding a job to database: " + job);
+					storeTaskDefinition(provider, job.getDefinition());
+					
+					ContentValues values = new ContentValues();
+					values.put(Job.Definitions._ID, job.getId());
+					values.put(Job.Definitions.NAME, job.getName());
+					values.put(Job.Definitions.TASK_DEFINITION_ID, job.getDefinition().getId());
+					values.put(Job.Definitions.CREATED, job.getCreated().getTime());
+					values.put(Job.Definitions.DUE, job.getDue().getTime());
+					values.put(Job.Definitions.STATUS, job.getStatus());
+					values.put(Job.Definitions.NOTES, "null".equals(job.getNotes()) ? "" : job.getNotes());
+					if(job.getGroup() != null){
+						values.put(Job.Definitions.GROUP, job.getGroup());
 					}
-					cursor.close();
-					cursor = null;
-				} catch(RemoteException re){
-					Log.e(TAG, "RemoteException", re);
-				}
-				
-				for(DataItem item: job.getDataItems()){
-					storeDataItem(provider, item, job);
+					
+					Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
+	
+					//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
+					//This is because the job could have been completed on another device or by other means.
+					
+					//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
+					try{
+						Cursor cursor = provider.query(jobUri, null, null, null, null);
+						if(cursor.moveToFirst()){
+							Log.d(TAG, "Updating job " + job.getId());
+							values.remove(Job.Definitions.STATUS);
+							provider.update(jobUri, values, null, null);
+						} else {
+							Log.d(TAG, "Inserting new job " + job.getId());
+							provider.insert(Job.Definitions.CONTENT_URI, values);
+						}
+						cursor.close();
+						cursor = null;
+					} catch(RemoteException re){
+						Log.e(TAG, "RemoteException", re);
+					}
+					
+					for(DataItem item: job.getDataItems()){
+						storeDataItem(provider, item, job);
+					}
 				}
 			}
 			

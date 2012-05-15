@@ -13,15 +13,17 @@ public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
 	
-	private final int id;
-	private final String name;
-	private final TaskDefinition definition;
-	private final Date created;
-	private final Date due;
+	private int id;
+	private String name;
+	private TaskDefinition definition;
+	private Date created;
+	private Date due;
 	private String status;
 	private String group;
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
+	
+	public JobDefinition(){}
 	
 	public JobDefinition(int id, String name, TaskDefinition definition, Date created,
 			Date due, String status, String notes) {
@@ -113,6 +115,11 @@ public class JobDefinition implements Serializable{
 
 	public Set<DataItem> getDataItems() {
 		return dataItems;
+	}
+
+	
+	public void setDataItems(Set<DataItem> dataItems) {
+		this.dataItems = dataItems;
 	}
 
 	@Override

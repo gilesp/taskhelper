@@ -6,10 +6,15 @@ public class WidgetWrapper {
 
 	private View widget;
 	private boolean required;
+	private boolean readOnly;
 	
-	public WidgetWrapper(View widget, boolean required){
+	public WidgetWrapper(View widget, boolean required, boolean readOnly){
 		this.widget = widget;
 		this.required = required;
+		this.readOnly = readOnly;
+	}
+	public WidgetWrapper(View widget, boolean required){
+		this(widget, required, false);
 	}
 	
 	public WidgetWrapper(View widget){
@@ -30,6 +35,12 @@ public class WidgetWrapper {
 
 	public void setRequired(boolean required) {
 		this.required = required;
+	}
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 	
 }
