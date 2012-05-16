@@ -10,9 +10,9 @@ public interface DataConnector {
 
 	public List<Instance> getInstances(String username, Date lastUpdated);
 	
-	public List<DataConnectorTaskDefinition> getDefinitions();
-	
-	public DataConnectorTaskDefinition getDefinition(String name);
+//	public List<DataConnectorTaskDefinition> getDefinitions();
+//	
+//	public DataConnectorTaskDefinition getDefinition(String name);
 	
 	public boolean createNew();
 	

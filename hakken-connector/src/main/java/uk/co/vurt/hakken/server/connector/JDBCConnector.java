@@ -39,7 +39,6 @@ public class JDBCConnector extends AbstractDataConnector {
 	private final static String TABLE_USER_FIELD_KEY = "username";
 	private final static String DB_USERNAME_KEY = "db_user";
 	private final static String PASSWORD_KEY = "password";
-//	private final static List<String> PROPERTIES = Arrays.asList(CONNECTION_STRING_KEY, DRIVER_NAME_KEY, DB_USERNAME_KEY, PASSWORD_KEY, TABLE_NAME_KEY, TABLE_USER_FIELD_KEY);
 	
 	private final static String INFO_STRING = "Connect to a database using JDBC.\nNeed to specify the url and other parameters.\nTODO: Complete this message.";
 
@@ -73,7 +72,7 @@ public class JDBCConnector extends AbstractDataConnector {
 					rs.close();
 					statement.close();
 				}catch(SQLException sqle){
-					sqle.printStackTrace();
+					logger.error("Unable to obtain column names from database", sqle);
 				}
 				closeConnection(conn);
 			}
@@ -88,7 +87,9 @@ public class JDBCConnector extends AbstractDataConnector {
 		Connection conn = getConnection();
 		if(conn != null){
 			try{
-				logger.debug("SQL: " + StringUtils.replaceTokens(GET_INSTANCES_SQL, replacements));
+				if(logger.isDebugEnabled()){
+					logger.debug("SQL: " + StringUtils.replaceTokens(GET_INSTANCES_SQL, replacements));
+				}
 				PreparedStatement ps = conn.prepareStatement(StringUtils.replaceTokens(GET_INSTANCES_SQL, replacements));
 				ps.setString(1, username);
 				ResultSet rs = ps.executeQuery();
@@ -99,12 +100,10 @@ public class JDBCConnector extends AbstractDataConnector {
 				while(rs.next()){
 					logger.debug("Retrieving instance " + id);
 					Map<String, String> dataItems = new HashMap<String, String>();
-//					for(String dataItemName: dataItemNames){
-//						logger.debug("Retrieveing column: " + dataItemName);
-//						dataItems.put(dataItemName, rs.getString(rs.findColumn(dataItemName)));
-//					}
 					for(int i = 1; i <= columns; i++){
-						logger.debug("Storing Data Item: " + metaData.getColumnName(i) + ":" + rs.getString(i));
+						if(logger.isDebugEnabled()){
+							logger.debug("Storing Data Item: " + metaData.getColumnName(i) + ":" + rs.getString(i));
+						}
 						dataItems.put(metaData.getColumnName(i), rs.getString(i));
 					}
 					instances.add(new Instance(id, username, new Date(), new Date(), "", dataItems));
@@ -116,18 +115,6 @@ public class JDBCConnector extends AbstractDataConnector {
 			closeConnection(conn);
 		}
 		return instances;
-	}
-
-	@Override
-	public List<DataConnectorTaskDefinition> getDefinitions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DataConnectorTaskDefinition getDefinition(String name) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -158,12 +145,10 @@ public class JDBCConnector extends AbstractDataConnector {
 		try {
 			Class.forName(properties.getProperty(DRIVER_NAME_KEY));
 			conn = DriverManager.getConnection(properties.getProperty(CONNECTION_STRING_KEY), connectionProps);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ClassNotFoundException cnfe) {
+			logger.error("Unable to find database driver class: " + properties.get(DB_USERNAME_KEY), cnfe);
+		} catch (SQLException sqle) {
+			logger.error("Unable to open connection to database.", sqle);
 		}
 		
 		return conn;
@@ -175,8 +160,7 @@ public class JDBCConnector extends AbstractDataConnector {
 				conn.close();
 				conn = null;
 			}catch(SQLException sqle){
-				//TODO: Handle exception on close
-				sqle.printStackTrace();
+				logger.error("Unable to close database connection.", sqle);
 			}
 		}
 	}
