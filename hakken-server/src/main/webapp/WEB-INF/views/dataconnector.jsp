@@ -7,29 +7,19 @@
     <jsp:directive.page contentType="text/html" pageEncoding="UTF-8" />
     <h:page section="admin" title="${connectorName}" intro="${dataConnector.info}">
         <div class="holder_content">
-            <section class="group1">
-                <h3>Properties</h3>
-                <ul>
-                <c:forEach var="field" items="${dataConnector.dataItems}" varStatus="status">
-                    <li>${status.count}) ${field}</li>
-                </c:forEach>
-                </ul>
-            </section>
-            
-            <section class="group2">
-                <h3>Mappings</h3>
-                <p>
-                <form name="newMapping" action="/hakken/admin/mapping/new"  method="POST">
+            <section class="group4">
+                <h3>Available Definitions</h3>
+                <form name="newMapping" action="/hakken/admin/dataconnector/newmapping" method="POST">
                     <input type="hidden" name="connectorName" value="${connectorName}"/>
-                    <select id="taskName" name="taskName">
-                    <c:forEach var="task" items="${taskDefinitions}">
-                        <option value="${task.name}" >${task.name}</option>
+                    <select id="definitionName" name="definitionName">
+                    <c:forEach var="definition" items="${dataConnector.definitions}" varStatus="status">
+                        <option value="${definition.name}">${definition.name}</option>
                     </c:forEach>
                     </select>
-<!--                                     <a href="">Create New Mapping</a> -->
                     <input type="submit" value="Create New Mapping"/>
                 </form>
-                </p>
+                <ol>
+                </ol>
             </section>
         </div>          
     </h:page>     

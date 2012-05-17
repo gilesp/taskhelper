@@ -1,6 +1,7 @@
 package uk.co.vurt.hakken.server.connector;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.vurt.hakken.server.connector.db.DatabaseTableTaskDefinition;
 import uk.co.vurt.hakken.util.StringUtils;
 
 /**
@@ -29,7 +31,7 @@ import uk.co.vurt.hakken.util.StringUtils;
  * @author giles.paterson
  *
  */
-public class JDBCConnector extends AbstractDataConnector {
+public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefinition> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JDBCConnector.class);
 			
@@ -43,46 +45,22 @@ public class JDBCConnector extends AbstractDataConnector {
 	private final static String INFO_STRING = "Connect to a database using JDBC.\nNeed to specify the url and other parameters.\nTODO: Complete this message.";
 
 	private Properties properties;
-	private Map<String, String> replacements;
-	private List<String> dataItemNames = null;
+	private String schema = null;
+	private List<DatabaseTableTaskDefinition> definitions;
+	
 	public JDBCConnector(){
 		properties = new Properties();
-		replacements = new HashMap<String, String>();
 	}
 	
 	private final static String GET_INSTANCES_SQL = "Select * from [" + TABLE_NAME_KEY + "] where upper([" + TABLE_USER_FIELD_KEY + "]) = upper(?)";
-	private final static String GET_ALL_SQL = "select * from [" + TABLE_NAME_KEY + "]";
-	
-	/*
-	 * Oh god, my eyes!
-	 */
-	public List<String> getDataItems(){
-		if(dataItemNames == null){
-			Connection conn = getConnection();
-			if(conn != null){
-				dataItemNames = new ArrayList<String>();
-				try{
-					Statement statement = conn.createStatement();
-					ResultSet rs = statement.executeQuery(StringUtils.replaceTokens(GET_ALL_SQL, replacements));
-					ResultSetMetaData metaData = rs.getMetaData();
-					int columns = metaData.getColumnCount();
-					for(int i = 1; i <= columns; i++){
-						dataItemNames.add(metaData.getColumnName(i));
-					}
-					rs.close();
-					statement.close();
-				}catch(SQLException sqle){
-					logger.error("Unable to obtain column names from database", sqle);
-				}
-				closeConnection(conn);
-			}
-		}
-		return dataItemNames;
-	}
 	
 	@Override
-	public List<Instance> getInstances(String username, Date lastUpdated) {
-		logger.debug("Retrieving instances from " + replacements.get(TABLE_NAME_KEY) + " for username " + username + " since " + lastUpdated);
+	public List<Instance> getInstances(DatabaseTableTaskDefinition taskDefinition, String username, Date lastUpdated) {
+		logger.debug("Retrieving instances from " + taskDefinition.getName() + " for username " + username + " since " + lastUpdated);
+
+		Map<String, String> replacements = taskDefinition.getProperties();
+		replacements.put(TABLE_NAME_KEY, taskDefinition.getName());
+		
 		List<Instance> instances = new ArrayList<Instance>();
 		Connection conn = getConnection();
 		if(conn != null){
@@ -202,10 +180,74 @@ public class JDBCConnector extends AbstractDataConnector {
 	public void setDbPassword(String dbPassword){
 		properties.put(PASSWORD_KEY, dbPassword);
 	}
-	public void setTableName(String tableName){
-		replacements.put(TABLE_NAME_KEY, tableName);
+	
+	public void setSchema(String schema){
+		this.schema = schema;
 	}
-	public void setUserField(String userField){
-		replacements.put(TABLE_USER_FIELD_KEY, userField);
+	
+//	public void setTableName(String tableName){
+//		replacements.put(TABLE_NAME_KEY, tableName);
+//	}
+//	public void setUserField(String userField){
+//		replacements.put(TABLE_USER_FIELD_KEY, userField);
+//	}
+
+	@Override
+	public List<DatabaseTableTaskDefinition> getDefinitions() {
+		if(definitions == null || definitions.isEmpty()){
+			definitions = new ArrayList<DatabaseTableTaskDefinition>();
+			
+			Connection con = getConnection();
+			if(con != null){
+				try {
+					DatabaseMetaData metadata = con.getMetaData();
+					ResultSet rs = metadata.getTables(null, schema, "%", null); //TODO: make this configurable
+					while(rs.next()){
+
+						String tableName = rs.getString("TABLE_NAME");
+
+						ResultSet tableRs = metadata.getColumns(null, null, tableName, null);
+						List<String> dataItemNames = new ArrayList<String>();
+						while(tableRs.next()){
+							dataItemNames.add(tableRs.getString("COLUMN_NAME"));
+						}
+						tableRs.close();
+						tableRs = null;
+						definitions.add(new DatabaseTableTaskDefinition(tableName, dataItemNames));
+					}
+					rs.close();
+					rs = null;
+					closeConnection(con);
+				} catch (SQLException sqle) {
+					logger.error("Unable to retrieve metadata from database.", sqle);
+				}
+				
+			}
+		}
+		
+		return definitions;
+	}
+	
+	@Override
+	public DatabaseTableTaskDefinition getDefinition(String name) {
+		DatabaseTableTaskDefinition taskDefinition = null;
+		if(name != null){
+			Connection conn = getConnection();
+			try {
+				DatabaseMetaData metadata = conn.getMetaData();
+				ResultSet rs = metadata.getColumns(null, null, name, null);
+				List<String> dataItemNames = new ArrayList<String>();
+				while(rs.next()){
+					dataItemNames.add(rs.getString("COLUMN_NAME"));
+				}
+				taskDefinition = new DatabaseTableTaskDefinition(name, dataItemNames);
+				rs.close();
+				rs = null;
+				closeConnection(conn);
+			} catch (SQLException sqle) {
+				logger.error("Unable to retrieve table metadata.", sqle);
+			}
+		}
+		return taskDefinition;
 	}
 }

@@ -18,7 +18,7 @@ public abstract class AbstractJpaDAO<ID, T extends Serializable> implements Abst
 	
 	protected Class<T> clazz;
 	
-	EntityManager entityManager;
+	protected EntityManager entityManager;
 	
 	public void setClazz(final Class<T> clazz){
 		logger.info("Setting clazz: " + clazz);

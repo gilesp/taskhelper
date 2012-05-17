@@ -2,7 +2,7 @@ package uk.co.vurt.hakken.server.connector;
 
 
 
-public abstract class AbstractDataConnector implements DataConnector {
+public abstract class AbstractDataConnector<T extends DataConnectorTaskDefinition> implements DataConnector<T> {
 
 	private String name;
 	

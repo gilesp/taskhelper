@@ -5,14 +5,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface DataConnector {
+public interface DataConnector<T extends DataConnectorTaskDefinition> {
 
 
-	public List<Instance> getInstances(String username, Date lastUpdated);
+	public abstract List<Instance> getInstances(T taskDefinition, String username, Date lastUpdated);
 	
-//	public List<DataConnectorTaskDefinition> getDefinitions();
-//	
-//	public DataConnectorTaskDefinition getDefinition(String name);
+	public List<T> getDefinitions();
+	
+	public T getDefinition(String name);
 	
 	public boolean createNew();
 	
@@ -27,6 +27,6 @@ public interface DataConnector {
 	public String getInfo();
 	
 //	public void init(Properties properties);
-	
-	public List<String> getDataItems();
+//	
+//	public List<String> getDataItems();
 }

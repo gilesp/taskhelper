@@ -11,12 +11,12 @@
                 <table>
                     <thead>
                         <td>Task Page Item</td>
-                        <td>DataConnector data item</td>
+                        <td>DataConnector Task Definition data item</td>
                     </thead>
                     <tbody>
                     <form name="createMapping" action="/hakken/admin/mapping/save" method="POST">
                         <input type="hidden" name="taskName" value="${taskDefinition.name}"/>
-                        <input type="hidden" name="connectorName" value="${dataConnector.name}"/>
+                        <input type="hidden" name="connectorName" value="${connectorName}"/>
                     <c:forEach var="page" items="${taskDefinition.pages}" varStatus="status">
                         <c:forEach var="pi" items="${page.items}">
                             <tr>
@@ -24,8 +24,8 @@
                                 <td>
                                     <select name="${page.name}_${pi.name }" class="mapping">
                                         <option value="" >--none--</option>
-                                        <c:forEach var="field" items="${dataConnector.dataItems}" varStatus="status">
-                                            <option value="${field}">${field}</option>
+                                        <c:forEach var="diName" items="${connectorDefinition.dataItemNames}" varStatus="status">
+                                            <option value="${diName}">${diName}</option>
                                         </c:forEach>
                                     </select>
                                 </td>

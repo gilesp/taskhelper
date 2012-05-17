@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.server.connector.DataConnector;
+import uk.co.vurt.hakken.server.connector.DataConnectorTaskDefinition;
+import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.service.DataConnectorService;
+import uk.co.vurt.hakken.server.service.DataConnectorTaskDefinitionMappingService;
 import uk.co.vurt.hakken.server.service.MappingService;
 import uk.co.vurt.hakken.server.task.TaskRegistry;
 
@@ -33,13 +35,15 @@ public class AdminController {
 	@Autowired
 	DataConnectorService dataConnectorService;
 	@Autowired
+	DataConnectorTaskDefinitionMappingService definitionMappingService;
+	@Autowired
 	MappingService mappingService;
+	
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model){
-		
 		model.addAttribute("taskDefinitions", taskRegistry.getAllTasks());
-//		model.addAttribute("dataConnectors", dataConnectorService.getConnectorNames());
+		model.addAttribute("dcDefinitionMappings", definitionMappingService.getAll());
 		model.addAttribute("dataConnectors", dataConnectorService.getDataConnectorsMap());
 		model.addAttribute("mappings", mappingService.getAll());
 		return "admin";
@@ -54,17 +58,51 @@ public class AdminController {
 	@RequestMapping(value = "/dataconnector/{name}", method = RequestMethod.GET)
 	public String viewDataConnector(@PathVariable String name, Model model){
 		model.addAttribute("dataConnector", dataConnectorService.getDataConnector(name));
-		model.addAttribute("taskDefinitions", taskRegistry.getAllTasks());
 		model.addAttribute("connectorName", name);
 		return "dataconnector";
 	}
 	
+	@RequestMapping(value = "/dataconnector/newmapping", method = RequestMethod.POST)
+	public String viewCreateDataConnectorTaskDefinitionMapping(@RequestParam String connectorName, @RequestParam String definitionName, Model model){
+		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
+		model.addAttribute("dataConnector", connector);
+		model.addAttribute("definition", connector.getDefinition(definitionName));
+		
+		return "createdefinitionmapping";
+	}
+	
+	@RequestMapping(value = "/dataconnector/savemapping", method = RequestMethod.POST)
+	public String createDataConnectorTaskDefinitionMapping(HttpServletRequest request){
+		String definitionName = request.getParameter("definitionName");
+		String connectorName = request.getParameter("connectorName");
+		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
+		DataConnectorTaskDefinitionMapping mapping = new DataConnectorTaskDefinitionMapping();
+		mapping.setDataConnectorName(connectorName);
+		mapping.setTaskDefinitionName(definitionName);
+		DataConnectorTaskDefinition definition = connector.getDefinition(definitionName);
+		for(String propertyName: definition.getPropertyNames()){
+			mapping.setProperty(propertyName, request.getParameter(propertyName));
+		}
+		definitionMappingService.save(mapping);
+		return "redirect:/admin/";
+	}
+	
+	@RequestMapping(value="/dataconnector/{connectorName}/{definitionName}", method=RequestMethod.GET)
+	public String viewDataConnectorTaskDefinition(@PathVariable String connectorName, @PathVariable String definitionName, Model model){
+		model.addAttribute("definition", dataConnectorService.getDataConnector(connectorName).getDefinition(definitionName));
+		model.addAttribute("connectorName", connectorName);
+//		model.addAttribute("taskDefinitions", taskRegistry.getAllTasks());
+		return "dataconnectordefinition";
+	}
+	
 	@RequestMapping(value = "/mapping/new", method = RequestMethod.POST)
-	public String createMapping(@RequestParam String connectorName, @RequestParam String taskName, Model model){
-		model.addAttribute("dataConnector", dataConnectorService.getDataConnector(connectorName));
+	public String createMapping(@RequestParam String connectorName, @RequestParam String definitionName, @RequestParam String taskName, Model model){
+		model.addAttribute("connectorName", connectorName);
+		model.addAttribute("connectorDefinition", dataConnectorService.getDataConnector(connectorName).getDefinition(definitionName));
 		model.addAttribute("taskDefinition", taskRegistry.getTask(taskName));
 		return "createmapping";
 	}
+	
 	@RequestMapping(value = "/mapping/save", method = RequestMethod.POST)
 	public String createMapping(HttpServletRequest request/*, @RequestParam String taskName, @RequestParam String connectorName*/){
 		String taskName = request.getParameter("taskName");

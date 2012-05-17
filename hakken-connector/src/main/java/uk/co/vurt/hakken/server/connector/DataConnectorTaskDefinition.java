@@ -1,12 +1,13 @@
 package uk.co.vurt.hakken.server.connector;
 
 
-import java.util.Map;
+import java.util.List;
 
 public abstract class DataConnectorTaskDefinition {
 
-	protected static String name;
-	protected static Map<String, String> dataitemNameMap;
+	protected static List<String> propertyNames;
+	protected String name;
+	protected List<String> dataItemNames; 
 	
 	public String getName(){
 		return this.name;
@@ -15,8 +16,13 @@ public abstract class DataConnectorTaskDefinition {
 	/**
 	 * Maps DataConnector data item names to their equivalent Task data items
 	 */
-	public Map<String, String> getDataitemNameMap() {
-		return dataitemNameMap;
+	public List<String> getDataItemNames() {
+		return dataItemNames;
 	}
+	
+	public List<String> getPropertyNames(){
+		return propertyNames;
+	}
+	
 	
 }

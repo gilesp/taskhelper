@@ -16,28 +16,13 @@
                     <c:otherwise>
                         <ul>
                             <c:forEach var="task" items="${taskDefinitions}" varStatus="status" >
-                                <li>${status.count}) <a href="/hakken/admin/task/${task.name}">${task.name}</a> - ${task.description}</li>
+                                <li><a href="/hakken/admin/task/${task.name}">${task.name}</a> - ${task.description}</li>
                             </c:forEach>
                         </ul>
                     </c:otherwise>
                 </c:choose>
             </section>
             <section class="group2">
-                <h3>Data Connectors</h3>
-                <c:choose>
-                    <c:when test="${empty dataConnectors}">
-                        <p>No data connectors have been defined</p>
-                    </c:when>
-                    <c:otherwise>
-                        <ul>
-                            <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
-                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a> ${entry.value.info}</li>
-                            </c:forEach>
-                        </ul>
-                    </c:otherwise>
-                </c:choose>
-            </section>
-            <section class="group3">
                 <h3>Mappings</h3>
                 <c:choose>
                     <c:when test="${empty mappings}">
@@ -52,9 +37,42 @@
                     </c:otherwise>
                 </c:choose>
             </section>
+            <section class="group3">
+                <h3>Data Connector Task Definitions</h3>
+                <c:choose>
+                    <c:when test="${empty dcDefinitionMappings}">
+                        <p>No Data Connector Task Definitions have been defined</p>
+                    </c:when>
+                    <c:otherwise>
+                        <ul>
+                        <c:forEach var="mapping" items="${dcDefinitionMappings}" varStatus="status">
+                            <li>${mapping.dataConnectorName} - ${mapping.taskDefinitionName}</li>
+                        </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
+            </section>
         </div>
+            
+            
         <div class="holder_content">
             <section class="group1">
+                <h3>Data Connectors</h3>
+                <c:choose>
+                    <c:when test="${empty dataConnectors}">
+                        <p>No data connectors have been defined</p>
+                    </c:when>
+                    <c:otherwise>
+                        <ul>
+                            <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
+                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a></li>
+                            </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
+            </section>
+            
+            <section class="group3">
                 <h3>Tools</h3>
                 <ul>
                    <li><a href="reloadTasks">Reload Task Definitions</a></li>
