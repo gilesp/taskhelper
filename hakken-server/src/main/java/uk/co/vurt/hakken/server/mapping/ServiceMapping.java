@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -41,13 +42,9 @@ public class ServiceMapping implements Serializable{
 	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ")
 	private long id;
 
-	@Transient
-	DataConnector dataConnector;
-
-	String dataConnectorName;
-	
-	@Transient
-	TaskDefinition taskDefinition;
+	@OneToOne
+	@JoinColumn(name="DC_DEF_MAPPING_ID")
+	DataConnectorTaskDefinitionMapping dataConnectorTaskDefinitionMapping;
 	
 	String taskDefinitionName;
 	
@@ -59,31 +56,7 @@ public class ServiceMapping implements Serializable{
 
 	@Transient
 	Map<String, String> taskToConnectorMappings;
-	
-	
-	public DataConnector getDataConnector() {
-		return dataConnector;
-	}
-	public void setDataConnector(DataConnector dataConnector) {
-		this.dataConnector = dataConnector;
-		setDataConnectorName(dataConnector.getName());
-	}
-	
-	public String getDataConnectorName() {
-		return dataConnectorName;
-	}
-	public void setDataConnectorName(String dataConnectorName) {
-		this.dataConnectorName = dataConnectorName;
-	}
-
-	public TaskDefinition getTaskDefinition() {
-		return taskDefinition;
-	}
-	public void setTaskDefinition(TaskDefinition taskDefinition) {
-		this.taskDefinition = taskDefinition;
-		setTaskDefinitionName(taskDefinition.getName());
-	}
-	
+		
 	public Map<String,String> getTaskToConnectorMappings(){
 		return taskToConnectorMappings;
 	}
@@ -138,34 +111,13 @@ public class ServiceMapping implements Serializable{
 		this.id = id;
 	}
 
-	@Override
-	public String toString() {
-		final int maxLen = 10;
-		StringBuilder builder = new StringBuilder();
-		builder.append("ServiceMapping [dataConnector=");
-		builder.append(dataConnector);
-		builder.append(", taskDefinition=");
-		builder.append(taskDefinition);
-		builder.append(", dataItemMappings=");
-		builder.append(connectorToTaskMappings != null ? toString(
-				connectorToTaskMappings.entrySet(), maxLen) : null);
-		builder.append("]");
-		return builder.toString();
+	public DataConnectorTaskDefinitionMapping getDataConnectorTaskDefinitionMapping() {
+		return dataConnectorTaskDefinitionMapping;
 	}
 
-	private String toString(Collection<?> collection, int maxLen) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		int i = 0;
-		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext()
-				&& i < maxLen; i++) {
-			if (i > 0)
-				builder.append(", ");
-			builder.append(iterator.next());
-		}
-		builder.append("]");
-		return builder.toString();
+	public void setDataConnectorTaskDefinitionMapping(
+			DataConnectorTaskDefinitionMapping dataConnectorTaskDefinitionMapping) {
+		this.dataConnectorTaskDefinitionMapping = dataConnectorTaskDefinitionMapping;
 	}
-	
 	
 }

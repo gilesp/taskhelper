@@ -5,7 +5,7 @@
            xmlns="http://www.w3.org/1999/xhtml">
 
     <jsp:directive.page contentType="text/html" pageEncoding="UTF-8" />
-    <h:page section="admin" title="Create mapping" intro="Create a mapping between Task ${taskDefinition.name} and DataConnector ${dataConnector}">
+    <h:page section="admin" title="Create mapping" intro="Create a mapping between Task ${taskDefinition.name} and ${dcTaskDefMappingName}">
         <div class="holder_content">
             <section class="group4">
                 <table>
@@ -16,7 +16,7 @@
                     <tbody>
                     <form name="createMapping" action="/hakken/admin/mapping/save" method="POST">
                         <input type="hidden" name="taskName" value="${taskDefinition.name}"/>
-                        <input type="hidden" name="connectorName" value="${connectorName}"/>
+                        <input type="hidden" name="dcTaskDefMappingId" value="${dcTaskDefMappingId}"/>
                     <c:forEach var="page" items="${taskDefinition.pages}" varStatus="status">
                         <c:forEach var="pi" items="${page.items}">
                             <tr>
@@ -24,7 +24,7 @@
                                 <td>
                                     <select name="${page.name}_${pi.name }" class="mapping">
                                         <option value="" >--none--</option>
-                                        <c:forEach var="diName" items="${connectorDefinition.dataItemNames}" varStatus="status">
+                                        <c:forEach var="diName" items="${dcTaskDefinition.dataItemNames}" varStatus="status">
                                             <option value="${diName}">${diName}</option>
                                         </c:forEach>
                                     </select>

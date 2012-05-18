@@ -52,6 +52,7 @@ public class AdminController {
 	@RequestMapping(value = "/task/{name}", method = RequestMethod.GET)
 	public String viewTask(@PathVariable String name, Model model){
 		model.addAttribute("task", taskRegistry.getTask(name));
+		model.addAttribute("dcDefinitionMappings", definitionMappingService.getAll());
 		return "task";
 	}
 	
@@ -96,9 +97,13 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value = "/mapping/new", method = RequestMethod.POST)
-	public String createMapping(@RequestParam String connectorName, @RequestParam String definitionName, @RequestParam String taskName, Model model){
-		model.addAttribute("connectorName", connectorName);
-		model.addAttribute("connectorDefinition", dataConnectorService.getDataConnector(connectorName).getDefinition(definitionName));
+	public String createMapping(@RequestParam Long dcTaskDefMappingId, @RequestParam String taskName, Model model){
+		DataConnectorTaskDefinitionMapping dcTaskDefinitionMapping = definitionMappingService.get(dcTaskDefMappingId);
+		DataConnector dataConnector = dataConnectorService.getDataConnector(dcTaskDefinitionMapping.getDataConnectorName());
+
+		model.addAttribute("dcTaskDefMappingId", dcTaskDefMappingId);
+		model.addAttribute("dcTaskDefMappingName", dcTaskDefinitionMapping.toString());
+		model.addAttribute("dcTaskDefinition", dataConnector.getDefinition(dcTaskDefinitionMapping.getTaskDefinitionName()));
 		model.addAttribute("taskDefinition", taskRegistry.getTask(taskName));
 		return "createmapping";
 	}
@@ -106,19 +111,22 @@ public class AdminController {
 	@RequestMapping(value = "/mapping/save", method = RequestMethod.POST)
 	public String createMapping(HttpServletRequest request/*, @RequestParam String taskName, @RequestParam String connectorName*/){
 		String taskName = request.getParameter("taskName");
-		String connectorName = request.getParameter("connectorName");
+		Long dataConnectorTaskDefinitionId = Long.valueOf(request.getParameter("dcTaskDefMappingId"));
 		
-		logger.info("TaskName: " + taskName + " connectorName: " + connectorName);
+		
+//		logger.info("TaskName: " + taskName + " connectorName: " + connectorName);
 		
 		TaskDefinition task = taskRegistry.getTask(taskName);
-		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
-		logger.info("TASK : " + task);
-		logger.info("CONNECTOR: " + connector);
+		DataConnectorTaskDefinitionMapping dcTaskDefinitionMapping = definitionMappingService.get(dataConnectorTaskDefinitionId);
 		
-		if(task != null && connector != null){
+//		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
+//		logger.info("TASK : " + task);
+//		logger.info("CONNECTOR: " + connector);
+		
+		if(task != null && dcTaskDefinitionMapping != null){
 			ServiceMapping mapping = new ServiceMapping();
-			mapping.setTaskDefinition(task);
-			mapping.setDataConnector(connector);
+			mapping.setTaskDefinitionName(taskName);
+			mapping.setDataConnectorTaskDefinitionMapping(dcTaskDefinitionMapping);
 
 			Enumeration parameterNames = request.getParameterNames();
 			while(parameterNames.hasMoreElements()){

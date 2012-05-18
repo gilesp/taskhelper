@@ -16,6 +16,7 @@ import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.server.connector.DataConnector;
 import uk.co.vurt.hakken.server.connector.Instance;
+import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
 import uk.co.vurt.hakken.server.task.TaskRegistry;
@@ -33,7 +34,7 @@ public class JobServiceImpl implements JobService{
 	MappingService mappingService;
 	@Autowired
 	DataConnectorService connectorService;
-	
+
 	public JobDefinition getByName(String name){
 		return dao.getByName(name);
 	}
@@ -56,10 +57,12 @@ public class JobServiceImpl implements JobService{
 		for(TaskDefinition definition: taskDefinitions){
 			ServiceMapping mapping = mappingService.getMappingForTaskDefinition(definition.getName());
 			if(mapping != null){
-				DataConnector connector = connectorService.getDataConnector(mapping.getDataConnectorName());
+				DataConnectorTaskDefinitionMapping dcMapping = mapping.getDataConnectorTaskDefinitionMapping();
+				DataConnector connector = connectorService.getDataConnector(dcMapping.getDataConnectorName());
+				
 				logger.debug("Retrieved connector");
 				
-				instances.addAll(connector.getInstances(null, username, lastUpdated)); //TODO: Don't forget about this! ;-)
+				instances.addAll(connector.getInstances(connector.getDefinition(dcMapping.getTaskDefinitionName()), username, lastUpdated));
 				
 				logger.debug("Total instances: " + instances.size());
 				

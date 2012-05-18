@@ -67,5 +67,22 @@ public class DataConnectorTaskDefinitionMapping implements Serializable {
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(dataConnectorName);
+		builder.append(" - ");
+		builder.append(taskDefinitionName);
+		return builder.toString();
+	}
 	
 }

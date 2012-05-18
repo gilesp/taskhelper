@@ -31,7 +31,7 @@
                     <c:otherwise>
                         <ul>
                         <c:forEach var="mapping" items="${mappings }" varStatus="status">
-                            <li><a href="/hakken/admin/mapping/${mapping.id}">${mapping.id} - Task: ${mapping.taskDefinitionName} - Connector: ${mapping.dataConnectorName}</a></li>
+                            <li><a href="/hakken/admin/mapping/${mapping.id}">${mapping.id} - Task: ${mapping.taskDefinitionName} - Connector: ${mapping.dataConnectorTaskDefinitionMapping}</a></li>
                         </c:forEach>
                         </ul>
                     </c:otherwise>
