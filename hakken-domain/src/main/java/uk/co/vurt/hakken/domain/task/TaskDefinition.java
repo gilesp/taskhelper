@@ -1,21 +1,20 @@
 package uk.co.vurt.hakken.domain.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public final class TaskDefinition {
 
 	private long id;
 	private String name;
 	private String description;
-//	private List<Page> pages;
 	private Map<String, Page> pages;
 	
 	public TaskDefinition(){
 		super();
-		pages = new  HashMap<String, Page>();
+		pages = new  TreeMap<String, Page>();
 	}
 	
 	public TaskDefinition(long id, String name, String description, List<Page> pages) {
@@ -23,7 +22,6 @@ public final class TaskDefinition {
 		this.id = id;
 		this.name = name;
 		this.description = description;
-//		this.pages = pages;
 		setPages(pages);
 	}
 
@@ -56,7 +54,7 @@ public final class TaskDefinition {
 	}
 
 	public void setPages(List<Page> pages) {
-//		this.pages = pages;
+		this.pages = new TreeMap<String, Page>();
 		for(Page page: pages){
 			this.pages.put(page.getName(), page);
 		}

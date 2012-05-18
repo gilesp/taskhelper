@@ -1,9 +1,14 @@
 package uk.co.vurt.hakken.server.web.admin;
 
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +55,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value = "/task/{name}", method = RequestMethod.GET)
-	public String viewTask(@PathVariable String name, Model model){
+	public String viewTask(@PathVariable String name, Model model) throws JsonGenerationException, JsonMappingException, IOException{
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 		model.addAttribute("task", taskRegistry.getTask(name));
+		model.addAttribute("taskAsJson", mapper.writeValueAsString(taskRegistry.getTask(name)));
 		model.addAttribute("dcDefinitionMappings", definitionMappingService.getAll());
 		return "task";
 	}

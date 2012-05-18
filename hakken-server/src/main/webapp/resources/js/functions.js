@@ -6,7 +6,8 @@
 $(document).ready(function (){
 
 	// your functions go here
-
+	prettyPrint();
+	
 	//TODO: implement a function that removes the selected value from the other
 	//select boxes on the mapping screen
 	//	$('.mapping').change(function() {

@@ -265,4 +265,8 @@ nav ul li a.current {
     margin-top: 4px;
     padding-top: 10px;
 }
-    
+
+pre.prettyprint {
+	white-space: pre;
+	font-family: monospace;
+}

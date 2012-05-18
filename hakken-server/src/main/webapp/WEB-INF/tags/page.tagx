@@ -23,6 +23,8 @@
         <!-- CSS: screen, mobile & print are all in the same file -->
         <link rel="stylesheet" href="/hakken/resources/css/html5reset.css"/>
     
+        <link href="/hakken/resources/css/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+        
         <link rel="stylesheet" href="/hakken/resources/css/hakken.css"/>
         
         <!-- all our JS is at the bottom of the page, except for Modernizr. -->
@@ -80,6 +82,7 @@
     <script src="/hakken/resources/js/jquery-1.5.1.min.js"><jsp:text/></script>
 
     <!-- this is where we put our custom functions -->
+    <script type="text/javascript" src="/hakken/resources/css/google-code-prettify/prettify.js"><jsp:text/></script>
     <script src="/hakken/resources/js/functions.js"><jsp:text/></script>
  </body>
 </html>

@@ -8,26 +8,7 @@
     <h:page section="admin" title="${task.name}" intro="${task.description}">
         <div class="holder_content">
             <section class="group4">
-                <c:choose>
-                    <c:when test="${empty task.pages}">
-                        <p>No pages defined</p>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach var="page" items="${task.pages}" varStatus="status">
-                            <h4>Page - ${page.name}</h4>
-                            <ul>
-                                <c:forEach var="item" items="${page.items}">
-                                    <li>Item - ${item.name} - ${item.label} [${item.type}]</li>
-                                </c:forEach>
-                            </ul>
-                            <ul class="selectors">
-                                <c:forEach var="selector" items="${page.nextPages}">
-                                    <li>Next Page = ${selector.pageName}, condition=${selector.condition}</li>
-                                </c:forEach>
-                            </ul>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
+                <pre class="prettyprint"><code class="language-js">${taskAsJson}</code></pre>
 	        </section>
         </div>          
         <div class="holder_content">
