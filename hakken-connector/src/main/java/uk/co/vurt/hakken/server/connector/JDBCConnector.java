@@ -48,6 +48,10 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	private String schema = null;
 	private List<DatabaseTableTaskDefinition> definitions;
 	
+	static {
+		type = "JDBC";
+	}
+	
 	public JDBCConnector(){
 		properties = new Properties();
 	}

@@ -20,7 +20,7 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public String getName();
 	
-	
+	public String getType();
 	
 //	public List<String> getPropertyNames();
 	

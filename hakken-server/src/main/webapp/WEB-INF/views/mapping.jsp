@@ -5,7 +5,7 @@
            xmlns="http://www.w3.org/1999/xhtml">
 
     <jsp:directive.page contentType="text/html" pageEncoding="UTF-8" />
-    <h:page section="admin" title="Mapping details" intro="${mapping.id} - Task: ${mapping.taskDefinitionName} - Connector: ${mapping.dataConnectorName}">
+    <h:page section="admin" title="Mapping details" intro="${mapping.id} - Task: ${mapping.taskDefinitionName} - Connector Task Definition: ${mapping.dataConnectorTaskDefinitionMapping}">
         <div class="holder_content">
             <section class="group1">
                 <h3>Mappings</h3>

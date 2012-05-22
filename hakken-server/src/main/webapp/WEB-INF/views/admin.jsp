@@ -65,7 +65,7 @@
                     <c:otherwise>
                         <ul>
                             <c:forEach var="entry" items="${dataConnectors}" varStatus="status" >
-                                <li><a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a></li>
+                                <li>[${entry.value.type}] - <a href="/hakken/admin/dataconnector/${entry.key}">${entry.key}</a></li>
                             </c:forEach>
                         </ul>
                     </c:otherwise>
