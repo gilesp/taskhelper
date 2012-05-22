@@ -8,7 +8,7 @@ import java.util.Map;
 public interface DataConnector<T extends DataConnectorTaskDefinition> {
 
 
-	public abstract List<Instance> getInstances(T taskDefinition, String username, Date lastUpdated);
+	public abstract List<Instance> getInstances(T taskDefinition, Map<String, String> properties, String username, Date lastUpdated);
 	
 	public List<T> getDefinitions();
 	

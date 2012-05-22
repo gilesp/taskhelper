@@ -61,8 +61,7 @@ public class JobServiceImpl implements JobService{
 				DataConnector connector = connectorService.getDataConnector(dcMapping.getDataConnectorName());
 				
 				logger.debug("Retrieved connector");
-				
-				instances.addAll(connector.getInstances(connector.getDefinition(dcMapping.getTaskDefinitionName()), username, lastUpdated));
+				instances.addAll(connector.getInstances(connector.getDefinition(dcMapping.getTaskDefinitionName()), dcMapping.getProperties(), username, lastUpdated));
 				
 				logger.debug("Total instances: " + instances.size());
 				

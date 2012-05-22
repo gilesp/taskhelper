@@ -55,20 +55,26 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	private final static String GET_INSTANCES_SQL = "Select * from [" + TABLE_NAME_KEY + "] where upper([" + TABLE_USER_FIELD_KEY + "]) = upper(?)";
 	
 	@Override
-	public List<Instance> getInstances(DatabaseTableTaskDefinition taskDefinition, String username, Date lastUpdated) {
+	public List<Instance> getInstances(DatabaseTableTaskDefinition taskDefinition, Map<String, String> properties, String username, Date lastUpdated) {
 		logger.debug("Retrieving instances from " + taskDefinition.getName() + " for username " + username + " since " + lastUpdated);
 
-		Map<String, String> replacements = taskDefinition.getProperties();
-		replacements.put(TABLE_NAME_KEY, taskDefinition.getName());
+		if(logger.isDebugEnabled()){
+			logger.debug("Properties: ");
+			for (Map.Entry<String, String> entry : properties.entrySet()) {
+			    logger.debug(entry.getKey() + " = " + entry.getValue());
+			}
+
+		}
+		properties.put(TABLE_NAME_KEY, taskDefinition.getName());
 		
 		List<Instance> instances = new ArrayList<Instance>();
 		Connection conn = getConnection();
 		if(conn != null){
 			try{
 				if(logger.isDebugEnabled()){
-					logger.debug("SQL: " + StringUtils.replaceTokens(GET_INSTANCES_SQL, replacements));
+					logger.debug("SQL: " + StringUtils.replaceTokens(GET_INSTANCES_SQL, properties));
 				}
-				PreparedStatement ps = conn.prepareStatement(StringUtils.replaceTokens(GET_INSTANCES_SQL, replacements));
+				PreparedStatement ps = conn.prepareStatement(StringUtils.replaceTokens(GET_INSTANCES_SQL, properties));
 				ps.setString(1, username);
 				ResultSet rs = ps.executeQuery();
 				ResultSetMetaData metaData = rs.getMetaData();
