@@ -48,10 +48,6 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	private String schema = null;
 	private List<DatabaseTableTaskDefinition> definitions;
 	
-	static {
-		type = "JDBC";
-	}
-	
 	public JDBCConnector(){
 		properties = new Properties();
 	}
@@ -94,6 +90,7 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 						}
 						dataItems.put(metaData.getColumnName(i), rs.getString(i));
 					}
+					//TODO: fix this id;
 					instances.add(new Instance(id, username, new Date(), new Date(), "", dataItems));
 					id++;
 				}

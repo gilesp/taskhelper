@@ -13,7 +13,7 @@ public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
 	
-	private int id;
+	private long id;
 	private String name;
 	private TaskDefinition definition;
 	private Date created;
@@ -25,7 +25,7 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(int id, String name, TaskDefinition definition, Date created,
+	public JobDefinition(long id, String name, TaskDefinition definition, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
@@ -85,7 +85,7 @@ public class JobDefinition implements Serializable{
 		this.status = status;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

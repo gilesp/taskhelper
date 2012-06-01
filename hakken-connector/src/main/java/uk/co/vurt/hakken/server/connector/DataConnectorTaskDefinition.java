@@ -5,7 +5,7 @@ import java.util.List;
 
 public abstract class DataConnectorTaskDefinition {
 
-	protected static List<String> propertyNames;
+	protected static List<ConfigProperty> configProperties;
 	protected String name;
 	protected List<String> dataItemNames; 
 	
@@ -20,8 +20,8 @@ public abstract class DataConnectorTaskDefinition {
 		return dataItemNames;
 	}
 	
-	public List<String> getPropertyNames(){
-		return propertyNames;
+	public List<ConfigProperty> getConfigProperties(){
+		return configProperties;
 	}
 	
 	

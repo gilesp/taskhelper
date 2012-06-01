@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
+import uk.co.vurt.hakken.server.connector.ConfigProperty;
 import uk.co.vurt.hakken.server.connector.DataConnector;
 import uk.co.vurt.hakken.server.connector.DataConnectorTaskDefinition;
 import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
@@ -89,10 +90,19 @@ public class AdminController {
 		mapping.setDataConnectorName(connectorName);
 		mapping.setTaskDefinitionName(definitionName);
 		DataConnectorTaskDefinition definition = connector.getDefinition(definitionName);
-		for(String propertyName: definition.getPropertyNames()){
-			mapping.setProperty(propertyName, request.getParameter(propertyName));
+		if(definition != null){
+			if(definition.getConfigProperties() != null){
+				for(ConfigProperty configProperty: definition.getConfigProperties()){
+//					configProperty.setValue(request.getParameter(configProperty.getName()));
+					mapping.setProperty(configProperty.getName(), request.getParameter(configProperty.getName()));
+				}
+//				for(String propertyName: definition.getPropertyNames()){
+//					mapping.setProperty(propertyName, request.getParameter(propertyName));
+//				}
+			}
+			definitionMappingService.save(mapping);
 		}
-		definitionMappingService.save(mapping);
+		
 		return "redirect:/admin/";
 	}
 	

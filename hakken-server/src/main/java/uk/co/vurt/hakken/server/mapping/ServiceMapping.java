@@ -2,9 +2,7 @@ package uk.co.vurt.hakken.server.mapping;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
-import uk.co.vurt.hakken.domain.task.TaskDefinition;
-import uk.co.vurt.hakken.server.connector.DataConnector;
 
 @Entity
 @Table(name="service_mappings")

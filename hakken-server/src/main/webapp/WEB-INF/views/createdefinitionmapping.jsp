@@ -14,16 +14,23 @@
                         <input type="hidden" name="definitionName" value="${definition.name}"/>
 
                     <table>                        
-                    <c:forEach var="property" items="${definition.propertyNames}" varStatus="status">
+                    <c:forEach var="property" items="${definition.configProperties}" varStatus="status">
                             <tr>
-                                <td>${property}</td>
+                                <td>${property.name}</td>
                                 <td>
-                                    <select name="${property}" class="mapping">
-                                        <option value="" >--none--</option>
-                                        <c:forEach var="diName" items="${definition.dataItemNames}" varStatus="status">
-                                            <option value="${diName}">${diName}</option>
-                                        </c:forEach>
-                                    </select>
+                                    <c:choose>
+                                        <c:when test="${property.dataItem}">
+                                            <select name="${property.name}" class="mapping">
+		                                        <option value="" >--none--</option>
+		                                        <c:forEach var="diName" items="${definition.dataItemNames}" varStatus="status">
+		                                            <option value="${diName}">${diName}</option>
+		                                        </c:forEach>
+		                                    </select>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input type="text" name="${property.name}"/>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                     </c:forEach>

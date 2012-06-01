@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Instance {
 
-	private int id;
+	private long id;
 	private String name;
 	private Date created;
 	private Date due;
@@ -15,7 +15,7 @@ public class Instance {
 	
 	public Instance(){}
 	
-	public Instance(int id, String name, Date created, Date due, String notes,
+	public Instance(long id, String name, Date created, Date due, String notes,
 			Map<String, String> dataItems) {
 		super();
 		this.id = id;
@@ -32,7 +32,7 @@ public class Instance {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	public String getName() {
