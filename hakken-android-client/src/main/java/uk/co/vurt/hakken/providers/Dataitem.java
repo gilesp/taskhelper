@@ -5,8 +5,6 @@ import android.provider.BaseColumns;
 
 public class Dataitem {
 
-//	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
-	
 	private Dataitem(){}
 	
 	public final static class Definitions implements BaseColumns {

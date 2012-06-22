@@ -22,6 +22,7 @@ public class JobDefinition implements Serializable{
 	private String group;
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
+	private boolean modified;
 	
 	public JobDefinition(){}
 	
@@ -81,6 +82,14 @@ public class JobDefinition implements Serializable{
 		return status;
 	}
 
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -129,4 +138,29 @@ public class JobDefinition implements Serializable{
 				+ ", status=" + status + "]";
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj){
+			return true;
+		}
+		if (obj == null){
+			return false;
+		}
+		if (getClass() != obj.getClass()){
+			return false;
+		}
+		JobDefinition other = (JobDefinition) obj;
+		if (id != other.id){
+			return false;
+		}
+		return true;
+	}
 }

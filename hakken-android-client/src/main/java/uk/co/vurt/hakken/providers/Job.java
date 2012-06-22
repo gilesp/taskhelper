@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class Job {
-
-//	public final static String AUTHORITY = "uk.co.vurt.taskhelper";
 	
 	/* Don't insantiate this class. */
 	private Job(){}
@@ -30,6 +28,7 @@ public class Job {
 		public static final String STATUS = "status";
 		public static final String GROUP = "groupname";
 		public static final String NOTES = "notes";
+		public static final String MODIFIED = "modified";
 		
 		public static final String DEFAULT_SORT_ORDER = GROUP + ", " + DUE + " ASC";
 		
@@ -41,7 +40,8 @@ public class Job {
 			DUE,
 			STATUS,
 			GROUP,
-			NOTES
+			NOTES,
+			MODIFIED
 		};
 	}
 	

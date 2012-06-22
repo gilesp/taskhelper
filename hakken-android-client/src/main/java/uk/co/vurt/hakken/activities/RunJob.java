@@ -231,10 +231,18 @@ public class RunJob extends Activity {
 	
 					}
 					if (value != null) {
-						DataItem dataItem = new DataItem(page.getName(),
-								item.getName(), item.getType(), value);
-						Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
-						Log.d(TAG, "Stored dataitem: " + dataItemUri);
+						
+						//compare to previous value
+						DataItem previousValue = retrieveDataItem(jobProcessor.getPageName(),
+								 item.getName(), 
+								 item.getType());
+						//only store a dataitem if the value has changed.
+						if(!previousValue.getValue().equals(value)){
+							DataItem dataItem = new DataItem(page.getName(),
+									item.getName(), item.getType(), value);
+							Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
+							Log.d(TAG, "Stored dataitem: " + dataItemUri);
+						}
 					}
 					
 					if(wrapper.isRequired()){

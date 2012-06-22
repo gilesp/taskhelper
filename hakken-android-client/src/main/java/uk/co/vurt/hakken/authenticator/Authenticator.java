@@ -27,6 +27,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 /**
  * This class is an implementation of AbstractAccountAuthenticator for
@@ -64,6 +65,19 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, 
     		String authTokenType, String[] requiredFeatures, Bundle options) {
+    	
+//    	AccountManager accountManager = AccountManager.get(context);
+//		Account[] accounts = accountManager.getAccountsByType(Constants.ACCOUNT_TYPE); //retrieve all Hakken accounts
+//		if(accounts.length > 0){
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Toast.makeText(context, "Only one account allowed", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//            return null;
+//        }
+
         final Intent intent = new Intent(context, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);

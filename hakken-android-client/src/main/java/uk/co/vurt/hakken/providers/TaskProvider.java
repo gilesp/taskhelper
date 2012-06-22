@@ -30,7 +30,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "tasks.db";
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 12;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -74,6 +74,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions.STATUS, Job.Definitions.STATUS);
 		jobsProjectionMap.put(Job.Definitions.GROUP, Job.Definitions.GROUP);
 		jobsProjectionMap.put(Job.Definitions.NOTES, Job.Definitions.NOTES);
+		jobsProjectionMap.put(Job.Definitions.MODIFIED, Job.Definitions.MODIFIED);
 
 		dataitemsProjectionMap = new HashMap<String, String>();
 		dataitemsProjectionMap.put(Dataitem.Definitions._ID, Dataitem.Definitions._ID);
@@ -86,6 +87,7 @@ public class TaskProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String whereClause, String[] whereArgs) {
+		Log.d(TAG, "Delete requested for " + uri + " " + whereClause + ":" + whereArgs);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		int count;
 		switch (uriMatcher.match(uri)) {
@@ -105,6 +107,23 @@ public class TaskProvider extends ContentProvider {
 				break;
 			case JOB_ID_URI:
 				String jobId = uri.getPathSegments().get(1);
+				
+				//we need to delete all dataitems associated with this job, before deleting the job itself
+				Cursor diCursor = query(Dataitem.Definitions.CONTENT_URI, 
+						 new String[]{Dataitem.Definitions._ID}, 
+						 Dataitem.Definitions.JOB_ID + " = ?", 
+						 new String[]{""+jobId}, 
+						 null);
+				if(diCursor != null){
+					diCursor.moveToFirst();
+					while(!diCursor.isAfterLast()){
+						delete(Uri.withAppendedPath(Dataitem.Definitions.CONTENT_URI, ""+diCursor.getLong(0)), null, null);
+						diCursor.moveToNext();
+					}
+					diCursor.close();
+					diCursor = null;
+				}
+						
 				count = db.delete(JOBS_TABLE_NAME, Job.Definitions._ID
 						+ "="
 						+ jobId
@@ -150,7 +169,7 @@ public class TaskProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues initialValues) {
 		ContentValues values;
-		Log.d(TAG, "URI: " + uri);
+		Log.d(TAG, "Insert requested URI: " + uri);
 		
 		if (initialValues != null) {
 			values = new ContentValues(initialValues);
@@ -333,6 +352,7 @@ public class TaskProvider extends ContentProvider {
 
 	@Override
 	public int update(Uri uri, ContentValues values, String whereClause, String[] whereArgs) {
+		Log.d(TAG, "Update requested " + uri);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
         switch (uriMatcher.match(uri)) {
@@ -393,7 +413,8 @@ public class TaskProvider extends ContentProvider {
 					+ Job.Definitions.DUE + " INTEGER, "
 					+ Job.Definitions.NOTES + " TEXT, "
 					+ Job.Definitions.GROUP + " TEXT DEFAULT 'Personal', "
-					+ Job.Definitions.STATUS + " TEXT "
+					+ Job.Definitions.STATUS + " TEXT, " 
+					+ Job.Definitions.MODIFIED + " INTEGER DEFAULT 0 "
 					+ ");");
 			
 			//Create dataitems table

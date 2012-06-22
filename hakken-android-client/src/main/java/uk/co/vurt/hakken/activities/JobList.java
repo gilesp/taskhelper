@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -107,6 +108,7 @@ public class JobList extends ListActivity {
 	}
 
 	private void synchronise(){
+		Log.d(TAG, "synchronise() called.");
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 		bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);

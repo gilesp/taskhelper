@@ -10,6 +10,7 @@ public class SyncService extends Service {
 	private static SyncAdapter syncAdapter = null;
 	
 	public void onCreate(){
+		super.onCreate();
 		synchronized(syncAdapterLock){
 			if(syncAdapter == null){
 				syncAdapter = new SyncAdapter(getApplicationContext(), true);

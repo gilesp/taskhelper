@@ -129,7 +129,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             message.setText(getMessage());
         } else {
-//            showProgress();
             // Start authenticating...
             showProgress();
             authTask = new UserLoginTask();
@@ -172,11 +171,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity{
         final Account account = new Account(username, Constants.ACCOUNT_TYPE);
         if (requestNewAccount) {
             accountManager.addAccountExplicitly(account, password, null);
-            // Set contacts sync for this account.
-            ContentResolver.setSyncAutomatically(account, TaskProvider.AUTHORITY, true);
         } else {
             accountManager.setPassword(account, password);
         }
+        // Set sync for this account.
+        ContentResolver.setSyncAutomatically(account, TaskProvider.AUTHORITY, true);
+        
         final Intent intent = new Intent();
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);

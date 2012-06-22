@@ -39,7 +39,8 @@ public class JobProcessor {
 		Job.Definitions.CREATED,
 		Job.Definitions.DUE,
 		Job.Definitions.STATUS,
-		Job.Definitions.NOTES
+		Job.Definitions.NOTES,
+		Job.Definitions.MODIFIED
 	};
 	
 	private static final int COLUMN_INDEX_JOB_ID = 0;
@@ -49,6 +50,7 @@ public class JobProcessor {
 	private static final int COLUMN_INDEX_JOB_DUE = 4;
 	private static final int COLUMN_INDEX_JOB_STATUS = 5;
 	private static final int COLUMN_INDEX_JOB_NOTES = 6;
+	private static final int COLUMN_INDEX_JOB_MODIFIED = 7;
 
 	private ContentResolver contentResolver;
 	private Cursor cursor;
@@ -227,7 +229,7 @@ public class JobProcessor {
 		contentResolver.update(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+jobDefinition.getId()) , values, null, null);
 	}
 	
-	public int getJobId(){
+	public long getJobId(){
 		return jobDefinition.getId();
 	}
 	
@@ -286,7 +288,13 @@ public class JobProcessor {
 			dataItemUri = contentResolver.insert(
 					Dataitem.Definitions.CONTENT_URI, values);
 			Log.d(TAG, "Saved URI: " + dataItemUri);
+			
 		}
+		//set the modified flag on the job.
+		values = new ContentValues();
+		jobDefinition.setModified(true);
+		values.put(Job.Definitions.MODIFIED, jobDefinition.isModified());
+		contentResolver.update(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+jobDefinition.getId()) , values, null, null);
 		
 		return dataItemUri;
 	}

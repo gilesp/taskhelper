@@ -3,4 +3,5 @@
     android:contentAuthority="uk.co.vurt.hakken"
     android:accountType="uk.co.vurt.hakken"
     android:supportsUploading="false"
+    android:userVisible="true"
 />

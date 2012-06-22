@@ -90,7 +90,9 @@ public class JobServiceImpl implements JobService{
 							String diName = parts[1];
 							dataItem.setPageName(pageName);
 							dataItem.setName(diName);
-							dataItem.setType(definition.getPage(pageName).getPageItem(diName).getType());
+							if(definition.getPage(pageName) != null && definition.getPage(pageName).getPageItem(diName) != null){
+								dataItem.setType(definition.getPage(pageName).getPageItem(diName).getType());
+							}
 							dataItems.add(dataItem);
 						}
 					}
