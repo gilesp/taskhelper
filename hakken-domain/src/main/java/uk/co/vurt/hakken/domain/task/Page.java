@@ -1,30 +1,26 @@
 package uk.co.vurt.hakken.domain.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 
 public class Page {
 	private String name;
 	private String title;
-//	private List<PageItem> items;
-	private Map<String, PageItem> items;
+	private LinkedHashMap<String, PageItem> items;
 	private List<PageSelector> nextPages;
 	
 	
 	public Page(){
-//		items = new ArrayList<PageItem>();
-		items = new HashMap<String, PageItem>();
+		items = new LinkedHashMap<String, PageItem>();
 	}
 	
 	public Page(String name, String title, List<PageItem> items) {
 		super();
 		this.name = name;
 		this.title = title;
-//		this.items = items;
 		setItems(items);
 	}
 
@@ -54,6 +50,7 @@ public class Page {
 	}
 
 	public void setItems(List<PageItem> items) {
+		this.items = new LinkedHashMap<String, PageItem>();
 		for(PageItem item: items){
 			addItem(item);
 		}

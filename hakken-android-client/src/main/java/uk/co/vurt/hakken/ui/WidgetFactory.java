@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import uk.co.vurt.hakken.domain.NameValue;
 import uk.co.vurt.hakken.domain.job.DataItem;
+import uk.co.vurt.hakken.domain.task.pageitem.LabelledValue;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.hakken.ui.widget.LabelledCheckBox;
 import uk.co.vurt.hakken.ui.widget.LabelledDatePicker;
@@ -103,24 +104,33 @@ public class WidgetFactory {
 				}
 			}
 			List<NameValue> selected = new ArrayList<NameValue>();
-			try {
+//			try {
 				Log.d(TAG, "Item Value: " + item.getValue());
-				if(item.getValue() != null){
-					JSONArray valueArray = new JSONArray(item.getValue());
-					for(int i = 0; i < valueArray.length(); i++){
-						JSONObject labelledValue = valueArray.getJSONObject(i);
-						if(labelledValue.has("label")){
-							NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
-							if(dataItemValues.contains(nameValue.getValue())){
-								selected.add(nameValue);
-							}
-							spinnerArray.add(nameValue);
-						}
+				List<LabelledValue> values = item.getValues();
+				for(LabelledValue value: values){
+					NameValue nameValue = new NameValue(value.getLabel(), value.getValue());
+					if(dataItemValues.contains(value.getValue())){
+						selected.add(nameValue);
 					}
+					spinnerArray.add(nameValue);
 				}
-			} catch (JSONException e) {
-				Log.e(TAG, "Unable to parse options.", e);
-			}
+				
+//				if(item.getValue() != null){
+//					JSONArray valueArray = new JSONArray(item.getValue());
+//					for(int i = 0; i < valueArray.length(); i++){
+//						JSONObject labelledValue = valueArray.getJSONObject(i);
+//						if(labelledValue.has("label")){
+//							NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
+//							if(dataItemValues.contains(nameValue.getValue())){
+//								selected.add(nameValue);
+//							}
+//							spinnerArray.add(nameValue);
+//						}
+//					}
+//				}
+//			} catch (JSONException e) {
+//				Log.e(TAG, "Unable to parse options.", e);
+//			}
 			spinner.setItems(spinnerArray);
 			for(NameValue selectedValue: selected){
 				spinner.setSelected(selectedValue);
