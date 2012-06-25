@@ -1,8 +1,8 @@
 package uk.co.vurt.hakken.domain.task;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 public final class TaskDefinition {
@@ -10,11 +10,11 @@ public final class TaskDefinition {
 	private long id;
 	private String name;
 	private String description;
-	private Map<String, Page> pages;
+	private LinkedHashMap<String, Page> pages;
 	
 	public TaskDefinition(){
 		super();
-		pages = new  TreeMap<String, Page>();
+		pages = new LinkedHashMap<String, Page>();
 	}
 	
 	public TaskDefinition(long id, String name, String description, List<Page> pages) {
@@ -54,7 +54,7 @@ public final class TaskDefinition {
 	}
 
 	public void setPages(List<Page> pages) {
-		this.pages = new TreeMap<String, Page>();
+		this.pages = new LinkedHashMap<String, Page>();
 		for(Page page: pages){
 			this.pages.put(page.getName(), page);
 		}

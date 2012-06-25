@@ -104,15 +104,18 @@ public class WidgetFactory {
 			}
 			List<NameValue> selected = new ArrayList<NameValue>();
 			try {
-				JSONArray valueArray = new JSONArray(item.getValue());
-				for(int i = 0; i < valueArray.length(); i++){
-					JSONObject labelledValue = valueArray.getJSONObject(i);
-					if(labelledValue.has("label")){
-						NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
-						if(dataItemValues.contains(nameValue.getValue())){
-							selected.add(nameValue);
+				Log.d(TAG, "Item Value: " + item.getValue());
+				if(item.getValue() != null){
+					JSONArray valueArray = new JSONArray(item.getValue());
+					for(int i = 0; i < valueArray.length(); i++){
+						JSONObject labelledValue = valueArray.getJSONObject(i);
+						if(labelledValue.has("label")){
+							NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
+							if(dataItemValues.contains(nameValue.getValue())){
+								selected.add(nameValue);
+							}
+							spinnerArray.add(nameValue);
 						}
-						spinnerArray.add(nameValue);
 					}
 				}
 			} catch (JSONException e) {

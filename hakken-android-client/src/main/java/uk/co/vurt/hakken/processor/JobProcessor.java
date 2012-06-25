@@ -140,8 +140,8 @@ public class JobProcessor {
 		String nextPageName = null;
 		previousPagePosition = currentPagePosition;
 		List<PageSelector> nextPages = getCurrentPage().getNextPages();
-		Log.d(TAG, "NextPages size: " + nextPages.size());
 		if(nextPages != null && nextPages.size() > 0 ){
+			Log.d(TAG, "NextPages size: " + nextPages.size());
 			//evaluate page selectors in turn, to find one that matches
 			for(int i = 0; i < nextPages.size() && nextPageName == null; i++){
 				PageSelector selector = nextPages.get(i);

@@ -237,7 +237,8 @@ public class RunJob extends Activity {
 								 item.getName(), 
 								 item.getType());
 						//only store a dataitem if the value has changed.
-						if(!previousValue.getValue().equals(value)){
+						if((previousValue != null) && 
+								(!previousValue.getValue().equals(value))){
 							DataItem dataItem = new DataItem(page.getName(),
 									item.getName(), item.getType(), value);
 							Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
