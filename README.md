@@ -9,3 +9,6 @@ The project uses Maven to build things, and takes the form of a multi module mav
 
 Development was done using Eclipse, and guidelines found here: http://www.workreloaded.com/2011/09/android-build-automation/ were followed to get Eclipse, ADT and maven playing nicely together.
 
+Note
+====
+I'm currently having issues pushing to github so this repo is lagging behind development somewhat. I hope to have this fixed as soon as possible.
