@@ -85,7 +85,7 @@ public class JobServiceImpl implements JobService{
 							logger.debug("value: " + instance.getDataItems().get(connectorDataItemName));
 							dataItem.setValue(instance.getDataItems().get(connectorDataItemName));
 							String taskDiName = mapping.getConnectorToTaskMappings().get(connectorDataItemName);
-							String[] parts = taskDiName.split("_");
+							String[] parts = taskDiName.split("@@");
 							String pageName = parts[0];
 							String diName = parts[1];
 							dataItem.setPageName(pageName);

@@ -149,7 +149,7 @@ public class AdminController {
 			Enumeration parameterNames = request.getParameterNames();
 			while(parameterNames.hasMoreElements()){
 				String paramName = (String)parameterNames.nextElement();
-				if(paramName.contains("_")){
+				if(paramName.contains("@@")){
 					logger.info("Found page item parameter: " + paramName);
 					mapping.setMapping(request.getParameter(paramName), paramName);
 				}

@@ -30,7 +30,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "tasks.db";
-	private static final int DATABASE_VERSION = 12;
+	private static final int DATABASE_VERSION = 15;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -263,8 +263,11 @@ public class TaskProvider extends ContentProvider {
 					long rowId = db.insert(DATAITEMS_TABLE_NAME, Dataitem.Definitions.NAME, values);
 					if(rowId > 0){
 						Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
+						Log.d(TAG, "Saved dataitem " + dataitemUri);
 						getContext().getContentResolver().notifyChange(dataitemUri, null);
 						return dataitemUri;
+					} else {
+						Log.d(TAG, "Dataitem not saved.");
 					}
 				} else {
 					Log.d(TAG, "Missing value.");
@@ -276,7 +279,7 @@ public class TaskProvider extends ContentProvider {
 					throw new SQLException("Unable to insert row into " + uri);
 				}
 			default:
-				throw new IllegalArgumentException("Unknown URI: " + uri);
+				throw new IllegalArgumentException("Unknown URI: " + uri + " MAtched value: " + uriMatcher.match(uri));
 		}
 		return null;
 	}
@@ -419,7 +422,7 @@ public class TaskProvider extends ContentProvider {
 			
 			//Create dataitems table
 			db.execSQL("CREATE TABLE IF NOT EXISTS " + DATAITEMS_TABLE_NAME + " ("
-					+ Dataitem.Definitions._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ Dataitem.Definitions._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
 					+ Dataitem.Definitions.JOB_ID + " INTEGER REFERENCES " + JOBS_TABLE_NAME + " (" + Job.Definitions._ID + "), "
 					+ Dataitem.Definitions.PAGENAME + " TEXT, "
 					+ Dataitem.Definitions.NAME + " TEXT, "

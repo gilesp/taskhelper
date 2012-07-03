@@ -1,6 +1,7 @@
 package uk.co.vurt.hakken.server.connector;
 
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class DataConnectorTaskDefinition {
@@ -17,6 +18,7 @@ public abstract class DataConnectorTaskDefinition {
 	 * Maps DataConnector data item names to their equivalent Task data items
 	 */
 	public List<String> getDataItemNames() {
+		Collections.sort(dataItemNames);
 		return dataItemNames;
 	}
 	

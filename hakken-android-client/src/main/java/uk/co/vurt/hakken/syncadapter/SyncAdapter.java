@@ -32,6 +32,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
@@ -68,8 +69,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			//We need to see if the definition already exists, if it does do an update otherwise do an insert
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, definition.getId());
 			
+			Cursor cur = null;
 			try {
-				Cursor cur = provider.query(definitionUri, null, null, null, null);
+				cur = provider.query(definitionUri, null, null, null, null);
 				if(cur.moveToFirst()){
 					Log.d(TAG, "Updating task definition " + definition.getId());
 					provider.update(definitionUri, values, null, null);
@@ -77,10 +79,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					Log.d(TAG, "Inserting new definition " + definition.getId());
 					provider.insert(Task.Definitions.CONTENT_URI, values);
 				}
-				cur.close();
-				cur = null;
 			} catch (RemoteException re) {
 				Log.e(TAG, "RemoteException", re);
+			} finally {
+				cur.close();
+				cur = null;
 			}
 		}else{
 			Log.d(TAG, "Null definition");
@@ -88,19 +91,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 	
 	private void storeDataItem(ContentProviderClient provider, DataItem dataItem, JobDefinition job){
-		Log.d(TAG, "Storing a dataitem for a job.");
-		ContentValues values = new ContentValues();
-		values.put(Dataitem.Definitions.JOB_ID, job.getId());
-		values.put(Dataitem.Definitions.PAGENAME, dataItem.getPageName());
-		values.put(Dataitem.Definitions.NAME, dataItem.getName());
-		values.put(Dataitem.Definitions.TYPE, dataItem.getType());
-		values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
-		
-		//TODO: handle updating as well as inserting
-		try{
-			provider.insert(Dataitem.Definitions.CONTENT_URI, values);
-		}catch(RemoteException re){
-			Log.e(TAG, "RemoteException", re);
+		if(dataItem.getValue() != null && !"null".equals(dataItem.getValue())){
+			Log.d(TAG, "Storing a dataitem for a job.");
+			ContentValues values = new ContentValues();
+			values.put(Dataitem.Definitions.JOB_ID, job.getId());
+			values.put(Dataitem.Definitions.PAGENAME, dataItem.getPageName());
+			values.put(Dataitem.Definitions.NAME, dataItem.getName());
+			values.put(Dataitem.Definitions.TYPE, dataItem.getType());
+			values.put(Dataitem.Definitions.VALUE, dataItem.getValue());
+			
+			try{
+				provider.insert(Dataitem.Definitions.CONTENT_URI, values);
+			}catch(SQLiteException e){
+				try {
+					provider.update(Dataitem.Definitions.CONTENT_URI, values, null, null);
+				} catch (RemoteException re) {
+					Log.e(TAG, "RemoteException", re);
+				}
+			}catch(RemoteException re){
+				Log.e(TAG, "RemoteException", re);
+			}
 		}
 	}
 
@@ -121,7 +131,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		}
 	}
 
-	private void submitCompletedJobs(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException {
+	private synchronized void submitCompletedJobs(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException {
 		Log.d(TAG, "submitCompletedJobs() called.");
 		//Find which jobs have been completed.
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
@@ -174,7 +184,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 	
 	
-	private void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
+	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		//TODO: implement syncJobsFromServer();
 		
 		//get a list of jobs currently on the device (currentJobs)
@@ -194,11 +204,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 						jobCursor.getString(6));
 
 				currentJobs.add(job);
+				jobCursor.moveToNext();
 			}
+			jobCursor.close();
+			jobCursor = null;
 		}
 		//get list of jobs from server (newJobs)
-		long lastUpdated = getLastUpdatedDate(account);
-		List<JobDefinition> newJobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(lastUpdated));
+		List<JobDefinition> newJobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(getLastUpdatedDate(account)));
+		long newLastUpdated = System.currentTimeMillis();
 		
 		//delete any current jobs that aren't in the new jobs list (as this means they will have been completed elsewhere
 		//TODO: Check this assumption - will need modifying if we switch to only sending new jobs, rather than all jobs
@@ -236,11 +249,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				
 				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
 				//  if job not on device, then create it on device
+				boolean storeDataItems = false;
 				if(currentJobs.contains(newJob) ){
 					if(!currentJobs.get(currentJobs.indexOf(newJob)).isModified()){
 						//update job
 						Log.d(TAG, "Updating job " + newJob.getId());
 						provider.update(jobUri, values, null, null);
+						storeDataItems = true;
 					}
 				} else {
 					storeTaskDefinition(provider, newJob.getDefinition());
@@ -248,10 +263,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					Log.d(TAG, "Inserting new job " + newJob.getId());
 					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
 					Log.d(TAG, "Inserted job as " + providerUri);
+					storeDataItems = true;
+				}
+				
+				if(storeDataItems){
+					for(DataItem item: newJob.getDataItems()){
+						storeDataItem(provider, item, newJob);
+					}
 				}
 			}
 		}
-		
+		setLastUpdatedDate(account, newLastUpdated);
 	}
 	
 	private void handleException(Exception e, String authtoken, SyncResult syncResult) {
