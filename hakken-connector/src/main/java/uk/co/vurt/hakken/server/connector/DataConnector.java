@@ -18,7 +18,7 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public boolean createNew();
 	
-	public boolean save(Submission submission, Map<String, String> taskToConnectorMappings);
+	public boolean save(Submission submission, Map<String, String> taskToConnectorMappings, String taskDefinitionName);
 	
 	public String getName();
 	

@@ -134,7 +134,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private synchronized void submitCompletedJobs(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException {
 		Log.d(TAG, "submitCompletedJobs() called.");
 		//Find which jobs have been completed.
-		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, new String[]{Job.Definitions._ID, Job.Definitions.TASK_DEFINITION_NAME}/*Job.Definitions.ALL*/, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
+		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, 
+				new String[]{Job.Definitions._ID, Job.Definitions.TASK_DEFINITION_NAME}, 
+				Job.Definitions.STATUS + " = ?", 
+				new String[]{"COMPLETED"}, null);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			//for each completed job:
@@ -143,6 +146,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				Log.d(TAG, "creating submission for job " + jobId);
 				
 				Submission submission = new Submission();
+//				submission.setId(jobId);
 				submission.setJobId(jobId);
 				submission.setTaskDefinitionName(jobCursor.getString(1));
 				submission.setUsername(account.name);

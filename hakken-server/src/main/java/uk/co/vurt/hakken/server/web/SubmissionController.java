@@ -63,8 +63,9 @@ public class SubmissionController extends RESTController{
 			ServiceMapping serviceMapping = mappingService.getMappingForTaskDefinition(submission.getTaskDefinitionName());
 			
 			DataConnectorTaskDefinitionMapping dcTaskDefMapping = serviceMapping.getDataConnectorTaskDefinitionMapping();
+			
 			DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
-			boolean success = connector.save(submission, serviceMapping.getTaskToConnectorMappings());
+			boolean success = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
 
 			
 			logger.debug("Submission status: " + success );
