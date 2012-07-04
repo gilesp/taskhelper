@@ -134,16 +134,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private synchronized void submitCompletedJobs(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException {
 		Log.d(TAG, "submitCompletedJobs() called.");
 		//Find which jobs have been completed.
-		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
+		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, new String[]{Job.Definitions._ID, Job.Definitions.TASK_DEFINITION_NAME}/*Job.Definitions.ALL*/, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			//for each completed job:
 			while(!jobCursor.isAfterLast()){
-				int jobId = jobCursor.getInt(0);
+				Long jobId = jobCursor.getLong(0);
 				Log.d(TAG, "creating submission for job " + jobId);
 				
 				Submission submission = new Submission();
 				submission.setJobId(jobId);
+				submission.setTaskDefinitionName(jobCursor.getString(1));
 				submission.setUsername(account.name);
 
 				// retrieve dataitems for them and combine into a submission
@@ -156,7 +157,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 					diCursor.moveToFirst();
 					while(!diCursor.isAfterLast()){
 						DataItem dataItem = new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3));
-						Log.d(TAG, "Adding DataItem: " + dataItem);
+//						Log.d(TAG, "Adding DataItem: " + dataItem);
 						submission.addDataItem(dataItem);
 						diCursor.moveToNext();
 					}
@@ -198,10 +199,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				JobDefinition job = new JobDefinition(jobCursor.getLong(0),
 						jobCursor.getString(1),
 						null, //do we need to retrieve the taskdefinition as well?
-						new Date(jobCursor.getLong(3)),
 						new Date(jobCursor.getLong(4)),
-						jobCursor.getString(5),
-						jobCursor.getString(6));
+						new Date(jobCursor.getLong(5)),
+						jobCursor.getString(6),
+						jobCursor.getString(7));
 
 				currentJobs.add(job);
 				jobCursor.moveToNext();
@@ -233,6 +234,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				values.put(Job.Definitions._ID, newJob.getId());
 				values.put(Job.Definitions.NAME, newJob.getName());
 				values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getDefinition().getId());
+				values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
 				values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
 				if(newJob.getDue() != null){
 					values.put(Job.Definitions.DUE, newJob.getDue().getTime());

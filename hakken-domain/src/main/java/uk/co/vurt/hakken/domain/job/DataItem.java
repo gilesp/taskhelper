@@ -1,9 +1,12 @@
 package uk.co.vurt.hakken.domain.job;
 
-public class DataItem {
+import java.io.Serializable;
+
+public class DataItem implements Serializable {
 
 	private final static String TAG = "DataItem";
 	
+	Long id;
 	String name;
 	String type;
 	String value;
@@ -17,6 +20,11 @@ public class DataItem {
 		this.name = name;
 		this.type = type;
 		this.value = value;
+	}
+	
+	public DataItem(Long id, String pageName, String name, String type, String value){
+		this(pageName, name, type, value);
+		this.id = id;
 	}
 	
 	public String getName() {
@@ -44,6 +52,14 @@ public class DataItem {
 
 	public void setPageName(String pageName) {
 		this.pageName = pageName;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override

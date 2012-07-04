@@ -1,25 +1,35 @@
 package uk.co.vurt.hakken.domain.job;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Submission {
+public class Submission implements Serializable {
 
+	private static final long serialVersionUID = 2876749616083811529L;
+	
+	private Long id;
 	private String username;
-	private int jobId;
+	private Long jobId;
+	private String taskDefinitionName;
 	private List<DataItem> dataItems;
 	
 	public Submission(){
 		dataItems = new ArrayList<DataItem>();
 	}
 	
-	public Submission(String username, int jobId, List<DataItem> dataItems) {
-		super();
+	public Submission(String username, long jobId, List<DataItem> dataItems) {
+		this();
 		this.username = username;
 		this.jobId = jobId;
 		this.dataItems = dataItems;
 	}
 
+	public Submission(Long id, String username, long jobId, List<DataItem> dataItems){
+		this(username, jobId, dataItems);
+		this.id = id;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -28,11 +38,11 @@ public class Submission {
 		this.username = username;
 	}
 
-	public int getJobId() {
+	public Long getJobId() {
 		return jobId;
 	}
 
-	public void setJobId(int jobId) {
+	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
 
@@ -46,6 +56,22 @@ public class Submission {
 	
 	public void addDataItem(DataItem dataItem){
 		this.dataItems.add(dataItem);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTaskDefinitionName() {
+		return taskDefinitionName;
+	}
+
+	public void setTaskDefinitionName(String taskDefinitionName) {
+		this.taskDefinitionName = taskDefinitionName;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ public class Job {
 		public static final String NAME = "name";
 		
 		public static final String TASK_DEFINITION_ID = "task_definition_id";
+		public static final String TASK_DEFINITION_NAME = "task_definition_name";
 		
 		public static final String CREATED = "created";
 		public static final String DUE = "due";
@@ -30,12 +31,14 @@ public class Job {
 		public static final String NOTES = "notes";
 		public static final String MODIFIED = "modified";
 		
+		
 		public static final String DEFAULT_SORT_ORDER = GROUP + ", " + DUE + " ASC";
 		
 		public static final String[] ALL = new String[]{
 			_ID,
 			NAME,
 			TASK_DEFINITION_ID,
+			TASK_DEFINITION_NAME,
 			CREATED,
 			DUE,
 			STATUS,

@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +19,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.server.connector.db.DatabaseTableTaskDefinition;
 import uk.co.vurt.hakken.util.StringUtils;
 
@@ -109,7 +109,7 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	}
 
 	@Override
-	public boolean save() {
+	public boolean save(Submission submission) {
 		// TODO Auto-generated method stub
 		return false;
 	}

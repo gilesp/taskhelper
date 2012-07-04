@@ -13,7 +13,7 @@ public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
 	
-	private long id;
+	private Long id;
 	private String name;
 	private TaskDefinition definition;
 	private Date created;
@@ -26,7 +26,7 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(long id, String name, TaskDefinition definition, Date created,
+	public JobDefinition(Long id, String name, TaskDefinition definition, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
@@ -38,10 +38,10 @@ public class JobDefinition implements Serializable{
 		this.notes = notes;
 	}
 
-	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
-		this(id, name, definition, created, due, status, notes);
-		this.group = group;
-	}
+//	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
+//		this(id, name, definition, created, due, status, notes);
+//		this.group = group;
+//	}
 	
 //	public static JobDefinition valueOf(JSONObject job){
 //		try{
@@ -94,7 +94,7 @@ public class JobDefinition implements Serializable{
 		this.status = status;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -120,6 +120,34 @@ public class JobDefinition implements Serializable{
 	
 	public String getNotes() {
 		return notes;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDefinition(TaskDefinition definition) {
+		this.definition = definition;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public void setDue(Date due) {
+		this.due = due;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	public Set<DataItem> getDataItems() {

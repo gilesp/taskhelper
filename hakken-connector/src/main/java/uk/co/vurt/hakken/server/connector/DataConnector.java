@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.vurt.hakken.domain.job.Submission;
+
 public interface DataConnector<T extends DataConnectorTaskDefinition> {
 
 
@@ -16,7 +18,7 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public boolean createNew();
 	
-	public boolean save();
+	public boolean save(Submission submission, Map<String, String> taskToConnectorMappings);
 	
 	public String getName();
 	

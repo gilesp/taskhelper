@@ -219,7 +219,9 @@ final public class NetworkUtilities {
 	 */
 	public static boolean submitData(Context context, Account account,
 			String authToken, Submission submission) {
-
+		
+		boolean success = false;
+		
 		StringEntity stringEntity;
 		try {
 			stringEntity = new StringEntity(JSONUtil.getInstance().toJson(submission));
@@ -239,12 +241,13 @@ final public class NetworkUtilities {
 			post.setHeader("Content-type", "application/json");
 			final HttpResponse httpResponse = getHttpClient().execute(post);
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-				return true;
+				String response = EntityUtils.toString(httpResponse.getEntity());
+				Log.d(TAG, "Response: " + response);
+				success = Boolean.parseBoolean(response);
 			} else {
-				//TODO: Find a way of displaying this error to the user.
-				Log.e(TAG, "Data submission failed: "
+				Log.w(TAG, "Data submission failed: "
 						+ httpResponse.getStatusLine().getStatusCode());
-				return false;
+				success = false;
 			}
 		} catch (UnsupportedEncodingException e) {
 			Log.e(TAG, "Unable to convert submission to JSON", e);
@@ -253,7 +256,7 @@ final public class NetworkUtilities {
 		} catch (IOException e) {
 			Log.e(TAG, "Error submitting json", e);
 		}
-		return false;
+		return success;
 
 	}
 

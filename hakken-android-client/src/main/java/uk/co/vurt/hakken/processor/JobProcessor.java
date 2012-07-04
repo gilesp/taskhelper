@@ -74,7 +74,8 @@ public class JobProcessor {
 		
 		if(cursor != null){
 			cursor.moveToFirst();
-			int jobId = cursor.getInt(COLUMN_INDEX_JOB_ID);
+
+			Long jobId = cursor.getLong(COLUMN_INDEX_JOB_ID);
 			String jobName = cursor.getString(COLUMN_INDEX_JOB_NAME);
 			Date jobCreated = new Date(cursor.getLong(COLUMN_INDEX_JOB_CREATED));
 			Date jobDue = new Date(cursor.getLong(COLUMN_INDEX_JOB_DUE));

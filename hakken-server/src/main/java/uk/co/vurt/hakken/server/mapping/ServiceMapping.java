@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -27,36 +29,26 @@ import uk.co.vurt.hakken.domain.job.DataItem;
 
 @Entity
 @Table(name="service_mappings")
+@Access(value = AccessType.PROPERTY)
 public class ServiceMapping implements Serializable{
 
 	private static final Logger logger = LoggerFactory.getLogger(ServiceMapping.class);
-	
 	private static final long serialVersionUID = -2494689555896279648L;
-	
-	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SERV_MAP_SEQ")
-	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ")
 	private long id;
-
-	@OneToOne
-	@JoinColumn(name="DC_DEF_MAPPING_ID")
 	DataConnectorTaskDefinitionMapping dataConnectorTaskDefinitionMapping;
-	
 	String taskDefinitionName;
+	Map<String, String> connectorToTaskMappings;
+	Map<String, String> taskToConnectorMappings;
+	
+	@Transient
+	public Map<String,String> getTaskToConnectorMappings(){
+		return taskToConnectorMappings;
+	}
 	
 	@ElementCollection
     @MapKeyColumn(name="connector_di")
     @Column(name="task_di")
     @CollectionTable(name="service_mapping_dataitems", joinColumns=@JoinColumn(name="mapping_id"))
-	Map<String, String> connectorToTaskMappings;
-
-	@Transient
-	Map<String, String> taskToConnectorMappings;
-		
-	public Map<String,String> getTaskToConnectorMappings(){
-		return taskToConnectorMappings;
-	}
-	
 	public Map<String, String> getConnectorToTaskMappings(){
 		return connectorToTaskMappings;
 	}
@@ -99,6 +91,9 @@ public class ServiceMapping implements Serializable{
 		this.taskDefinitionName = taskDefinitionName;
 	}
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SERV_MAP_SEQ")
+	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ")
 	public long getId() {
 		return id;
 	}
@@ -107,6 +102,8 @@ public class ServiceMapping implements Serializable{
 		this.id = id;
 	}
 
+	@OneToOne
+	@JoinColumn(name="DC_DEF_MAPPING_ID")
 	public DataConnectorTaskDefinitionMapping getDataConnectorTaskDefinitionMapping() {
 		return dataConnectorTaskDefinitionMapping;
 	}
