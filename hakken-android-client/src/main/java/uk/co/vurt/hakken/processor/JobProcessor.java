@@ -57,7 +57,7 @@ public class JobProcessor {
 	private TaskProcessor taskProcessor;
 	private JobDefinition jobDefinition;
 	private ExpressionFactory expressionFactory = new ExpressionFactory();
-	private EvaluationVisitor expressionVisitor = new HakkenEvaluationVisitor();
+	private HakkenEvaluationVisitor expressionVisitor = new HakkenEvaluationVisitor();
 	
 	private List<Page> pages;
 	private Map<String, Page> pageCache;
@@ -147,14 +147,17 @@ public class JobProcessor {
 			for(int i = 0; i < nextPages.size() && nextPageName == null; i++){
 				PageSelector selector = nextPages.get(i);
 				Log.d(TAG, "Testing pageselector " + i);
-				if(selector.getCondition() != null){
-					Log.d(TAG, "PageSelector has condition");
+				if(selector.getCondition() != null && selector.getCondition().length() > 0 ){
+					Log.d(TAG, "PageSelector has condition: " + selector.getCondition());
 					try{
 						Expression expression = expressionFactory.createCondition(selector.getCondition());
 						expressionVisitor.setExpression(expression);
+						expressionVisitor.setJobProcessor(this);
 						if(expressionVisitor.evaluateCondition()){
 							Log.d(TAG, "condition was true");
 							nextPageName = selector.getPageName();
+						} else {
+							Log.d(TAG, "condition was false");
 						}
 					}catch(ExpressionException ee){
 						Log.e(TAG, "Unable to evaluate page selector condition", ee);
@@ -217,7 +220,7 @@ public class JobProcessor {
 	}
 	
 	public Page getCurrentPage(){
-		if(pages != null){
+		if(pages != null && currentPagePosition > -1){
 			return pages.get(currentPagePosition); 
 		}else {
 			return null;
@@ -325,4 +328,5 @@ public class JobProcessor {
 
 		return dataitem;
 	}
+	
 }
