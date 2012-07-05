@@ -73,11 +73,7 @@ public class JobList extends ListActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.taskhelper_menu, menu);
-        // This is our one standard application action -- inserting a
-        // new note into the list.
-//        menu.add(0, MENU_ITEM_INSERT, 0, R.string.menu_insert)
-//                .setShortcut('3', 'a')
-//                .setIcon(android.R.drawable.ic_menu_add);
+
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
