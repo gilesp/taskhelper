@@ -90,6 +90,7 @@ public class JobProcessor {
 			
 			pages = taskProcessor.getPages();
 		}
+		expressionVisitor.setJobProcessor(this);
 	}
 	
 	public JobProcessor(ContentResolver contentResolver, Uri jobUri, Bundle savedState){
@@ -152,7 +153,7 @@ public class JobProcessor {
 					try{
 						Expression expression = expressionFactory.createCondition(selector.getCondition());
 						expressionVisitor.setExpression(expression);
-						expressionVisitor.setJobProcessor(this);
+						
 						if(expressionVisitor.evaluateCondition()){
 							Log.d(TAG, "condition was true");
 							nextPageName = selector.getPageName();
@@ -179,6 +180,18 @@ public class JobProcessor {
 		}
 	}
 	
+	public String evaluateExpression(String expression){
+		String value = null;
+		try {
+			Expression expr = expressionFactory.createExpression(expression);
+			expressionVisitor.setExpression(expr);
+			value = (String)expressionVisitor.evaluateExpression();
+		} catch (ExpressionException e) {
+			Log.e(TAG, "Unable to evaluate expression '" + expression + "'.", e);
+			e.printStackTrace();
+		}
+		return value;
+	}
 	private Page getPage(String name){
 		Page page = null;
 		if(pageCache == null){

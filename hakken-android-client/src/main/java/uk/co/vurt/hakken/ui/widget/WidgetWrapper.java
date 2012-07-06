@@ -7,14 +7,16 @@ public class WidgetWrapper {
 	private View widget;
 	private boolean required;
 	private boolean readOnly;
+	private boolean hidden;
 	
-	public WidgetWrapper(View widget, boolean required, boolean readOnly){
+	public WidgetWrapper(View widget, boolean required, boolean readOnly, boolean hidden){
 		this.widget = widget;
 		this.required = required;
 		this.readOnly = readOnly;
+		this.hidden = hidden;
 	}
 	public WidgetWrapper(View widget, boolean required){
-		this(widget, required, false);
+		this(widget, required, false, false);
 	}
 	
 	public WidgetWrapper(View widget){
@@ -41,6 +43,12 @@ public class WidgetWrapper {
 	}
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
+	}
+	public boolean isHidden() {
+		return hidden;
+	}
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 	
 }

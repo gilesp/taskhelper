@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import uk.co.vurt.hakken.domain.NameValue;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.pageitem.LabelledValue;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
+import uk.co.vurt.hakken.processor.PageItemProcessor;
 import uk.co.vurt.hakken.ui.widget.LabelledCheckBox;
 import uk.co.vurt.hakken.ui.widget.LabelledDatePicker;
 import uk.co.vurt.hakken.ui.widget.LabelledEditBox;
@@ -33,17 +30,16 @@ public class WidgetFactory {
 
 	private static final String TAG = "WidgetFactory";
 	
+	
+	
 	public static WidgetWrapper createWidget(Context context, PageItem item,
 			DataItem dataItem) {
-		Log.d(TAG, "PageItem: " + item);
-		Log.d(TAG, "DataItem: " + dataItem);
+
 		View widget = null;
 
-		boolean readonly = false;
-		if(item.getAttributes() != null && item.getAttributes().containsKey("readonly")){
-			readonly = Boolean.parseBoolean(item.getAttributes().get("readonly"));
-			Log.d(TAG, "Readonly: " + readonly);
-		}
+		boolean readonly = PageItemProcessor.getBooleanAttribute(item, "readonly");
+		boolean hidden = PageItemProcessor.getBooleanAttribute(item, "hidden");
+		boolean required = PageItemProcessor.getBooleanAttribute(item, "required");
 		
 		// create new widget and add it to the map
 		if ("LABEL".equals(item.getType())) {
@@ -76,10 +72,12 @@ public class WidgetFactory {
 					dataItem != null ? dataItem.getValue() : item.getValue());
 			widget = datePicker;
 		} else if ("YESNO".equals(item.getType())) {
+			
 			LabelledCheckBox checkBox = new LabelledCheckBox(
 					context,
 					item.getLabel(),
-					dataItem != null ? Boolean.parseBoolean(dataItem.getValue())
+					dataItem != null && (dataItem.getValue().equals("true") || dataItem.getValue().equals("Y")) 
+							? true
 							: false);
 			widget = checkBox;
 		} else if ("SELECT".equals(item.getType())) {
@@ -104,33 +102,14 @@ public class WidgetFactory {
 				}
 			}
 			List<NameValue> selected = new ArrayList<NameValue>();
-//			try {
-				Log.d(TAG, "Item Value: " + item.getValue());
-				List<LabelledValue> values = item.getValues();
-				for(LabelledValue value: values){
-					NameValue nameValue = new NameValue(value.getLabel(), value.getValue());
-					if(dataItemValues.contains(value.getValue())){
-						selected.add(nameValue);
-					}
-					spinnerArray.add(nameValue);
+			List<LabelledValue> values = item.getValues();
+			for(LabelledValue value: values){
+				NameValue nameValue = new NameValue(value.getLabel(), value.getValue());
+				if(dataItemValues.contains(value.getValue())){
+					selected.add(nameValue);
 				}
-				
-//				if(item.getValue() != null){
-//					JSONArray valueArray = new JSONArray(item.getValue());
-//					for(int i = 0; i < valueArray.length(); i++){
-//						JSONObject labelledValue = valueArray.getJSONObject(i);
-//						if(labelledValue.has("label")){
-//							NameValue nameValue = new NameValue(labelledValue.getString("label"), labelledValue.getString("value"));
-//							if(dataItemValues.contains(nameValue.getValue())){
-//								selected.add(nameValue);
-//							}
-//							spinnerArray.add(nameValue);
-//						}
-//					}
-//				}
-//			} catch (JSONException e) {
-//				Log.e(TAG, "Unable to parse options.", e);
-//			}
+				spinnerArray.add(nameValue);
+			}
 			spinner.setItems(spinnerArray);
 			for(NameValue selectedValue: selected){
 				spinner.setSelected(selectedValue);
@@ -142,12 +121,8 @@ public class WidgetFactory {
 			widget = errorLabel;
 		}
 
-		boolean required = false;
-		if(item.getAttributes() != null && item.getAttributes().containsKey("required")){
-			required = Boolean.parseBoolean(item.getAttributes().get("required"));
-			Log.i(TAG, "required: " + required);
-		}
 		
-		return new WidgetWrapper(widget, required, readonly);
+		
+		return new WidgetWrapper(widget, required, readonly, hidden);
 	}
 }

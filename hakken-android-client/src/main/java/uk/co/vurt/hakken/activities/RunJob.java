@@ -6,17 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 import uk.co.vurt.hakken.processor.JobProcessor;
+import uk.co.vurt.hakken.processor.PageItemProcessor;
 import uk.co.vurt.hakken.ui.WidgetFactory;
 import uk.co.vurt.hakken.ui.widget.LabelledCheckBox;
 import uk.co.vurt.hakken.ui.widget.LabelledDatePicker;
 import uk.co.vurt.hakken.ui.widget.LabelledEditBox;
 import uk.co.vurt.hakken.ui.widget.LabelledSpinner;
 import uk.co.vurt.hakken.ui.widget.WidgetWrapper;
-import uk.co.vurt.hakken.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -230,15 +231,26 @@ public class RunJob extends Activity {
 						}
 	
 					}
+
+					//Not sure if this it the best place to do this but...
+					//is there an expression we need to evaluate fo rthe value?
+					String expression = PageItemProcessor.getStringAttribute(item, "expression");
+					if(expression != null){
+						value = jobProcessor.evaluateExpression(expression);
+					}
+					
 					if (value != null) {
 						
 						//compare to previous value
 						DataItem previousValue = retrieveDataItem(jobProcessor.getPageName(),
 								 item.getName(), 
 								 item.getType());
+
 						//only store a dataitem if the value has changed.
-						if((previousValue != null) && 
-								(!previousValue.getValue().equals(value))){
+						if((previousValue == null) || 
+								(previousValue != null && (!previousValue.getValue().equals(value)))){
+							Log.d(TAG, "Previous value: " + (previousValue != null ? previousValue.getValue() : "null") + " New value: " + value);
+							
 							DataItem dataItem = new DataItem(page.getName(),
 									item.getName(), item.getType(), value);
 							Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
@@ -289,6 +301,7 @@ public class RunJob extends Activity {
 					String widgetKey = createWidgetKey(
 							jobProcessor.getPageName(), item);
 
+					
 					WidgetWrapper wrapper = null;
 					if (widgetWrapperMap.containsKey(widgetKey)) {
 						// retrieve widget from map
@@ -316,7 +329,9 @@ public class RunJob extends Activity {
 						}
 						widgetWrapperMap.put(widgetKey, wrapper);
 					}
-					pageContent.addView(wrapper.getWidget());
+					if(!wrapper.isHidden()){
+						pageContent.addView(wrapper.getWidget());
+					}
 				}
 			} else {
 				TextView errorLabel = new TextView(this);
