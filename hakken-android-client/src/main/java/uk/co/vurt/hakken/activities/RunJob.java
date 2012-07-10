@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.job.DataItem;
@@ -30,7 +29,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -40,7 +38,7 @@ import android.widget.TextView;
 public class RunJob extends Activity {
 
 	private static final String TAG = "RunJob";
-	
+	private static final String WIDGET_MAP_KEY = TAG + "-widget_map";
 	
 	// Shouldn't this be an enum?
 	private static final int STATE_RUN = 0;
@@ -50,10 +48,9 @@ public class RunJob extends Activity {
 	private ContentResolver contentResolver;
 
 	private JobProcessor jobProcessor;
-	private Map<String, WidgetWrapper> widgetWrapperMap;
+	private HashMap<String, WidgetWrapper> widgetWrapperMap;
 
 	private LinearLayout pageContent;
-//	private LinearLayout buttonBar;
 
 	private Button finishButton;
 	private Button nextButton;
@@ -80,7 +77,6 @@ public class RunJob extends Activity {
 		setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.hsc_logo);
 
-//		buttonBar = (LinearLayout) findViewById(R.id.buttonBar);
 		pageContent = (LinearLayout) findViewById(R.id.pageContent);
 
 		// Get the job definition
@@ -90,7 +86,11 @@ public class RunJob extends Activity {
 			jobProcessor = new JobProcessor(contentResolver, intent.getData());
 		}
 
-		widgetWrapperMap = new HashMap<String, WidgetWrapper>();
+		if(savedInstanceState != null && savedInstanceState.containsKey(WIDGET_MAP_KEY)){
+			widgetWrapperMap = (HashMap)savedInstanceState.getSerializable(WIDGET_MAP_KEY);
+		} else {
+			widgetWrapperMap = new HashMap<String, WidgetWrapper>();
+		}
 
 		
 		// Setup buttons
@@ -98,11 +98,6 @@ public class RunJob extends Activity {
 		nextButton = (Button)findViewById(R.id.nextButton);
 		finishButton = (Button)findViewById(R.id.finishButton);
 		
-//		previousButton = new Button(this);
-//		previousButton.setLayoutParams(new LayoutParams(
-//				ViewGroup.LayoutParams.WRAP_CONTENT,
-//				ViewGroup.LayoutParams.WRAP_CONTENT));
-//		previousButton.setText("Previous");
 		previousButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -113,12 +108,7 @@ public class RunJob extends Activity {
 			}
 
 		});
-//
-//		nextButton = new Button(this);
-//		nextButton.setLayoutParams(new LayoutParams(
-//				ViewGroup.LayoutParams.WRAP_CONTENT,
-//				ViewGroup.LayoutParams.WRAP_CONTENT));
-//		nextButton.setText("Next");
+
 		nextButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -130,12 +120,7 @@ public class RunJob extends Activity {
 			}
 
 		});
-//
-//		finishButton = new Button(this);
-//		finishButton.setLayoutParams(new LayoutParams(
-//				ViewGroup.LayoutParams.WRAP_CONTENT,
-//				ViewGroup.LayoutParams.WRAP_CONTENT));
-//		finishButton.setText("Finish");
+
 		finishButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -161,6 +146,14 @@ public class RunJob extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		jobProcessor.saveInstanceState(outState);
+		if(widgetWrapperMap != null){
+			for(WidgetWrapper wrapper: widgetWrapperMap.values()){
+				if(wrapper.getWidget() != null && wrapper.getWidget().getParent() != null){
+					((ViewGroup)wrapper.getWidget().getParent()).removeView(wrapper.getWidget());
+				}
+			}
+			outState.putSerializable(WIDGET_MAP_KEY, widgetWrapperMap);
+		}
 	}
 
 	protected void finishJob() {

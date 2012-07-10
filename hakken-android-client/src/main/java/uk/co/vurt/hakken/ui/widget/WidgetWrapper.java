@@ -1,9 +1,13 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
+
 import android.view.View;
 
-public class WidgetWrapper {
+public class WidgetWrapper implements Serializable {
 
+	private static final long serialVersionUID = -6533675131580965386L;
+	
 	private View widget;
 	private boolean required;
 	private boolean readOnly;
