@@ -1,11 +1,11 @@
 package uk.co.vurt.hakken.processor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.wmfs.coalesce.csql.EvaluationVisitor;
 import net.wmfs.coalesce.csql.Expression;
 import net.wmfs.coalesce.csql.ExpressionException;
 import net.wmfs.coalesce.csql.ExpressionFactory;
@@ -30,7 +30,9 @@ public class JobProcessor {
 
 	private static final String TAG = "JobProcessor";
 	private static final String CURRENT_PAGE_KEY = TAG + "-current_page";
-	private static final String PREVIOUS_PAGE_KEY = TAG + "-previous_page";
+//	private static final String PREVIOUS_PAGE_KEY = TAG + "-previous_page";
+	private static final String PREVIOUS_PAGE_POSITION_KEY = TAG + "-previous_position";
+	private static final String HISTORY_KEY = TAG + "-history";
 	
 	public static final String[] JOB_PROJECTION = new String[] {
 		Job.Definitions._ID,
@@ -63,7 +65,8 @@ public class JobProcessor {
 	private Map<String, Page> pageCache;
 	
 	int currentPagePosition = 0;
-	int previousPagePosition = -1;
+	ArrayList<Integer> pageHistory;
+	int pageHistoryPosition = -1;
 	
 	public JobProcessor(ContentResolver contentResolver, Uri jobUri){
 		Log.d(TAG, "Instantiating with URI: " + jobUri);
@@ -89,15 +92,25 @@ public class JobProcessor {
 			jobDefinition = new JobDefinition(jobId, jobName, taskProcessor.getTaskDefinition(), jobCreated, jobDue, jobStatus, notes);
 			
 			pages = taskProcessor.getPages();
+			pageHistory =  new ArrayList<Integer>();
+			pageHistory.add(currentPagePosition);
+			pageHistoryPosition = 0;
 		}
 		expressionVisitor.setJobProcessor(this);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JobProcessor(ContentResolver contentResolver, Uri jobUri, Bundle savedState){
 		this(contentResolver, jobUri);
 		if(savedState != null){
-			this.currentPagePosition = savedState.getInt(CURRENT_PAGE_KEY);
-			this.previousPagePosition = savedState.getInt(PREVIOUS_PAGE_KEY);
+			if(savedState.containsKey(CURRENT_PAGE_KEY)){
+				this.currentPagePosition = savedState.getInt(CURRENT_PAGE_KEY);
+			}
+			
+			if(savedState.containsKey(HISTORY_KEY) && savedState.containsKey(PREVIOUS_PAGE_POSITION_KEY)){
+				this.pageHistory = (ArrayList<Integer>)savedState.getSerializable(HISTORY_KEY);
+				this.pageHistoryPosition = savedState.getInt(PREVIOUS_PAGE_POSITION_KEY);
+			}
 		}
 	}
 	
@@ -115,7 +128,8 @@ public class JobProcessor {
 	
 	public void saveInstanceState(Bundle outState){
 		outState.putInt(CURRENT_PAGE_KEY, currentPagePosition);
-		outState.putInt(PREVIOUS_PAGE_KEY, previousPagePosition);
+		outState.putInt(PREVIOUS_PAGE_POSITION_KEY, pageHistoryPosition);
+		outState.putSerializable(HISTORY_KEY, pageHistory);
 	}
 	
 	public String getPageName(){
@@ -140,44 +154,36 @@ public class JobProcessor {
 	
 	public void nextPage(){
 		String nextPageName = null;
-		previousPagePosition = currentPagePosition;
+		
 		List<PageSelector> nextPages = getCurrentPage().getNextPages();
 		if(nextPages != null && nextPages.size() > 0 ){
-			Log.d(TAG, "NextPages size: " + nextPages.size());
 			//evaluate page selectors in turn, to find one that matches
 			for(int i = 0; i < nextPages.size() && nextPageName == null; i++){
 				PageSelector selector = nextPages.get(i);
-				Log.d(TAG, "Testing pageselector " + i);
 				if(selector.getCondition() != null && selector.getCondition().length() > 0 ){
-					Log.d(TAG, "PageSelector has condition: " + selector.getCondition());
 					try{
 						Expression expression = expressionFactory.createCondition(selector.getCondition());
 						expressionVisitor.setExpression(expression);
 						
 						if(expressionVisitor.evaluateCondition()){
-							Log.d(TAG, "condition was true");
 							nextPageName = selector.getPageName();
-						} else {
-							Log.d(TAG, "condition was false");
 						}
 					}catch(ExpressionException ee){
 						Log.e(TAG, "Unable to evaluate page selector condition", ee);
 					}
 				} else {
-					Log.d(TAG, "No condition on page selector");
 					nextPageName = selector.getPageName();
 				}
 			}
-			Log.d(TAG, "Next page name: " + nextPageName);
-			
 			currentPagePosition = getPagePosition(getPage(nextPageName));
-			Log.d(TAG, "Setting currentPagePosition to " + currentPagePosition);
 		}else {
 			//otherwise just get the next page in the list.
 			if(morePages()){
 				currentPagePosition++;
 			}
 		}
+		pageHistory.add(currentPagePosition);
+		pageHistoryPosition++;
 	}
 	
 	public String evaluateExpression(String expression){
@@ -223,13 +229,14 @@ public class JobProcessor {
 	}
 	
 	public void previousPage(){
-		if(previousPagePosition == -1){
-			if(previousPages()){
-				currentPagePosition--;
-			}
-		}else{
-			currentPagePosition = previousPagePosition;
+
+		Log.d(TAG, "Previous Page called. pageHistoryPosition: " + pageHistoryPosition);
+		if(pageHistoryPosition > 0){
+			pageHistoryPosition--;
 		}
+		Log.d(TAG, "pageHistoryPosition: " + pageHistoryPosition);
+		currentPagePosition = pageHistory.get(pageHistoryPosition);
+		pageHistory.subList(pageHistoryPosition + 1, pageHistory.size()).clear(); //remove old "next" pages
 	}
 	
 	public Page getCurrentPage(){
