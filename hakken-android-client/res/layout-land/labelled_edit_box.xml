@@ -1,14 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_height="wrap_content"
-    android:layout_width="fill_parent">
+    android:layout_width="fill_parent"
+    android:layout_marginTop="5dip">
     <TextView
         android:id="@+id/labelled_edit_box_label"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="20dip" />
+        android:gravity="top"
+        android:paddingRight="20dip" 
+        android:minWidth="100dip"/>
     <EditText
         android:id="@+id/labelled_edit_box_value"
         android:singleLine="true"
@@ -16,6 +19,7 @@
         android:layout_height="wrap_content"
         android:minWidth="250dip"
         android:scrollHorizontally="true"
+        android:gravity="top"
         android:capitalize="none"
         android:autoText="false"
         android:inputType="text"/>

@@ -12,12 +12,11 @@
         android:gravity="center_vertical"
         android:paddingRight="5dip"
         android:text="Does anyone in the household smoke?"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textStyle="bold" />
 
 	    <CheckBox
 	        android:id="@+id/labelled_check_box_value"
-	        android:layout_width="wrap_content"
+	        android:layout_width="55dip"
 	        android:layout_height="match_parent"
 	        android:gravity="center" />
 </LinearLayout>
