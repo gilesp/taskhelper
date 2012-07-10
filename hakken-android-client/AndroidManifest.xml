@@ -1,142 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.co.vurt.hakken"
-    android:installLocation="auto"
-    android:versionCode="1"
-    android:versionName="1.0" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" android:versionCode="9" android:versionName="1.0.0-SNAPSHOT" package="uk.co.vurt.hakken">
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="11" />
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="13"/>
     <!-- <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="10" /> -->
 
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:resizeable="true"
-        android:smallScreens="true" />
+    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true"/>
 
-    <application
-        android:icon="@drawable/icon"
-        android:label="@string/app_name"
-        android:hardwareAccelerated="true"
-        android:theme="@style/ActivityAssistant" >
-        <provider
-            android:name=".providers.TaskProvider"
-            android:authorities="uk.co.vurt.hakken" />
+    <application android:debuggable="false" android:hardwareAccelerated="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:theme="@style/ActivityAssistant">
+        <provider android:authorities="uk.co.vurt.hakken" android:name=".providers.TaskProvider"/>
 
-        <service
-            android:name=".authenticator.AuthenticationService"
-            android.exported="true" >
+        <service android.exported="true" android:name=".authenticator.AuthenticationService">
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
+                <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
 
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator"/>
         </service>
-        <service
-            android:name=".syncadapter.SyncService"
-            android.exported="true" >
+        <service android.exported="true" android:name=".syncadapter.SyncService">
             <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
 
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter"/>
         </service>
 
-        <activity
-            android:name=".activities.PreferencesActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name=".authenticator.AuthenticatorActivity"
-            android:excludeFromRecents="true"
-            android:label="@string/ui_activity_title"
-            android:theme="@android:style/Theme.Dialog" >
+        <activity android:label="@string/app_name" android:name=".activities.PreferencesActivity"/>
+        <activity android:excludeFromRecents="true" android:label="@string/ui_activity_title" android:name=".authenticator.AuthenticatorActivity" android:theme="@android:style/Theme.Dialog">
         </activity>
-        <activity
-            android:name=".activities.TaskList"
-            android:label="@string/app_name" >
+        <activity android:label="@string/app_name" android:name=".activities.TaskList">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.PICK" />
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.PICK"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.hakken.task" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.hakken.task"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
+                <action android:name="android.intent.action.GET_CONTENT"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.task" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.task"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.JobList"
-            android:label="@string/job_list_title" >
+        <activity android:label="@string/job_list_title" android:name=".activities.JobList">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.EDIT" />
-                <action android:name="android.intent.action.PICK" />
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.EDIT"/>
+                <action android:name="android.intent.action.PICK"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.hakken.job" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.vurt.hakken.job"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
+                <action android:name="android.intent.action.GET_CONTENT"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.job" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.job"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.RunTask"
-            android:label="@string/run_activity_title" >
+        <activity android:label="@string/run_activity_title" android:name=".activities.RunTask">
             <intent-filter>
-                <action android:name="android.intent.action.RUN" />
+                <action android:name="android.intent.action.RUN"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.task.definition" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.task.definition"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.RunJob"
-            android:label="@string/run_activity_title" >
+        <activity android:label="@string/run_activity_title" android:name=".activities.RunJob">
             <intent-filter>
-                <action android:name="android.intent.action.RUN" />
+                <action android:name="android.intent.action.RUN"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.job" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.vurt.hakken.job"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.DispatcherActivity"
-            android:label="@string/app_name" >
+        <activity android:label="@string/app_name" android:name=".activities.DispatcherActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

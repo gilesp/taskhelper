@@ -53,12 +53,12 @@ public class RunJob extends Activity {
 	private Map<String, WidgetWrapper> widgetWrapperMap;
 
 	private LinearLayout pageContent;
-	private LinearLayout buttonBar;
+//	private LinearLayout buttonBar;
 
 	private Button finishButton;
 	private Button nextButton;
 	private Button previousButton;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,7 +80,7 @@ public class RunJob extends Activity {
 		setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				R.drawable.hsc_logo);
 
-		buttonBar = (LinearLayout) findViewById(R.id.buttonBar);
+//		buttonBar = (LinearLayout) findViewById(R.id.buttonBar);
 		pageContent = (LinearLayout) findViewById(R.id.pageContent);
 
 		// Get the job definition
@@ -92,12 +92,17 @@ public class RunJob extends Activity {
 
 		widgetWrapperMap = new HashMap<String, WidgetWrapper>();
 
+		
 		// Setup buttons
-		previousButton = new Button(this);
-		previousButton.setLayoutParams(new LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT));
-		previousButton.setText("Previous");
+		previousButton = (Button)findViewById(R.id.previousButton);
+		nextButton = (Button)findViewById(R.id.nextButton);
+		finishButton = (Button)findViewById(R.id.finishButton);
+		
+//		previousButton = new Button(this);
+//		previousButton.setLayoutParams(new LayoutParams(
+//				ViewGroup.LayoutParams.WRAP_CONTENT,
+//				ViewGroup.LayoutParams.WRAP_CONTENT));
+//		previousButton.setText("Previous");
 		previousButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -108,12 +113,12 @@ public class RunJob extends Activity {
 			}
 
 		});
-
-		nextButton = new Button(this);
-		nextButton.setLayoutParams(new LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT));
-		nextButton.setText("Next");
+//
+//		nextButton = new Button(this);
+//		nextButton.setLayoutParams(new LayoutParams(
+//				ViewGroup.LayoutParams.WRAP_CONTENT,
+//				ViewGroup.LayoutParams.WRAP_CONTENT));
+//		nextButton.setText("Next");
 		nextButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -125,12 +130,12 @@ public class RunJob extends Activity {
 			}
 
 		});
-
-		finishButton = new Button(this);
-		finishButton.setLayoutParams(new LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT));
-		finishButton.setText("Finish");
+//
+//		finishButton = new Button(this);
+//		finishButton.setLayoutParams(new LayoutParams(
+//				ViewGroup.LayoutParams.WRAP_CONTENT,
+//				ViewGroup.LayoutParams.WRAP_CONTENT));
+//		finishButton.setText("Finish");
 		finishButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -341,16 +346,23 @@ public class RunJob extends Activity {
 			}
 
 			// define next/previous/finish buttons
-			buttonBar.removeAllViewsInLayout();
-
+//			buttonBar.removeAllViewsInLayout();
+			
 			if (jobProcessor.previousPages()) {
-				buttonBar.addView(previousButton);
+//				buttonBar.addView(previousButton);
+				previousButton.setVisibility(View.VISIBLE);
+			} else {
+				previousButton.setVisibility(View.GONE);
 			}
 			if (jobProcessor.morePages()) {
 				if (jobProcessor.lastPage()) {
-					buttonBar.addView(finishButton);
+//					buttonBar.addView(finishButton);
+					finishButton.setVisibility(View.VISIBLE);
+					nextButton.setVisibility(View.GONE);
 				} else {
-					buttonBar.addView(nextButton);
+//					buttonBar.addView(nextButton);
+					nextButton.setVisibility(View.VISIBLE);
+					finishButton.setVisibility(View.GONE);
 				}
 			}
 

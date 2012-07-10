@@ -109,12 +109,6 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	}
 
 	@Override
-	public boolean save(Submission submission) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String getInfo() {
 		return INFO_STRING;
 	}
@@ -256,5 +250,13 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 			}
 		}
 		return taskDefinition;
+	}
+
+	@Override
+	public boolean save(Submission submission,
+			Map<String, String> taskToConnectorMappings,
+			String taskDefinitionName) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

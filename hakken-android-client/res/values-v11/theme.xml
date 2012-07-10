@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="TitleBackgroundStyle">
         <item name="android:background">@drawable/blue_gradient</item>
     </style>
     
     <style name="TitleTextStyle">
-        <item name="android:textSize">20dip</item>
+        <item name="android:textSize">28dip</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textStyle">bold</item>
     </style>
     
     <color name="light_blue">#6274d5</color>
+    <color name="light_grey">#aaaaaa</color>
     
     <style name="ActivityAssistant" parent="android:Theme.Holo.Light"> 
         <item name="android:windowTitleBackgroundStyle">@style/TitleBackgroundStyle</item>
         <item name="android:windowTitleStyle">@style/TitleTextStyle</item>
-        <item name="android:windowTitleSize">28dip</item>
+        <item name="android:windowTitleSize">40dip</item>
         <item name="android:windowBackground">@color/light_blue</item>
-        <item name="android:textSize">18dip</item>
+        <item name="android:textSize">26dip</item>
         <item name="android:textColor">#FFFFFF</item>
+        <item name="android:dropDownListViewStyle">@style/AAPopupMenu</item>
+        <item name="android:popupMenuStyle">@style/AAPopupMenu</item>
     </style>
     
+    <style name="AAPopupMenu" parent="android:style/Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@color/light_grey</item>
+        <item name="android:textColor">#999999</item> 
+    </style>
+
 </resources>

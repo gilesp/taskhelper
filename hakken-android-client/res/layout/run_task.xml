@@ -1,34 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent" 
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <LinearLayout android:id="@+id/buttonBar"
-        android:layout_width="fill_parent" 
+    android:orientation="vertical" >
+
+    <!-- <LinearLayout android:id="@+id/buttonBar" -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_alignParentBottom="true" -->
+    <!-- android:orientation="horizontal"> -->
+    <!-- </LinearLayout> -->
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/buttonBar"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="15dip" >
+
+        <Button
+            android:id="@+id/previousButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous" />
+
+        <LinearLayout
+            android:id="@+id/buttonSpacer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next" />
+
+        <Button
+            android:id="@+id/finishButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finish" />
     </LinearLayout>
-    <LinearLayout android:layout_width="fill_parent" 
-                  android:layout_height="wrap_content"
-                  android:layout_above="@+id/buttonBar" 
-                  android:layout_alignParentTop="true"
-                  android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonBar"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
         <ScrollView
-	        android:layout_width="fill_parent"
-	        android:layout_height="0dip"
-	        android:layout_weight="1">
-	        <LinearLayout
-	            android:id="@+id/pageContent"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:orientation="vertical"
-	            android:paddingTop="5dip"
-	            android:paddingBottom="13dip"
-	            android:paddingLeft="20dip"
-	            android:paddingRight="20dip">
-	        </LinearLayout>
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:id="@+id/pageContent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingBottom="13dip"
+                android:paddingLeft="20dip"
+                android:paddingRight="20dip"
+                android:paddingTop="5dip" >
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
 </RelativeLayout>
-    

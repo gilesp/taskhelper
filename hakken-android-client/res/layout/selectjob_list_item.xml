@@ -7,9 +7,9 @@
         android:id="@+id/joblist_section_header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="20dip"
         android:gravity="center_vertical"
-        android:paddingLeft="0dip"
+        android:paddingLeft="2dip"
         android:singleLine="true"
         android:text="Section header"
         android:background="@drawable/blue_gradient"
@@ -45,7 +45,7 @@
 		        android:gravity="right"
 		        android:paddingRight="5dip"
 		        android:singleLine="true" 
-		        android:textSize="12dip"
+		        android:textSize="20dip"
 		        android:text="Due: 01/01/12"
 			/>
 			<ImageView
@@ -63,7 +63,7 @@
 		    android:paddingLeft="5dip"
 		    android:paddingRight="5dip"
 		    android:singleLine="true"
-		    android:textSize="12dip"
+		    android:textSize="20dip"
 		    android:text="Notes: 15 OSWIN ROAD,WALLSALL, WS3 1PX"/>
     </LinearLayout>
 </LinearLayout>
