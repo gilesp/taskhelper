@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -8,16 +10,16 @@
 	<packaging>war</packaging>
 
 	<parent>
-        <groupId>uk.co.vurt.hakken</groupId>
-        <artifactId>parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
-    
+		<groupId>uk.co.vurt.hakken</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
 	<properties>
-<!-- 	    <jackson.version>2.0.0</jackson.version> -->
-	    
+		<!-- <jackson.version>2.0.0</jackson.version> -->
+        <db.persistence.schema>hakken</db.persistence.schema>
 	</properties>
-	
+
 	<dependencies>
 		<!-- Hakken modules -->
 		<dependency>
@@ -26,16 +28,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>hakken-domain</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>hakken-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hakken-domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hakken-connector</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -55,93 +57,102 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-orm</artifactId>
-		    <version>${org.springframework-version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${org.springframework-version}</version>
 		</dependency>
 
-		<!--  Logging with sl4j instead of JCL -->
+		<!-- Logging with sl4j instead of JCL -->
 		<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${org.slf4j-version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${org.slf4j-version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jdmk</groupId>
-                    <artifactId>jmxtools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jmx</groupId>
-                    <artifactId>jmxri</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>runtime</scope>
-        </dependency>
-        
-		<!--  Persistence -->
-		<dependency>
-		    <groupId>javax.persistence</groupId>
-		    <artifactId>persistence-api</artifactId>
-		    <version>1.0</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-entitymanager</artifactId>
-		    <version>3.6.9.Final</version>
-		    <scope>runtime</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.1-901.jdbc4</version>
-            <scope>runtime</scope>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Persistence -->
+		<!-- 
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+		 -->
+		<dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.1.Final</version>
+<!--             <scope>provided</scope> -->
         </dependency>
-		
-<!-- 		<dependency> -->
-<!-- 		    <groupId>net.sf.log4jdbc</groupId> -->
-<!-- 		    <artifactId>log4jdbc</artifactId> -->
-<!-- 		    <version>1.2</version> -->
-<!-- 		</dependency> -->
-		
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.6.10.Final</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901.jdbc4</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>net.sf.log4jdbc</groupId> -->
+		<!-- <artifactId>log4jdbc</artifactId> -->
+		<!-- <version>1.2</version> -->
+		<!-- </dependency> -->
+
 		<!-- Jackson JSON library -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-<!--         <dependency> -->
-<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
-<!--             <artifactId>jackson-core</artifactId> -->
-<!--             <version>${jackson.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>com.fasterxml.jackson.core</groupId> -->
-<!--             <artifactId>jackson-databind</artifactId> -->
-<!--             <version>${jackson.version}</version> -->
-<!--         </dependency> -->
-        
+		<!-- <dependency> -->
+		<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
+		<!-- <artifactId>jackson-core</artifactId> -->
+		<!-- <version>${jackson.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
+		<!-- <artifactId>jackson-databind</artifactId> -->
+		<!-- <version>${jackson.version}</version> -->
+		<!-- </dependency> -->
+
 		<!-- AspectJ -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -176,12 +187,12 @@
 		</dependency>
 
 		<!-- Guava -->
-<!-- 		<dependency> -->
-<!--             <groupId>com.google.guava</groupId> -->
-<!--             <artifactId>guava</artifactId> -->
-<!--             <version>12.0</version> -->
-<!--         </dependency> -->
-        
+		<!-- <dependency> -->
+		<!-- <groupId>com.google.guava</groupId> -->
+		<!-- <artifactId>guava</artifactId> -->
+		<!-- <version>12.0</version> -->
+		<!-- </dependency> -->
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -191,11 +202,17 @@
 		</dependency>
 	</dependencies>
 	<build>
+	   <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+	   
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.2</version>
 				<configuration>
 					<source>${java-version}</source>
 					<target>${java-version}</target>

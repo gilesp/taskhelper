@@ -5,5 +5,12 @@
            xmlns="http://www.w3.org/1999/xhtml">
 
     <jsp:directive.page contentType="text/html" pageEncoding="UTF-8" />
-    <h:page section="home" title="Hello, World!" intro="This is the hakken server" />               
+    <h:page section="home" title="Hakken" intro="This is the hakken server" hideAdmin="true">
+        <div class="holder_content">
+            <section class="group1">
+                <h3>Install Android Client</h3>
+                Here is the <a href="/hakken/resources/hakken-signed-aligned.apk">apk required to install the android client</a> 
+            </section>
+        </div>
+    </h:page>               
 </jsp:root> 

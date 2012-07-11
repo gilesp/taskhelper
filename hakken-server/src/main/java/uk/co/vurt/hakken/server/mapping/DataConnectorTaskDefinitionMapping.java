@@ -22,9 +22,12 @@ public class DataConnectorTaskDefinitionMapping implements Serializable {
 
 	private static final long serialVersionUID = 1824955271398493674L;
 	
+	/* Hibernate has a bug which means that the jpa schema is ignored in sequences
+	 * so we need to manually include the schema name in the sequence name
+	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="DC_DEFINITION_MAP_SEQ")
-	@SequenceGenerator(name="DC_DEFINITION_MAP_SEQ", sequenceName="DC_DEFINITION_MAP_SEQ")
+	@SequenceGenerator(name="DC_DEFINITION_MAP_SEQ", sequenceName="hakken.DC_DEFINITION_MAP_SEQ", schema="hakken")
 	private long id;
 	
 	private String dataConnectorName;
@@ -33,7 +36,7 @@ public class DataConnectorTaskDefinitionMapping implements Serializable {
 	@ElementCollection
     @MapKeyColumn(name="key")
     @Column(name="value")
-    @CollectionTable(name="dc_def_mapping_props", joinColumns=@JoinColumn(name="dc_def_mapping_id"))
+    @CollectionTable(name="dc_def_mapping_props", joinColumns=@JoinColumn(name="dc_def_mapping_id"), schema="hakken")
 	private Map<String, String> properties = new HashMap<String, String>();
 	
 	public void setProperty(String name, String value){

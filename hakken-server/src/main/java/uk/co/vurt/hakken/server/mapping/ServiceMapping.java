@@ -48,7 +48,7 @@ public class ServiceMapping implements Serializable{
 	@ElementCollection
     @MapKeyColumn(name="connector_di")
     @Column(name="task_di")
-    @CollectionTable(name="service_mapping_dataitems", joinColumns=@JoinColumn(name="mapping_id"))
+    @CollectionTable(name="service_mapping_dataitems", joinColumns=@JoinColumn(name="mapping_id"), schema="hakken")
 	public Map<String, String> getConnectorToTaskMappings(){
 		return connectorToTaskMappings;
 	}
@@ -91,9 +91,12 @@ public class ServiceMapping implements Serializable{
 		this.taskDefinitionName = taskDefinitionName;
 	}
 
+	/* Hibernate has a bug which means that the jpa schema is ignored in sequences
+	 * so we need to manually include the schema name in the sequence name
+	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SERV_MAP_SEQ")
-	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="SERV_MAP_SEQ")
+	@SequenceGenerator(name="SERV_MAP_SEQ", sequenceName="hakken.SERV_MAP_SEQ", schema="hakken")
 	public long getId() {
 		return id;
 	}

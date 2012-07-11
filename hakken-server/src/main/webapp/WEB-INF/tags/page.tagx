@@ -6,6 +6,8 @@
  <jsp:directive.attribute name="title" required="true"/>
  <jsp:directive.attribute name="intro" required="false"/>
  <jsp:directive.attribute name="section" required="true"/>
+ <jsp:directive.attribute name="hideAdmin" required="false"/>
+ 
  <jsp:output omit-xml-declaration="true" />
  <jsp:output doctype-root-element="HTML" 
              doctype-system="about:legacy-compat" />
@@ -49,14 +51,16 @@
                             </c:otherwise>
                         </c:choose>
                         
-                        <c:choose>
-                            <c:when test="${section eq 'admin'}">
-                                <li><a href="/hakken/admin/" class="current">Admin</a></li>
-                            </c:when>
-                            <c:otherwise>
-                                <li><a href="/hakken/admin/">Admin</a></li>
-                            </c:otherwise>
-                        </c:choose>
+                        <c:if test="${hideAdmin ne 'true'}">
+	                        <c:choose>
+	                            <c:when test="${section eq 'admin'}">
+	                                <li><a href="/hakken/admin/" class="current">Admin</a></li>
+	                            </c:when>
+	                            <c:otherwise>
+	                                <li><a href="/hakken/admin/">Admin</a></li>
+	                            </c:otherwise>
+	                        </c:choose>
+                        </c:if>
                     </ul>
                 </nav>
             </header>

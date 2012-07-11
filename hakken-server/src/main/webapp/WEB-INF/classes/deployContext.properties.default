@@ -7,6 +7,9 @@ db.password=taskhelper
 db.hibernate.show_sql=true
 db.jpa.generateDdl=true
 
+auth.ldap.url=ldap://ldap.compan.com:389/
+auth.ldap.prefix=DOMAIN\
+
 #Directories containing task definitions, comma separated
 taskdefinition.src.dirs=
 #Directories containing service mapping definitions, comma separated

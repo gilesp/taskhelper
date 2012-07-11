@@ -1,68 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="2.0"
-        xmlns="http://java.sun.com/xml/ns/persistence/orm"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
-    <description>Hakken server mappings</description>
-    
-    <!--  note this mapping file is not exhaustive - some clases use annotations -->
-    <!--  Just to keep you on your toes. -->
-    <entity name="Submission" class="uk.co.vurt.hakken.domain.job.Submission" access="FIELD">
-        <table name="submissions"/>
-        <attributes>
-            <id name="id">
-                <column name="sub_id"/>
-                <generated-value strategy="SEQUENCE" generator="SUBMISSION_SEQ"/>
-                <sequence-generator name="SUBMISSION_SEQ" sequence-name="SUBMISSION_SEQ"/>
-            </id>
-            
-            <basic name="username">
-                <column name="username"/>
-            </basic>
-            
-            <basic name="jobId">
-                <column name="job_id"/>
-            </basic>
-            <!-- 
-            <element-collection name="dataItems">
-                <collection-table name="submission_dataitems" >
-                    <join-column name="submission_id"/>
-                </collection-table>
-            </element-collection>
-             -->
-             
-             <one-to-many name="dataItems">
-                <join-table name="submission_dataitems">
-                    <join-column name="submission_id" referenced-column-name="sub_id"/>
-                    <inverse-join-column name="data_item_id" referenced-column-name="di_id" unique="true"/>
-                </join-table>
-             </one-to-many>
-        </attributes>
-    </entity>
-    
-    <entity name="DataItem" class="uk.co.vurt.hakken.domain.job.DataItem" access="FIELD">
-        <table name="dataitems"/>
-        <attributes>
-            <id name="id">
-                <column name="di_id"/>
-                <generated-value strategy="SEQUENCE" generator="DATAITEM_SEQ"/>
-                <sequence-generator name="DATAITEM_SEQ" sequence-name="DATAITEM_SEQ"/>
-            </id>
-            <basic name="pageName"/>
-            <basic name="name"/>
-            <basic name="type"/>
-            <basic name="value"/>
-        </attributes>
-    </entity>
-    
-<!--     <entity name="JobDefinition" class="" access="FIELD"> -->
-<!--         <attributes> -->
-<!--             <id name="id"/> -->
-<!--             <basic name="name"/> -->
-<!--             <basic name="created"/> -->
-<!--             <basic name="due"/> -->
-<!--             <basic name="status"/> -->
-<!--             <basic name="notes"/> -->
-<!--         </attributes> -->
-<!--     </entity> -->
+<entity-mappings
+	version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd">
+	<description>Hakken server mappings</description>
+	<persistence-unit-metadata>
+		<persistence-unit-defaults>
+			<schema>${db.persistence.schema}</schema>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+
+	<!-- note this mapping file is not exhaustive - some clases use annotations -->
+	<!-- Just to keep you on your toes. -->
+	<entity
+		name="Submission"
+		class="uk.co.vurt.hakken.domain.job.Submission"
+		access="FIELD">
+		<table name="submissions" />
+		<attributes>
+			<id name="id">
+				<column name="sub_id" />
+				<generated-value
+					strategy="SEQUENCE"
+					generator="SUBMISSION_SEQ" />
+					<!--  due to a bug in hibernate, the jpa schema is ignored
+					for sequences, so we need to manually include the sequence in the name.
+					Ugly and brittle, but the best we can do right now. -->
+				<sequence-generator
+					name="SUBMISSION_SEQ"
+					sequence-name="${db.persistence.schema}.SUBMISSION_SEQ"
+					schema="${db.persistence.schema}"/>
+			</id>
+
+			<basic name="username">
+				<column name="username" />
+			</basic>
+
+			<basic name="jobId">
+				<column name="job_id" />
+			</basic>
+			<!-- <element-collection name="dataItems"> <collection-table name="submission_dataitems" 
+				> <join-column name="submission_id"/> </collection-table> </element-collection> -->
+
+			<one-to-many name="dataItems">
+				<join-table name="submission_dataitems">
+					<join-column
+						name="submission_id"
+						referenced-column-name="sub_id" />
+					<inverse-join-column
+						name="data_item_id"
+						referenced-column-name="di_id"
+						unique="true" />
+				</join-table>
+			</one-to-many>
+		</attributes>
+	</entity>
+
+	<entity
+		name="DataItem"
+		class="uk.co.vurt.hakken.domain.job.DataItem"
+		access="FIELD">
+		<table name="dataitems" />
+		<attributes>
+			<id name="id">
+				<column name="di_id" />
+				<generated-value
+					strategy="SEQUENCE"
+					generator="DATAITEM_SEQ" />
+				<sequence-generator
+					name="DATAITEM_SEQ"
+					sequence-name="${db.persistence.schema}.DATAITEM_SEQ"
+					schema="${db.persistence.schema}"/>
+			</id>
+			<basic name="pageName" />
+			<basic name="name" />
+			<basic name="type" />
+			<basic name="value" />
+		</attributes>
+	</entity>
+
+	<!-- <entity name="JobDefinition" class="" access="FIELD"> -->
+	<!-- <attributes> -->
+	<!-- <id name="id"/> -->
+	<!-- <basic name="name"/> -->
+	<!-- <basic name="created"/> -->
+	<!-- <basic name="due"/> -->
+	<!-- <basic name="status"/> -->
+	<!-- <basic name="notes"/> -->
+	<!-- </attributes> -->
+	<!-- </entity> -->
 </entity-mappings>
