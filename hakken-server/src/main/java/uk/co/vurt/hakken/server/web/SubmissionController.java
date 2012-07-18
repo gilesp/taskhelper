@@ -46,6 +46,7 @@ public class SubmissionController extends RESTController{
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
 	public boolean handleSubmission(@PathVariable String username, @RequestParam String hmac, @RequestBody Submission submission) throws HakkenException{
+		boolean success = false;
 		Map<String, String>parameterMap = new HashMap<String, String>();
 		parameterMap.put("username", username);
 
@@ -53,6 +54,7 @@ public class SubmissionController extends RESTController{
 		logger.info("hmac: " + hmac);
 		
 		boolean validRequest = HashUtils.validate(parameterMap, hmac);
+		
 		if(validRequest){
 			logger.info("Received submission from " + username);
 			logger.info(submission.toString());
@@ -65,7 +67,7 @@ public class SubmissionController extends RESTController{
 			DataConnectorTaskDefinitionMapping dcTaskDefMapping = serviceMapping.getDataConnectorTaskDefinitionMapping();
 			
 			DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
-			boolean success = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
+			success = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
 
 			
 			logger.debug("Submission status: " + success );
@@ -77,6 +79,6 @@ public class SubmissionController extends RESTController{
 			logger.warn("Woop Woop! Invalid request received!");
 			throw new HakkenException("Invalid request received");
 		}
-		return false;
+		return success;
 	}
 }
