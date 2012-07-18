@@ -2,6 +2,7 @@ package uk.co.vurt.hakken.processor.csql;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import net.wmfs.coalesce.csql.EvaluationVisitor;
 import net.wmfs.coalesce.csql.Expression.CustomItemExpression;
@@ -54,9 +55,16 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 	}
 
 	protected void visitCurrentDateExpression() {
+//		Time now = new Time();
+//		result = now.toString();
+//		now = null;
 		//NOTE: using android.text.format.DateFormat rather than java.text version as supposedly more efficient on devices
 		//however it does mean the use of a slightly different format string.
-		result = DateFormat.format("yyy-mm-dd kk:mm:ssz", new Date());
+//		result = DateFormat.format("yyy-mm-dd'T'kk:mm:ssz", new Date());
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ", Locale.US);
+	
+		result = sdf.format(new Date());
 	}
 	
 	public void setJobProcessor(JobProcessor jobProcessor) {
