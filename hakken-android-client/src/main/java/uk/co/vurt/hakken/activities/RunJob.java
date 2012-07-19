@@ -201,7 +201,8 @@ public class RunJob extends Activity {
 					if ("TEXT".equals(item.getType())) {
 						LabelledEditBox editBox = (LabelledEditBox) widget;
 						value = editBox.getValue();
-					} else if ("DIGITS".equals(item.getType())) {
+					} else if ("DIGITS".equals(item.getType()) ||
+							"NUMERIC".equals(item.getType())) {
 						LabelledEditBox editBox = (LabelledEditBox) widget;
 						value = editBox.getValue();
 					} else if ("DATETIME".equals(item.getType())) {
@@ -230,7 +231,7 @@ public class RunJob extends Activity {
 	
 					}
 
-					//Not sure if this it the best place to do this but...
+					//Not sure if this it  the best place to do this but...
 					//is there an expression we need to evaluate fo rthe value?
 					String expression = PageItemProcessor.getStringAttribute(item, "expression");
 					if(expression != null){

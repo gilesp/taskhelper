@@ -3,20 +3,24 @@ package uk.co.vurt.hakken.ui.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.vurt.hakken.domain.NameValue;
 import uk.co.vurt.hakken.R;
+import uk.co.vurt.hakken.domain.NameValue;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.Spinner;
 
 public class MultiSelectSpinner extends Spinner implements
 		OnMultiChoiceClickListener, OnCancelListener {
 
+	private static final String TAG = "MultiSelectSpinner";
+	
 	private List<NameValue> items;
 	private boolean selected[];
 	private String defaultText;
@@ -73,10 +77,42 @@ public class MultiSelectSpinner extends Spinner implements
         setAdapter(adapter);
     }
 
+	public List<NameValue> getItems(){
+		return items;
+	}
+	
 	@Override
 	public void onCancel(DialogInterface arg0) {
-		// refresh text on spinner
-        StringBuffer spinnerBuffer = new StringBuffer();
+//		// refresh text on spinner
+//        StringBuffer spinnerBuffer = new StringBuffer();
+//        boolean someUnselected = false;
+//        if(items != null){
+//	        for (int i = 0; i < items.size(); i++) {
+//	            if (selected[i] == true) {
+//	                spinnerBuffer.append(items.get(i));
+//	                spinnerBuffer.append(", ");
+//	            } else {
+//	                someUnselected = true;
+//	            }
+//	        }
+//        }
+//        String spinnerText;
+//        if (someUnselected) {
+//            spinnerText = spinnerBuffer.toString();
+//            if (spinnerText.length() > 2){
+//                spinnerText = spinnerText.substring(0, spinnerText.length() - 2);
+//            }
+//        } else {
+//            spinnerText = defaultText;
+//        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                R.layout.spinner_item,
+                new String[] { getSpinnerText() });
+        setAdapter(adapter);
+	}
+
+	public String getSpinnerText(){
+		StringBuffer spinnerBuffer = new StringBuffer();
         boolean someUnselected = false;
         if(items != null){
 	        for (int i = 0; i < items.size(); i++) {
@@ -97,12 +133,10 @@ public class MultiSelectSpinner extends Spinner implements
         } else {
             spinnerText = defaultText;
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                R.layout.spinner_item,
-                new String[] { spinnerText });
-        setAdapter(adapter);
+        
+        return spinnerText;
 	}
-
+	
 	@Override
 	public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 		if(isChecked){
@@ -121,4 +155,30 @@ public class MultiSelectSpinner extends Spinner implements
 		}
 		return selectedItems;
 	}
+	
+	public void setSelected(int itemPosition){
+		if(itemPosition > 0 && itemPosition <= selected.length){
+			
+			Log.d(TAG, "Attempting to set item " + itemPosition + " as selected");
+			selected[itemPosition] = true;
+//			((CheckedTextView)getItemAtPosition(itemPosition)).setChecked(true);
+//			((CheckedTextView)((ArrayAdapter)getAdapter()).getItem(itemPosition)).setChecked(true);
+		} else {
+			throw new RuntimeException("Invalid item position.");
+		}
+	}
+	
+//	public void setSelected(boolean[] selections){
+//		if(selections.length == selected.length){
+//			for(int i = 0; i < selected.length; i++){
+//				if(selections[i]){
+//					selected[i] = selections[i];
+//					CheckedTextView checkedTextView = (CheckedTextView)((ArrayAdapter)getAdapter()).getItem(i);
+//					checkedTextView.setChecked(selections[i]);
+//				}
+//			}
+//		} else {
+//			throw new RuntimeException("Incorrect number of selections provided.");
+//		}
+//	}
 }

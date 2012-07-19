@@ -112,6 +112,7 @@ public class WidgetFactory {
 			}
 			spinner.setItems(spinnerArray);
 			for(NameValue selectedValue: selected){
+				Log.d(TAG, "Setting selected value: " + selectedValue);
 				spinner.setSelected(selectedValue);
 			}
 			widget = spinner;

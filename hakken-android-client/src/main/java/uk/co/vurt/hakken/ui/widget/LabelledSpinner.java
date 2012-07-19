@@ -3,9 +3,10 @@ package uk.co.vurt.hakken.ui.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.vurt.hakken.domain.NameValue;
 import uk.co.vurt.hakken.R;
+import uk.co.vurt.hakken.domain.NameValue;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 public class LabelledSpinner extends AbstractLabelledWidget {
 
+	private static final String TAG = "LabelledSpinner";
+	
 	Context context;
 	Spinner spinner;
 	boolean multiSelect = false;
@@ -40,6 +43,7 @@ public class LabelledSpinner extends AbstractLabelledWidget {
 	}
 	
 	public void setItems(List<NameValue> items){
+		Log.d(TAG, "Setting " + items.size() + " items.");
 		if(multiSelect){
 			((MultiSelectSpinner)spinner).setItems(items, "Please select...");
 		}else{
@@ -50,8 +54,17 @@ public class LabelledSpinner extends AbstractLabelledWidget {
 	
 	public void setSelected(NameValue nameValue){
 		if(multiSelect){
+			
 			ArrayAdapter<String> adapter = (ArrayAdapter<String>)spinner.getAdapter();
-			spinner.setSelection(adapter.getPosition(nameValue.getName()));
+			int i = 0;
+			for(NameValue item: ((MultiSelectSpinner)spinner).getItems()){
+				if(item.getName().equals(nameValue.getName())){
+					((MultiSelectSpinner)spinner).setSelected(i);
+				}
+				i++;
+			}
+//			spinner.setSelection(adapter.getPosition(nameValue.getName()));
+			((MultiSelectSpinner)spinner).onCancel(null);
 		} else {
 			NameValueAdapter adapter = (NameValueAdapter)spinner.getAdapter();
 			spinner.setSelection(adapter.getPosition(nameValue));
