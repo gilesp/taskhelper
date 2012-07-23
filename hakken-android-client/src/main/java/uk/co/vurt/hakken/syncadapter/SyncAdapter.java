@@ -190,8 +190,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
-		//TODO: implement syncJobsFromServer();
-		
 		//get a list of jobs currently on the device (currentJobs)
 		List<JobDefinition> currentJobs = new ArrayList<JobDefinition>();
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, null, null, null);
@@ -297,12 +295,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	          // automatically.
 	          syncResult.stats.numIoExceptions++;
 	          Log.e(TAG, "AuthenticationException", e);
-//	      } else if (e instanceof ParseException) {
-//	          syncResult.stats.numParseExceptions++;
-//	          Log.e(TAG, "ParseException", e);
-//	      } else if (e instanceof JsonParseException) {
-//	          syncResult.stats.numParseExceptions++;
-//	          Log.e(TAG, "JSONException", e);
 	      } else if (e instanceof RemoteException){
 	    	  syncResult.stats.numIoExceptions++;
 	    	  Log.e(TAG, "RemoteException", e);
@@ -311,169 +303,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	    	  Log.e(TAG, "Unhandled Exception", e);
 	      }
 	  }
-	
-/*	
-	public void onPerformSync(Account account, Bundle extras, String authority,
-			ContentProviderClient provider, SyncResult syncResult) {
 
-		Log.d(TAG, "onPerformSync() called.");
-		List<JobDefinition> jobs = new ArrayList<JobDefinition>();
-		List<TaskDefinition> definitions = new ArrayList<TaskDefinition>();
-		String authToken = null;
-		try{
-			authToken = accountManager.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, NOTIFY_AUTH_FAILURE);
-			long lastUpdated = getLastUpdatedDate(account);
-			
-			
-			//Submit completed jobs
-			//Find which jobs have been completed.
-			Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, Job.Definitions.STATUS + " = ?", new String[]{"COMPLETED"}, null);
-			if(jobCursor != null){
-				jobCursor.moveToFirst();
-				//for each completed job:
-				while(!jobCursor.isAfterLast()){
-					
-					
-					int jobId = jobCursor.getInt(0);
-					
-					Submission submission = new Submission();
-					submission.setJobId(jobId);
-					submission.setUsername(account.name);
-
-					// retrieve dataitems for them and combine into a submission
-					Cursor diCursor = provider.query(Dataitem.Definitions.CONTENT_URI, 
-													 new String[]{Dataitem.Definitions.PAGENAME, Dataitem.Definitions.NAME, Dataitem.Definitions.TYPE, Dataitem.Definitions.VALUE}, 
-													 Dataitem.Definitions.JOB_ID + " = ?", 
-													 new String[]{""+jobId}, 
-													 null);
-					if(diCursor != null){
-						diCursor.moveToFirst();
-						while(!diCursor.isAfterLast()){
-							DataItem dataItem = new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3));
-							Log.d(TAG, "Adding DataItem: " + dataItem);
-							submission.addDataItem(dataItem);
-							diCursor.moveToNext();
-						}
-						diCursor.close();
-						diCursor = null;
-					}
-
-					//if successful, delete completed job and dataitems.
-					boolean submitted = NetworkUtilities.submitData(context, account, authToken, submission);
-					if(submitted){
-						Log.d(TAG, "Deleting old dataitems");
-						provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
-						Log.d(TAG, "Deleting job: " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()));
-						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
-					}
-					jobCursor.moveToNext();
-				}
-				
-			}
-			jobCursor.close();
-			
-			
-			jobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(lastUpdated));
-			//Commented out while developing/testing job synch
-//			definitions = NetworkUtilities.fetchTaskDefinitions(account, authToken, new Date(lastUpdated));
-			
-			
-			lastUpdated = System.currentTimeMillis(); //set to the current date/time
-			//TODO: This should be handled by a TaskManager or similar really
-			//for each TaskDefinition, we need to insert it into the SQLLite database
-			for(TaskDefinition definition: definitions){
-				storeTaskDefinition(provider, definition);
-			}
-			
-			ArrayList<Long> newJobIds = new ArrayList<Long>();
-			for(JobDefinition job: jobs){
-				if(job != null){
-					newJobIds.add(job.getId());
-					
-					Log.d(TAG, "Adding a job to database: " + job);
-					storeTaskDefinition(provider, job.getDefinition());
-					
-					ContentValues values = new ContentValues();
-					values.put(Job.Definitions._ID, job.getId());
-					values.put(Job.Definitions.NAME, job.getName());
-					values.put(Job.Definitions.TASK_DEFINITION_ID, job.getDefinition().getId());
-					values.put(Job.Definitions.CREATED, job.getCreated().getTime());
-					if(job.getDue() != null){
-						values.put(Job.Definitions.DUE, job.getDue().getTime());
-					} else {
-						Log.e(TAG, "Job has no due date!");
-					}
-					values.put(Job.Definitions.STATUS, job.getStatus());
-					values.put(Job.Definitions.NOTES, "null".equals(job.getNotes()) ? "" : job.getNotes());
-					if(job.getGroup() != null){
-						values.put(Job.Definitions.GROUP, job.getGroup());
-					}
-					
-					Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, job.getId());
-	
-					//TODO: If we have a job already on the device, but it doesn't come through in the list of newly synched jobs, then we want to remove it from the device.
-					//This is because the job could have been completed on another device or by other means.
-					
-					//TODO: Stop fetched jobs blatting any saved jobs - particuarly the status - if the job has previously been completed.
-					try{
-						Cursor cursor = provider.query(jobUri, null, null, null, null);
-						if(cursor.moveToFirst()){
-							Log.d(TAG, "Updating job " + job.getId());
-							values.remove(Job.Definitions.STATUS);
-							provider.update(jobUri, values, null, null);
-						} else {
-							Log.d(TAG, "Inserting new job " + job.getId());
-							Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
-							Log.d(TAG, "Inserted job as " + providerUri);
-						}
-						cursor.close();
-						cursor = null;
-					} catch(RemoteException re){
-						Log.e(TAG, "RemoteException", re);
-					}
-					
-					for(DataItem item: job.getDataItems()){
-						storeDataItem(provider, item, job);
-					}
-				}
-			}
-			
-
-			//Delete old jobs from the database.
-			//Basically, anything that hasn't arrived in the recent sync.
-//			Cursor cursor = provider.query(Job.Definitions.CONTENT_URI, new String[]{Job.Definitions._ID}, null, null, null);
-//			if(cursor.moveToFirst()){
-//				do{
-//					int id = cursor.getInt(cursor.getColumnIndex(Job.Definitions._ID));
-//					if(!newJobIds.contains(id)){
-//						provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, id), null, null);
-//					}
-//				}while(cursor.moveToNext());
-//			}
-//			cursor.close();
-//			cursor = null;
-//			
-			setLastUpdatedDate(account, lastUpdated);
-		}catch(final AuthenticatorException ae){
-			syncResult.stats.numParseExceptions++;
-			Log.e(TAG, "AuthenticatorException", ae);
-		}catch(final AuthenticationException ae){
-			accountManager.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
-	        syncResult.stats.numAuthExceptions++;
-			Log.e(TAG, "AuthenticationException", ae);
-		}catch(final JSONException je){
-			Log.e(TAG, "JSONException", je);
-			syncResult.stats.numParseExceptions++;
-		}catch(final OperationCanceledException oce){
-			Log.e(TAG, "OperationCanceledException", oce);
-		}catch(final IOException ioe){
-			Log.e(TAG, "IOException", ioe);
-			syncResult.stats.numIoExceptions++;
-		} catch (RemoteException e) {
-			Log.e(TAG, "RemoteException ", e);
-		}
-	}
-*/
 	private long getLastUpdatedDate(Account account){
 		String lastUpdatedString = accountManager.getUserData(account, LAST_UPDATED_KEY);
 		if(lastUpdatedString != null && lastUpdatedString.length() > 0){

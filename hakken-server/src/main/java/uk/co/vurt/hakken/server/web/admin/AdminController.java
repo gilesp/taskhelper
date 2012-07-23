@@ -27,6 +27,7 @@ import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.service.DataConnectorService;
 import uk.co.vurt.hakken.server.service.DataConnectorTaskDefinitionMappingService;
+import uk.co.vurt.hakken.server.service.LogService;
 import uk.co.vurt.hakken.server.service.MappingService;
 import uk.co.vurt.hakken.server.task.TaskRegistry;
 
@@ -44,7 +45,8 @@ public class AdminController {
 	DataConnectorTaskDefinitionMappingService definitionMappingService;
 	@Autowired
 	MappingService mappingService;
-	
+	@Autowired
+	LogService logService;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model){
@@ -170,5 +172,11 @@ public class AdminController {
 	public String reloadTasks(Model model){
 		taskRegistry.reload();
 		return home(model);
+	}
+	
+	@RequestMapping("/logs")
+	public String viewLogs(Model model){
+		model.addAttribute("logs", logService.getAll());
+		return("viewlogs");
 	}
 }

@@ -60,15 +60,8 @@ public class SubmissionController extends RESTController{
 			logger.info(submission.toString());
 	
 			service.store(submission);
-			
-			//lookup dataconnector and save instance
-			ServiceMapping serviceMapping = mappingService.getMappingForTaskDefinition(submission.getTaskDefinitionName());
-			
-			DataConnectorTaskDefinitionMapping dcTaskDefMapping = serviceMapping.getDataConnectorTaskDefinitionMapping();
-			
-			DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
-			success = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
 
+			success = service.submit(submission);
 			
 			logger.debug("Submission status: " + success );
 			
@@ -81,4 +74,5 @@ public class SubmissionController extends RESTController{
 		}
 		return success;
 	}
+	
 }

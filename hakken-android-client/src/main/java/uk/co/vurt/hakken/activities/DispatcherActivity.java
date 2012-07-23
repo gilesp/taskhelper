@@ -2,9 +2,11 @@ package uk.co.vurt.hakken.activities;
 
 import uk.co.vurt.hakken.Constants;
 import uk.co.vurt.hakken.authenticator.AuthenticatorActivity;
+import uk.co.vurt.hakken.providers.TaskProvider;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,6 +40,8 @@ public class DispatcherActivity extends Activity {
 		} else {
 			//Account found, so carry on as normal.
 			intent = new Intent(this, JobList.class);
+			Bundle bundle = new Bundle();
+			ContentResolver.addPeriodicSync(accounts[0], TaskProvider.AUTHORITY, bundle, 900); //TODO make this period configurable and handle multiple accounts
 		}
 		startActivity(intent);
 		finish();

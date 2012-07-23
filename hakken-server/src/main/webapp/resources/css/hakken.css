@@ -270,3 +270,8 @@ pre.prettyprint {
 	white-space: pre;
 	font-family: monospace;
 }
+
+td {
+	padding: 5px;
+	border-bottom: 1px solid black;
+}

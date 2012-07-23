@@ -1,5 +1,7 @@
 package uk.co.vurt.hakken.server.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.server.connector.DataConnector;
+import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
+import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.DataItemDAO;
 import uk.co.vurt.hakken.server.persistence.SubmissionDAO;
 
@@ -16,8 +21,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 	private static final Logger logger = LoggerFactory.getLogger(SubmissionServiceImpl.class);
 	
 
-	SubmissionDAO submissionDao;
-	DataItemDAO dataItemDao;
+	private SubmissionDAO submissionDao;
+	private DataItemDAO dataItemDao;
+	private MappingService mappingService;
+	private DataConnectorService connectorService;
+	private LogService logService;
 	
 	@Autowired
 	public void setSubmissionDao(SubmissionDAO dao) {
@@ -31,6 +39,16 @@ public class SubmissionServiceImpl implements SubmissionService {
 		this.dataItemDao = dataItemDao;
 	}
 	
+	@Autowired
+	public void setMappingService(MappingService mappingService) {
+		this.mappingService = mappingService;
+	}
+	
+	@Autowired
+	public void setConnectorService(DataConnectorService connectorService) {
+		this.connectorService = connectorService;
+	}
+
 	@Override
 	public Submission get(Long id) {
 		return submissionDao.get(id);
@@ -46,10 +64,40 @@ public class SubmissionServiceImpl implements SubmissionService {
 			}
 		}
 		if(submissionDao.getByJobId(submission.getJobId()) != null){
+			logger.debug("Updating submission for job " + submission.getJobId());
 			submissionDao.update(submission);
 		} else {
+			logger.debug("Saving new submission.");
 			submissionDao.save(submission);
 		}
 	}
 
+	@Override
+	public List<Submission> getAll() {
+		return submissionDao.getAll();
+	}
+
+	@Override
+	public void delete(long id) {
+		submissionDao.deleteById(id);
+	}
+
+	public boolean submit(Submission submission){
+		//lookup dataconnector and save instance
+		ServiceMapping serviceMapping = mappingService.getMappingForTaskDefinition(submission.getTaskDefinitionName());
+		
+		DataConnectorTaskDefinitionMapping dcTaskDefMapping = serviceMapping.getDataConnectorTaskDefinitionMapping();
+		
+		DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
+		boolean status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
+		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status);
+		return status;
+	}
+
+	@Autowired
+	public void setLogService(LogService logService) {
+		this.logService = logService;
+	}
+	
+	
 }

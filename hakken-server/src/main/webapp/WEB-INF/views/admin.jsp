@@ -76,6 +76,8 @@
                 <h3>Tools</h3>
                 <ul>
                    <li><a href="reloadTasks">Reload Task Definitions</a></li>
+                   <li><a href="submission/">Manage submissions</a></li>
+                   <li><a href="logs">View Log Entries</a></li>
                 </ul>
             </section>
         </div>
