@@ -506,10 +506,23 @@ ALTER TABLE ONLY submission_dataitems
 ALTER TABLE ONLY dc_def_mapping_props
     ADD CONSTRAINT fkf619d045471e1b FOREIGN KEY (dc_def_mapping_id) REFERENCES dc_def_mappings(id);
 
+CREATE TABLE hakken.logs
+(
+  id bigint NOT NULL,
+  message character varying(255),
+  "timestamp" timestamp without time zone,
+  username character varying(255),
+  CONSTRAINT logs_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hakken.logs OWNER TO hakken;
 
--- Completed on 2012-07-11 16:14:32 BST
-
---
--- PostgreSQL database dump complete
---
-
+CREATE SEQUENCE hakken.log_entry_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 10
+  CACHE 1;
+ALTER TABLE hakken.log_entry_seq OWNER TO hakken;
