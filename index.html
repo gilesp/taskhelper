@@ -1,0 +1,104 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Taskhelper</title>
+  <meta name="description" content="Mobile workflow that integrates with existing back office systems">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Taskhelper</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Mobile workflow that integrates with existing back office systems</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/gilesp/taskhelper/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/gilesp/taskhelper/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/gilesp/taskhelper" class="code">View Taskhelper on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h1>Taskhelper</h1>
+
+<p>Taskhelper is a dynamic Android application that allows for "wizard" style applications to be defined using JSON and synced with the device in the form of a ToDo list. There is also a server side component that handles the synchronisation and data storage.</p>
+
+<h2>Building</h2>
+
+<p>The project uses Maven to build things, and takes the form of a multi module maven project.</p>
+
+<p>Development was done using Eclipse, and guidelines found here: <a href="http://www.workreloaded.com/2011/09/android-build-automation/">http://www.workreloaded.com/2011/09/android-build-automation/</a> were followed to get Eclipse, ADT and maven playing nicely together.</p>
+
+<h2>Releasing</h2>
+
+<p>In order to package the apk for release, you need to configure a few things</p>
+
+<p>First, create your key following the instructions at <a href="http://developer.android.com/guide/publishing/app-signing.html#cert">http://developer.android.com/guide/publishing/app-signing.html#cert</a></p>
+
+<p>Then create a profile like this</p>
+
+<pre><code>&lt;settings&gt;
+   &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;activation&gt;
+                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;sign.keystore&gt;/absolute/path/to/your.keystore&lt;/sign.keystore&gt;
+                &lt;sign.alias&gt;youralias&lt;/sign.alias&gt;
+                &lt;sign.keypass&gt;keypass&lt;/sign.keypass&gt;
+                &lt;sign.storepass&gt;storepass&lt;/sign.storepass&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+&lt;/settings&gt;
+</code></pre>
+
+<p>in your settings.xml file in ~/.m2</p>
+
+<p>Once this is done, you can create a production version of the apk with the following command:</p>
+
+<pre><code>mvn clean install -P release
+</code></pre>
+
+<p>which will in turn sign and zipalign the apk.</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/gilesp" class="avatar"><img src="https://secure.gravatar.com/avatar/951c2726225643ecb3e9c5e646b05932?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/gilesp">gilesp</a> maintains <a href="https://github.com/gilesp/taskhelper">Taskhelper</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/gilesp/taskhelper/tarball/master" class="tar">tar</a><a href="https://github.com/gilesp/taskhelper/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
