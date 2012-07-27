@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.server.connector.db.DatabaseTableTaskDefinition;
 import uk.co.vurt.hakken.util.StringUtils;
 
@@ -255,7 +256,7 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	@Override
 	public boolean save(Submission submission,
 			Map<String, String> taskToConnectorMappings,
-			String taskDefinitionName) {
+			TaskDefinition taskDefinition) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -14,13 +14,15 @@ import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.DataItemDAO;
 import uk.co.vurt.hakken.server.persistence.SubmissionDAO;
+import uk.co.vurt.hakken.server.task.TaskRegistry;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubmissionServiceImpl.class);
 	
-
+	
+	private TaskRegistry taskRegistry;
 	private SubmissionDAO submissionDao;
 	private DataItemDAO dataItemDao;
 	private MappingService mappingService;
@@ -49,6 +51,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 		this.connectorService = connectorService;
 	}
 
+	@Autowired
+	public void setTaskRegistry(TaskRegistry taskRegistry){
+		this.taskRegistry = taskRegistry;
+	}
+	
 	@Override
 	public Submission get(Long id) {
 		return submissionDao.get(id);
@@ -89,7 +96,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		DataConnectorTaskDefinitionMapping dcTaskDefMapping = serviceMapping.getDataConnectorTaskDefinitionMapping();
 		
 		DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
-		boolean status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), dcTaskDefMapping.getTaskDefinitionName());
+		logger.debug("TaskDefinition Name: " + submission.getTaskDefinitionName());
+		logger.debug("Task: " + taskRegistry.getTask(dcTaskDefMapping.getTaskDefinitionName()));
+		boolean status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), taskRegistry.getTask(submission.getTaskDefinitionName()));
 		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status);
 		return status;
 	}
