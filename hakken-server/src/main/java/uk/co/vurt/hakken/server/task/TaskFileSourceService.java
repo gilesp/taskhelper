@@ -1,7 +1,6 @@
 package uk.co.vurt.hakken.server.task;
 
 import java.io.File;
-
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,11 +15,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
-//import com.fasterxml.jackson.core.JsonParseException;
-//import com.fasterxml.jackson.databind.DeserializationFeature;
-//import com.fasterxml.jackson.databind.JsonMappingException;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class TaskFileSourceService implements TaskSourceService, InitializingBean{
 
 	private static final Logger logger = LoggerFactory.getLogger(TaskFileSourceService.class);
@@ -30,7 +24,7 @@ public class TaskFileSourceService implements TaskSourceService, InitializingBea
 	private ObjectMapper mapper;
 	
 	private List<TaskDefinition> taskDefinitions;
-	
+
 	public TaskFileSourceService(){
 		mapper = new ObjectMapper();
 		
@@ -81,6 +75,9 @@ public class TaskFileSourceService implements TaskSourceService, InitializingBea
 				}
 			}
 		}
+		
+		
+		logger.info("Loaded " + taskDefinitions.size() + " definitions");
 	}
 	
 	@Override

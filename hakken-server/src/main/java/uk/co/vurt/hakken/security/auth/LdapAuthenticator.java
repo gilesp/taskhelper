@@ -33,6 +33,10 @@ public class LdapAuthenticator implements Authenticator {
 		exception = null;
 		
 		StringBuffer userCredentials = new StringBuffer();
+		logger.debug("USERNAME: " + username);
+		logger.debug("PREFIX: " + prefix);
+		logger.debug("SUFFIX: " + suffix);
+		logger.debug("SERVER: " + environment.get(Context.PROVIDER_URL));
 		if(prefix != null){
 			userCredentials.append(prefix);
 		}

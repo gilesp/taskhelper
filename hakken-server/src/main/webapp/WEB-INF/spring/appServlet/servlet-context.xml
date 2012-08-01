@@ -25,39 +25,6 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="uk.co.vurt" />
+	<context:component-scan base-package="uk.co.vurt.hakken.server.web" />
 	
-	
-	<beans:bean name="taskSource" class="uk.co.vurt.hakken.server.task.TaskFileSourceService">
-	   <beans:property name="taskDirectoryPaths" value="${taskdefinition.src.dirs}"/>    
-	</beans:bean>
-	
-<!-- 	<beans:bean name="jobService" class="uk.co.vurt.hakken.server.service.JobServiceImpl"/> -->
-	    
-	<!-- database configuration -->
-	<beans:bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <beans:property name="dataSource" ref="dataSource" />
-        <beans:property name="packagesToScan" value="uk.co.vurt.hakken.server.persistence" />
-        <beans:property name="jpaVendorAdapter">
-            <beans:bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <beans:property name="showSql" value="${db.hibernate.show_sql}" />
-                <beans:property name="generateDdl" value="${db.jpa.generateDdl}" />
-                <beans:property name="databasePlatform" value="${db.persistence.dialect}" />
-            </beans:bean>
-        </beans:property>
-    </beans:bean>
-    
-	<beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <beans:property name="driverClassName" value="${db.driverClassName}" />
-        <beans:property name="url" value="${db.url}" />
-        <beans:property name="username" value="${db.username}" />
-        <beans:property name="password" value="${db.password}" />
-    </beans:bean>
-
-    <beans:bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <beans:property name="entityManagerFactory" ref="myEmf" />
-    </beans:bean>
-    
-    <tx:annotation-driven transaction-manager="txManager" />
-    
 </beans:beans>

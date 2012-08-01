@@ -1,29 +1,35 @@
 package uk.co.vurt.hakken.domain.job;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
+public class Submission implements Serializable {
 
-public class Submission {
-
+	private static final long serialVersionUID = 2876749616083811529L;
+	
+	private Long id;
 	private String username;
-	private int jobId;
+	private Long jobId;
+	private String taskDefinitionName;
 	private List<DataItem> dataItems;
 	
 	public Submission(){
 		dataItems = new ArrayList<DataItem>();
 	}
 	
-	public Submission(String username, int jobId, List<DataItem> dataItems) {
-		super();
+	public Submission(String username, long jobId, List<DataItem> dataItems) {
+		this();
 		this.username = username;
 		this.jobId = jobId;
 		this.dataItems = dataItems;
 	}
 
+	public Submission(Long id, String username, long jobId, List<DataItem> dataItems){
+		this(username, jobId, dataItems);
+		this.id = id;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -32,11 +38,11 @@ public class Submission {
 		this.username = username;
 	}
 
-	public int getJobId() {
+	public Long getJobId() {
 		return jobId;
 	}
 
-	public void setJobId(int jobId) {
+	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
 
@@ -51,21 +57,28 @@ public class Submission {
 	public void addDataItem(DataItem dataItem){
 		this.dataItems.add(dataItem);
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTaskDefinitionName() {
+		return taskDefinitionName;
+	}
+
+	public void setTaskDefinitionName(String taskDefinitionName) {
+		this.taskDefinitionName = taskDefinitionName;
+	}
+
+	@Override
+	public String toString() {
+		return "Submission [username=" + username + ", jobId=" + jobId
+				+ ", dataItems=" + dataItems + "]";
+	}
 	
-//	public JSONObject toJSON(){
-//		JSONObject data = new JSONObject();
-//		try {
-//			data.put("username", username);
-//			data.put("jobId", jobId);
-//			JSONArray diArray = new JSONArray();
-//			for(DataItem dataItem: dataItems){
-//				diArray.put(dataItem.toJSON());
-//			}
-//			data.put("dataitems", diArray);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return data;
-//	}
+	
 }

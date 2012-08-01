@@ -13,17 +13,20 @@ public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
 	
-	private final int id;
-	private final String name;
-	private final TaskDefinition definition;
-	private final Date created;
-	private final Date due;
+	private Long id;
+	private String name;
+	private TaskDefinition definition;
+	private Date created;
+	private Date due;
 	private String status;
 	private String group;
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
+	private boolean modified;
 	
-	public JobDefinition(int id, String name, TaskDefinition definition, Date created,
+	public JobDefinition(){}
+	
+	public JobDefinition(Long id, String name, TaskDefinition definition, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
@@ -35,10 +38,10 @@ public class JobDefinition implements Serializable{
 		this.notes = notes;
 	}
 
-	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
-		this(id, name, definition, created, due, status, notes);
-		this.group = group;
-	}
+//	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
+//		this(id, name, definition, created, due, status, notes);
+//		this.group = group;
+//	}
 	
 //	public static JobDefinition valueOf(JSONObject job){
 //		try{
@@ -79,11 +82,19 @@ public class JobDefinition implements Serializable{
 		return status;
 	}
 
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -111,8 +122,41 @@ public class JobDefinition implements Serializable{
 		return notes;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDefinition(TaskDefinition definition) {
+		this.definition = definition;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public void setDue(Date due) {
+		this.due = due;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
 	public Set<DataItem> getDataItems() {
 		return dataItems;
+	}
+
+	
+	public void setDataItems(Set<DataItem> dataItems) {
+		this.dataItems = dataItems;
 	}
 
 	@Override
@@ -122,4 +166,29 @@ public class JobDefinition implements Serializable{
 				+ ", status=" + status + "]";
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj){
+			return true;
+		}
+		if (obj == null){
+			return false;
+		}
+		if (getClass() != obj.getClass()){
+			return false;
+		}
+		JobDefinition other = (JobDefinition) obj;
+		if (id != other.id){
+			return false;
+		}
+		return true;
+	}
 }
