@@ -29,6 +29,8 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public String getInfo();
 	
+	public String getMessage();
+	
 //	public void init(Properties properties);
 //	
 //	public List<String> getDataItems();

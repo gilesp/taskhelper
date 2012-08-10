@@ -70,12 +70,16 @@ public class SubmissionServiceImpl implements SubmissionService {
 				dataItemDao.save(dataItem);
 			}
 		}
-		if(submissionDao.getByJobId(submission.getJobId()) != null){
-			logger.debug("Updating submission for job " + submission.getJobId());
+		Submission existing = submissionDao.getByJobId(submission.getJobId());
+		if(existing != null){
+			submission.setId(existing.getId());
+			logger.debug("Updating submission for job " + submission.getJobId() + ", " + existing.getId());
 			submissionDao.update(submission);
+			logService.log(submission.getUsername(), "Updated submission " + submission.getId() + " job: " + submission.getJobId());
 		} else {
 			logger.debug("Saving new submission.");
 			submissionDao.save(submission);
+			logService.log(submission.getUsername(), "New submission " + submission.getId()  + " job: " + submission.getJobId());
 		}
 	}
 
@@ -99,7 +103,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		logger.debug("TaskDefinition Name: " + submission.getTaskDefinitionName());
 		logger.debug("Task: " + taskRegistry.getTask(dcTaskDefMapping.getTaskDefinitionName()));
 		boolean status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), taskRegistry.getTask(submission.getTaskDefinitionName()));
-		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status);
+		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status + (!status ? "Error: " + connector.getMessage() : ""));
 		return status;
 	}
 

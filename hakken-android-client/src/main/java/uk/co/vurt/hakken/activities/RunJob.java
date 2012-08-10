@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import net.wmfs.coalesce.csql.ExpressionException;
+
 import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.Page;
@@ -103,7 +105,7 @@ public class RunJob extends Activity {
 			public void onClick(View view) {
 				savePage(jobProcessor.getCurrentPage());
 				jobProcessor.previousPage();
-				drawPage();
+				drawPage(true);
 				return;
 			}
 
@@ -115,7 +117,7 @@ public class RunJob extends Activity {
 				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
 					jobProcessor.nextPage();
 				}
-				drawPage();
+				drawPage(false);
 				return;
 			}
 
@@ -127,7 +129,7 @@ public class RunJob extends Activity {
 				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
 					finishJob();
 				}else{
-					drawPage();
+					drawPage(false);
 				}
 				return;
 			}
@@ -138,7 +140,7 @@ public class RunJob extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		drawPage();
+		drawPage(true); //should we ignore errors here?
 	}
 
 	
@@ -258,7 +260,17 @@ public class RunJob extends Activity {
 					}
 					
 					if(wrapper.isRequired()){
-						if(value == null | value.length() <= 0){
+						boolean checkValue = true;
+						
+						if(wrapper.hasCondition()){
+							try {
+								checkValue = jobProcessor.evaluateCondition(wrapper.getCondition());
+							} catch (ExpressionException e) {
+								Log.e(TAG, "Unable to evaluate condition", e);
+							}
+						}
+						if(checkValue && 
+								(value == null || value.length() <= 0)){
 							missingValues.add(item.getLabel());
 							valid = false;
 						}
@@ -282,7 +294,7 @@ public class RunJob extends Activity {
 		return pageName + "_" + item.getName() + "_" + item.getType();
 	}
 
-	protected void drawPage() {
+	protected void drawPage(boolean ignoreErrors) {
 
 		Log.d(TAG, "state: " + state);
 		if (state == STATE_RUN) {
@@ -361,7 +373,7 @@ public class RunJob extends Activity {
 			}
 
 			//display error message if validation errors exists
-			if(missingValues != null && missingValues.size() > 0){
+			if(!ignoreErrors && missingValues != null && missingValues.size() > 0){
 				StringBuffer errorBuffer = new StringBuffer("The following fields require a value:\n");
 				for(String missingField: missingValues){
 					errorBuffer.append(" ");

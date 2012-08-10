@@ -186,6 +186,12 @@ public class JobProcessor {
 		pageHistoryPosition++;
 	}
 	
+	public boolean evaluateCondition(String condition) throws ExpressionException{
+		Expression expression = expressionFactory.createCondition(condition);
+		expressionVisitor.setExpression(expression);
+		return expressionVisitor.evaluateCondition();
+	}
+	
 	public String evaluateExpression(String expression){
 		String value = null;
 		try {

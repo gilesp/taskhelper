@@ -5,6 +5,7 @@ package uk.co.vurt.hakken.server.connector;
 public abstract class AbstractDataConnector<T extends DataConnectorTaskDefinition> implements DataConnector<T> {
 
 	private String name;
+	protected String message = null;
 	
 	public void setName(String name){
 		this.name = name;
@@ -17,5 +18,11 @@ public abstract class AbstractDataConnector<T extends DataConnectorTaskDefinitio
 	public String getType() {
 		return this.getClass().getSimpleName();
 	}
+
+	@Override
+	public String getMessage() {
+		return message;
+	}
+	
 	
 }
