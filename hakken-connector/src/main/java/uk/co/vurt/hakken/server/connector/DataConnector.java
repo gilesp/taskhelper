@@ -19,7 +19,7 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public boolean createNew();
 	
-	public boolean save(Submission submission, Map<String, String> taskToConnectorMappings, TaskDefinition taskDefinition);
+	public SubmissionStatus save(Submission submission, Map<String, String> taskToConnectorMappings, TaskDefinition taskDefinition);
 	
 	public String getName();
 	
@@ -29,7 +29,6 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public String getInfo();
 	
-	public String getMessage();
 	
 //	public void init(Properties properties);
 //	

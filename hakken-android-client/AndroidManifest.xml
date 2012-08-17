@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" android:versionCode="16" android:versionName="1.0.0-SNAPSHOT" package="uk.co.vurt.hakken">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" android:versionCode="18" android:versionName="1.0.0-SNAPSHOT" package="uk.co.vurt.hakken">
 
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="13"/>
-    <!-- <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="10" /> -->
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>

@@ -61,7 +61,7 @@ final public class NetworkUtilities {
 
 	public static final String USER_AGENT = "TaskHelper/1.0";
 
-	public static final int REQUEST_TIMEOUT_MS = 30 * 1000; // ms
+	public static final int REQUEST_TIMEOUT_MS = 300 * 1000; // ms
 
 	// public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper";
 	// /**TODO: Load Server URL from resource file?? */
@@ -101,15 +101,22 @@ final public class NetworkUtilities {
 	/**
 	 * Configures the httpClient to connect to the URL provided.
 	 */
-	public static HttpClient getHttpClient() {
+	public static HttpClient getHttpClient(Integer timeout) {
 		HttpClient httpClient = new DefaultHttpClient();
 		final HttpParams params = httpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, REQUEST_TIMEOUT_MS);
-		HttpConnectionParams.setSoTimeout(params, REQUEST_TIMEOUT_MS);
-		ConnManagerParams.setTimeout(params, REQUEST_TIMEOUT_MS);
+		if(timeout == null){
+			timeout = REQUEST_TIMEOUT_MS;
+		}
+		HttpConnectionParams.setConnectionTimeout(params, timeout);
+		HttpConnectionParams.setSoTimeout(params, timeout);
+		ConnManagerParams.setTimeout(params, timeout);
 		return httpClient;
 	}
 
+	public static HttpClient getHttpClient(){
+		return getHttpClient(REQUEST_TIMEOUT_MS);
+	}
+	
 	/**
 	 * Connects to the server, authenticates the provided username and password.
 	 * 
@@ -240,6 +247,7 @@ final public class NetworkUtilities {
 			post.setEntity(stringEntity);
 			post.setHeader("Accept", "application/json");
 			post.setHeader("Content-type", "application/json");
+			
 			final HttpResponse httpResponse = getHttpClient().execute(post);
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 				String response = EntityUtils.toString(httpResponse.getEntity());
