@@ -222,7 +222,7 @@ public class TaskProvider extends ContentProvider {
 						Uri definitionUri = ContentUris.withAppendedId(
 								Task.Definitions.CONTENT_URI, rowId);
 						getContext().getContentResolver().notifyChange(definitionUri,
-								null);
+								null, false);
 						return definitionUri;
 					}
 				}else {
@@ -257,7 +257,7 @@ public class TaskProvider extends ContentProvider {
 					long rowId = db.insert(JOBS_TABLE_NAME, Job.Definitions.NAME, values);
 					if(rowId > 0){
 						Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, rowId);
-						getContext().getContentResolver().notifyChange(jobUri, null);
+						getContext().getContentResolver().notifyChange(jobUri, null, false);
 						return jobUri;
 					}
 				} else {
@@ -284,7 +284,7 @@ public class TaskProvider extends ContentProvider {
 					if(rowId > 0){
 						Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
 						Log.d(TAG, "Saved dataitem " + dataitemUri);
-						getContext().getContentResolver().notifyChange(dataitemUri, null);
+						getContext().getContentResolver().notifyChange(dataitemUri, null, false);
 						return dataitemUri;
 					} else {
 						Log.d(TAG, "Dataitem not saved.");
@@ -378,6 +378,7 @@ public class TaskProvider extends ContentProvider {
 		Log.d(TAG, "Update requested " + uri);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count;
+        boolean syncToNetwork = false;
         switch (uriMatcher.match(uri)) {
 	        case DEFINITIONS_URI:
 	            count = db.update(DEFINITIONS_TABLE_NAME, values, whereClause, whereArgs);
@@ -395,16 +396,20 @@ public class TaskProvider extends ContentProvider {
 	            break;
 	        case DATAITEMS_URI:
 	            count = db.update(DATAITEMS_TABLE_NAME, values, whereClause, whereArgs);
+	            if(values.containsKey(Job.Definitions.MODIFIED)){
+	            	syncToNetwork = true;
+	            }
 	            break;
 	        case DATAITEM_ID_URI:
 	            count = db.update(DATAITEMS_TABLE_NAME, values, Dataitem.Definitions._ID + "=" + uri.getPathSegments().get(1)
 	                    + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
+//	            syncToNetwork = true;
 	            break;
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null, syncToNetwork);
         return count;
 	}
 

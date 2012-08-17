@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.server.connector.DataConnector;
+import uk.co.vurt.hakken.server.connector.SubmissionStatus;
 import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.DataItemDAO;
@@ -102,9 +103,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		DataConnector connector = connectorService.getDataConnector(dcTaskDefMapping.getDataConnectorName());
 		logger.debug("TaskDefinition Name: " + submission.getTaskDefinitionName());
 		logger.debug("Task: " + taskRegistry.getTask(dcTaskDefMapping.getTaskDefinitionName()));
-		boolean status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), taskRegistry.getTask(submission.getTaskDefinitionName()));
-		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status + (!status ? "Error: " + connector.getMessage() : ""));
-		return status;
+		SubmissionStatus status = connector.save(submission, serviceMapping.getTaskToConnectorMappings(), taskRegistry.getTask(submission.getTaskDefinitionName()));
+		logService.log(submission.getUsername(), "Submitted job " + submission.getJobId() + ". Status: " + status + (!status.isValid() ? " Error: " + status.getMessage() : ""));
+		return status.isValid();
 	}
 
 	@Autowired
