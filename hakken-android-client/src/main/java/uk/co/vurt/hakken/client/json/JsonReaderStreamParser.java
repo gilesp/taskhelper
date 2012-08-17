@@ -1,31 +1,38 @@
-package uk.co.vurt.hakken.client;
+package uk.co.vurt.hakken.client.json;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
+//import java.io.InputStreamReader;
+//import java.util.ArrayList;
+//import java.util.Date;
+//import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+//import java.util.Set;
 
-import uk.co.vurt.hakken.domain.job.DataItem;
+//import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
-import uk.co.vurt.hakken.domain.task.TaskDefinition;
-import android.util.JsonReader;
-import android.util.JsonToken;
+//import android.util.JsonReader;
+//import android.util.JsonToken;
 
-public class JsonStreamParser {
+/**
+ * This class requires functionality only present in API Level >= 11 (Android 3+)
+ * Until I can figure out a way to choose it when running on those platforms but 
+ * still support previous ones, I'm going to comment it out.
+ * 
+ *
+ */
+public class JsonReaderStreamParser implements JsonStreamParser{
 
-	public List readJsonStream(InputStream in) throws IOException {
-		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-		try {
-			return readJobsArray(reader);
-		}finally {
-			reader.close();
-		}
+	public List<JobDefinition> parseJobDefinitionStream(InputStream in) throws IOException {
+//		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+//		try {
+//			return readJobsArray(reader);
+//		}finally {
+//			reader.close();
+//		}
+		return null;
 	}
-	
+/*	
 	public List readJobsArray(JsonReader reader) throws IOException {
 		List jobs = new ArrayList();
 		
@@ -123,4 +130,5 @@ public class JsonStreamParser {
 		
 		return new DataItem(id, pageName, name, type, value);
 	}
+	*/
 }
