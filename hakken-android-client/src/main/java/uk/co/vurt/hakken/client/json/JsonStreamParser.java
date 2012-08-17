@@ -9,4 +9,6 @@ import uk.co.vurt.hakken.domain.job.JobDefinition;
 public interface JsonStreamParser {
 
 	public List<JobDefinition> parseJobDefinitionStream(InputStream in) throws IOException;
+	
+	public void parseJobDefinitionStream(InputStream in, JobDefinitionHandler callback) throws IOException;
 }

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -280,14 +281,25 @@ public class TaskProvider extends ContentProvider {
 						&& values.containsKey(Dataitem.Definitions.TYPE)
 						&& values.containsKey(Dataitem.Definitions.VALUE)){
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
-					long rowId = db.insert(DATAITEMS_TABLE_NAME, Dataitem.Definitions.NAME, values);
-					if(rowId > 0){
-						Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
-						Log.d(TAG, "Saved dataitem " + dataitemUri);
-						getContext().getContentResolver().notifyChange(dataitemUri, null, false);
-						return dataitemUri;
-					} else {
-						Log.d(TAG, "Dataitem not saved.");
+					try{
+						long rowId = db.insert(DATAITEMS_TABLE_NAME, Dataitem.Definitions.NAME, values);
+						if(rowId > 0){
+							Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
+							Log.d(TAG, "Saved dataitem " + dataitemUri);
+							getContext().getContentResolver().notifyChange(dataitemUri, null, false);
+							return dataitemUri;
+						} else {
+							Log.d(TAG, "Dataitem not saved.");
+						}
+					}catch(SQLiteConstraintException sqlce){
+						Log.d(TAG, "Duplicate data item. This shouldn't happen.");
+						Log.d(TAG, "Job Id: " + values.getAsString(Dataitem.Definitions.JOB_ID));
+						Log.d(TAG, "Page name: " + values.getAsString(Dataitem.Definitions.PAGENAME));
+						Log.d(TAG, "Name: " + values.getAsString(Dataitem.Definitions.NAME));
+						Log.d(TAG, "Type: " + values.getAsString(Dataitem.Definitions.TYPE));
+						Log.d(TAG, "Value: " + values.getAsString(Dataitem.Definitions.VALUE));
+					}catch(Exception e){
+						Log.d(TAG, "Unable to insert dataitem", e);
 					}
 				} else {
 					Log.d(TAG, "Missing value.");

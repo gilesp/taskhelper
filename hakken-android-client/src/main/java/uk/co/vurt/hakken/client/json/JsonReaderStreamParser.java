@@ -131,4 +131,11 @@ public class JsonReaderStreamParser implements JsonStreamParser{
 		return new DataItem(id, pageName, name, type, value);
 	}
 	*/
+
+	@Override
+	public void parseJobDefinitionStream(InputStream in,
+			JobDefinitionHandler callback) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

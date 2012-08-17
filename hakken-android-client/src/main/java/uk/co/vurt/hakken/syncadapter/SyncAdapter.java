@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.http.auth.AuthenticationException;
@@ -13,6 +12,7 @@ import org.json.JSONException;
 import uk.co.vurt.hakken.Constants;
 import uk.co.vurt.hakken.authenticator.AuthenticatorActivity;
 import uk.co.vurt.hakken.client.NetworkUtilities;
+import uk.co.vurt.hakken.client.json.JobDefinitionHandler;
 import uk.co.vurt.hakken.domain.JSONUtil;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
@@ -24,7 +24,6 @@ import uk.co.vurt.hakken.providers.Task;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentUris;
@@ -39,13 +38,14 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class SyncAdapter extends AbstractThreadedSyncAdapter {
+public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	private static final String TAG = "SyncAdapter";
 	private static final String LAST_UPDATED_KEY = "uk.co.vurt.hakken.syncadapter.lastUpdated";
 	private static final boolean NOTIFY_AUTH_FAILURE = true;
 	
 	private final AccountManager accountManager;
 	private final Context context;
+	
 	
 //	private Date lastUpdated;
 	
@@ -191,92 +191,105 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		//get a list of jobs currently on the device (currentJobs)
-		List<JobDefinition> currentJobs = new ArrayList<JobDefinition>();
+//		List<JobDefinition> currentJobs = new ArrayList<JobDefinition>();
+		
+		List<Long> oldJobIds = new ArrayList<Long>();
+		
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, null, null, null);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			while(!jobCursor.isAfterLast()){
 				//int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group
 				//_ID, NAME, TASK_DEFINITION_ID, CREATED, DUE, STATUS, GROUP, NOTES, MODIFIED
-				JobDefinition job = new JobDefinition(jobCursor.getLong(0),
-						jobCursor.getString(1),
-						null, //do we need to retrieve the taskdefinition as well?
-						new Date(jobCursor.getLong(4)),
-						new Date(jobCursor.getLong(5)),
-						jobCursor.getString(6),
-						jobCursor.getString(7));
-
-				currentJobs.add(job);
+//				JobDefinition job = new JobDefinition(jobCursor.getLong(0),
+//						jobCursor.getString(1),
+//						null, //do we need to retrieve the taskdefinition as well?
+//						new Date(jobCursor.getLong(4)),
+//						new Date(jobCursor.getLong(5)),
+//						jobCursor.getString(6),
+//						jobCursor.getString(7));
+//
+//				currentJobs.add(job);
+				
+				oldJobIds.add(jobCursor.getLong(0));
 				jobCursor.moveToNext();
 			}
 			jobCursor.close();
 			jobCursor = null;
 		}
 		//get list of jobs from server (newJobs)
-		List<JobDefinition> newJobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(getLastUpdatedDate(account)));
+//		List<JobDefinition> newJobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(getLastUpdatedDate(account)));
+		JobDefinitionAdapter jobAdapter = new JobDefinitionAdapter(provider, oldJobIds);
+		
+		NetworkUtilities.fetchJobs(context,  account,  authToken,  new Date(getLastUpdatedDate(account)), jobAdapter);
+		
 		long newLastUpdated = System.currentTimeMillis();
 		
-		//delete any current jobs that aren't in the new jobs list (as this means they will have been completed elsewhere
-		//TODO: Check this assumption - will need modifying if we switch to only sending new jobs, rather than all jobs
-		if(currentJobs.size() > 0){
-			Collection<JobDefinition> jobsToDelete = new ArrayList<JobDefinition>(currentJobs);
-			jobsToDelete.removeAll(newJobs);
-			for(JobDefinition jobToDelete: jobsToDelete){
-				provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDelete.getId()), null, null);
-			}
+		oldJobIds.removeAll(jobAdapter.getAddedJobIds());
+		for(Long jobToDeleteId: oldJobIds){
+			provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDeleteId), null, null);
 		}
+//		//delete any current jobs that aren't in the new jobs list (as this means they will have been completed elsewhere
+//		//TODO: Check this assumption - will need modifying if we switch to only sending new jobs, rather than all jobs
+//		if(currentJobs.size() > 0){
+//			Collection<JobDefinition> jobsToDelete = new ArrayList<JobDefinition>(currentJobs);
+//			jobsToDelete.removeAll(newJobs);
+//			for(JobDefinition jobToDelete: jobsToDelete){
+//				provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDelete.getId()), null, null);
+//			}
+//		}
 		
-		//for each newJob:
-		if(newJobs.size() > 0 ){
-			for(JobDefinition newJob: newJobs){
-				Log.d(TAG, "Adding a job to database: " + newJob);
-				
-				
-				ContentValues values = new ContentValues();
-				values.put(Job.Definitions._ID, newJob.getId());
-				values.put(Job.Definitions.NAME, newJob.getName());
-				values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getDefinition().getId());
-				values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
-				values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
-				if(newJob.getDue() != null){
-					values.put(Job.Definitions.DUE, newJob.getDue().getTime());
-				} else {
-					Log.e(TAG, "Job has no due date!");
-				}
-				values.put(Job.Definitions.STATUS, newJob.getStatus());
-				values.put(Job.Definitions.NOTES, "null".equals(newJob.getNotes()) ? "" : newJob.getNotes());
-				if(newJob.getGroup() != null){
-					values.put(Job.Definitions.GROUP, newJob.getGroup());
-				}
-				
-				Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
-				
-				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
-				//  if job not on device, then create it on device
-				boolean storeDataItems = false;
-				if(currentJobs.contains(newJob) ){
-					if(!currentJobs.get(currentJobs.indexOf(newJob)).isModified()){
-						//update job
-						Log.d(TAG, "Updating job " + newJob.getId());
-						provider.update(jobUri, values, null, null);
-						storeDataItems = true;
-					}
-				} else {
-					storeTaskDefinition(provider, newJob.getDefinition());
-					//create job
-					Log.d(TAG, "Inserting new job " + newJob.getId());
-					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
-					Log.d(TAG, "Inserted job as " + providerUri);
-					storeDataItems = true;
-				}
-				
-				if(storeDataItems){
-					for(DataItem item: newJob.getDataItems()){
-						storeDataItem(provider, item, newJob);
-					}
-				}
-			}
-		}
+//		//for each newJob:
+//		if(newJobs.size() > 0 ){
+//			for(JobDefinition newJob: newJobs){
+//				Log.d(TAG, "Adding a job to database: " + newJob);
+//				
+//				
+//				ContentValues values = new ContentValues();
+//				values.put(Job.Definitions._ID, newJob.getId());
+//				values.put(Job.Definitions.NAME, newJob.getName());
+//				values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getDefinition().getId());
+//				values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
+//				values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
+//				if(newJob.getDue() != null){
+//					values.put(Job.Definitions.DUE, newJob.getDue().getTime());
+//				} else {
+//					Log.e(TAG, "Job has no due date!");
+//				}
+//				values.put(Job.Definitions.STATUS, newJob.getStatus());
+//				values.put(Job.Definitions.NOTES, "null".equals(newJob.getNotes()) ? "" : newJob.getNotes());
+//				if(newJob.getGroup() != null){
+//					values.put(Job.Definitions.GROUP, newJob.getGroup());
+//				}
+//				
+//				Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
+//				
+//				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
+//				//  if job not on device, then create it on device
+//				boolean storeDataItems = false;
+//				if(currentJobs.contains(newJob) ){
+//					if(!currentJobs.get(currentJobs.indexOf(newJob)).isModified()){
+//						//update job
+//						Log.d(TAG, "Updating job " + newJob.getId());
+//						provider.update(jobUri, values, null, null);
+//						storeDataItems = true;
+//					}
+//				} else {
+//					storeTaskDefinition(provider, newJob.getDefinition());
+//					//create job
+//					Log.d(TAG, "Inserting new job " + newJob.getId());
+//					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
+//					Log.d(TAG, "Inserted job as " + providerUri);
+//					storeDataItems = true;
+//				}
+//				
+//				if(storeDataItems){
+//					for(DataItem item: newJob.getDataItems()){
+//						storeDataItem(provider, item, newJob);
+//					}
+//				}
+//			}
+//		}
 		setLastUpdatedDate(account, newLastUpdated);
 	}
 	
@@ -316,5 +329,87 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	private void setLastUpdatedDate(Account account, long lastUpdated){
 		accountManager.setUserData(account, LAST_UPDATED_KEY, Long.toString(lastUpdated));
+	}
+
+	
+	
+	private class JobDefinitionAdapter implements JobDefinitionHandler {
+		
+		private ContentProviderClient provider;
+		private List<Long> addedJobIds;
+		private List<Long> oldJobIds;
+		
+		public JobDefinitionAdapter(ContentProviderClient provider, List<Long> oldJobIds){
+			this.provider = provider;
+			this.oldJobIds = oldJobIds;
+			addedJobIds = new ArrayList<Long>();
+		}
+		
+		public List<Long> getAddedJobIds(){
+			return addedJobIds;
+		}
+		
+		@Override
+		public void handle(JobDefinition newJob) {
+			Log.d(TAG, "Adding a job to database: " + newJob);
+			addedJobIds.add(newJob.getId());
+			
+			ContentValues values = new ContentValues();
+			values.put(Job.Definitions._ID, newJob.getId());
+			values.put(Job.Definitions.NAME, newJob.getName());
+			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getDefinition().getId());
+			values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
+			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
+			if(newJob.getDue() != null){
+				values.put(Job.Definitions.DUE, newJob.getDue().getTime());
+			} else {
+				Log.e(TAG, "Job has no due date!");
+			}
+			values.put(Job.Definitions.STATUS, newJob.getStatus());
+			values.put(Job.Definitions.NOTES, "null".equals(newJob.getNotes()) ? "" : newJob.getNotes());
+			if(newJob.getGroup() != null){
+				values.put(Job.Definitions.GROUP, newJob.getGroup());
+			}
+			
+			Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
+			
+			try{
+				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
+				//  if job not on device, then create it on device
+				boolean storeDataItems = false;
+				if(oldJobIds.contains(newJob.getId())){
+					Cursor jobCursor = provider.query(jobUri, null, null, null, null);
+					boolean modified = false;
+					if(jobCursor != null){
+						jobCursor.moveToFirst();
+						modified = Boolean.valueOf(jobCursor.getString(7));
+						jobCursor.close();
+						jobCursor = null;
+					}
+					
+					if(!modified){
+						//update job
+						Log.d(TAG, "Updating job " + newJob.getId());
+						provider.update(jobUri, values, null, null);
+						storeDataItems = true;
+					}
+				} else {
+					storeTaskDefinition(provider, newJob.getDefinition());
+					//create job
+					Log.d(TAG, "Inserting new job " + newJob.getId());
+					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
+					Log.d(TAG, "Inserted job as " + providerUri);
+					storeDataItems = true;
+				}
+				
+				if(storeDataItems){
+					for(DataItem item: newJob.getDataItems()){
+						storeDataItem(provider, item, newJob);
+					}
+				}
+			}catch(RemoteException re){
+				Log.e(TAG, "Unable to store job definition.", re);
+			}
+		}
 	}
 }

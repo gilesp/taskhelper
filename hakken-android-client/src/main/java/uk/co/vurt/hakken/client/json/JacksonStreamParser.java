@@ -21,18 +21,34 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 public class JacksonStreamParser implements JsonStreamParser {
 
+	private JsonFactory jsonFactory;
+	
+	public JacksonStreamParser(){
+		jsonFactory = new JsonFactory();
+	}
+	
 	@Override
 	public List<JobDefinition> parseJobDefinitionStream(InputStream in) throws IOException {
-		JsonFactory jsonF = new JsonFactory();
-		JsonParser jp = jsonF.createJsonParser(in);
+		JsonParser jp = jsonFactory.createJsonParser(in);
 		try{
-			return readJobsArray(jp);
+			return readJobsArray(jp, null);
 		}finally{
 			jp.close();
 		}
 	}
 
-	private List<JobDefinition> readJobsArray(JsonParser jp) throws IOException{
+	@Override
+	public void parseJobDefinitionStream(InputStream in,
+			JobDefinitionHandler callback) throws IOException {
+		JsonParser jp = jsonFactory.createJsonParser(in);
+		try{
+			readJobsArray(jp, callback);
+		}finally{
+			jp.close();
+		}
+	}
+	
+	private List<JobDefinition> readJobsArray(JsonParser jp, JobDefinitionHandler callback) throws IOException{
 		List<JobDefinition> jobs = new ArrayList<JobDefinition>();
 		
 		JsonToken current;
@@ -47,7 +63,11 @@ public class JacksonStreamParser implements JsonStreamParser {
 			current = jp.nextToken();
 			while(current != null && current != JsonToken.END_ARRAY){
 //				System.out.println("2 Current: " + current.toString());
-				jobs.add(readJob(jp));
+				if(callback != null){
+					callback.handle(readJob(jp));
+				}else {
+					jobs.add(readJob(jp));
+				}
 				current = jp.nextToken();
 			}
 		}catch(JsonParseException jpe){
@@ -81,41 +101,42 @@ public class JacksonStreamParser implements JsonStreamParser {
 //			System.out.println("Item Name: '" + itemName + "'");
 			//move to value token
 			jp.nextToken();
-			
-			if(itemName.equals("id")){
-				id = jp.getValueAsLong();
-//				System.out.println("ID:" + id);
-			} else if(itemName.equals("name")){
-				name = jp.getText();
-//				System.out.println("Name:" + name);
-			} else if(itemName.equals("definition")){
-				definition = readTaskDefinition(jp);
-//				System.out.println("Definition:" + definition);
-			} else if(itemName.equals("created")){
-				created = new Date(Long.parseLong(jp.getText()));
-//				System.out.println("Created:" + created);
-			} else if(itemName.equals("due")){
-				due = new Date(Long.parseLong(jp.getText()));
-//				System.out.println("Due:" + due);
-			} else if(itemName.equals("status")){
-				status = jp.getText();
-//				System.out.println("Status:" + status);
-			} else if(itemName.equals("group")){
-				group = jp.getText();
-//				System.out.println("Group:" + group);
-			} else if(itemName.equals("notes")){
-				notes = jp.getText();
-//				System.out.println("Notes:" + notes);
-			} else if(itemName.equals("dataItems")){
-				dataItems.addAll(readDataItemsArray(jp));
-//				System.out.println("DataItems:" + dataItems);
-			} else if(itemName.equals("modified")){
-				modified = jp.getBooleanValue();
-//				System.out.println("Modified:" + modified);
-			} else {
-				//something we weren't expecting so just skip it.
-				jp.skipChildren();
-//				System.out.println("Skipping...");
+			if(jp.getCurrentToken() != JsonToken.VALUE_NULL){
+				if(itemName.equals("id")){
+					id = jp.getValueAsLong();
+	//				System.out.println("ID:" + id);
+				} else if(itemName.equals("name")){
+					name = jp.getText();
+	//				System.out.println("Name:" + name);
+				} else if(itemName.equals("definition")){
+					definition = readTaskDefinition(jp);
+	//				System.out.println("Definition:" + definition);
+				} else if(itemName.equals("created")){
+					created = new Date(Long.parseLong(jp.getText()));
+	//				System.out.println("Created:" + created);
+				} else if(itemName.equals("due")){
+					due = new Date(Long.parseLong(jp.getText()));
+	//				System.out.println("Due:" + due);
+				} else if(itemName.equals("status")){
+					status = jp.getText();
+	//				System.out.println("Status:" + status);
+				} else if(itemName.equals("group")){
+					group = jp.getText();
+	//				System.out.println("Group:" + group);
+				} else if(itemName.equals("notes")){
+					notes = jp.getText();
+	//				System.out.println("Notes:" + notes);
+				} else if(itemName.equals("dataItems")){
+					dataItems.addAll(readDataItemsArray(jp));
+	//				System.out.println("DataItems:" + dataItems);
+				} else if(itemName.equals("modified")){
+					modified = jp.getBooleanValue();
+	//				System.out.println("Modified:" + modified);
+				} else {
+					//something we weren't expecting so just skip it.
+					jp.skipChildren();
+	//				System.out.println("Skipping...");
+				}
 			}
 		}
 		return new JobDefinition(id, name, definition, created, due, status, group, notes, dataItems, modified);
@@ -178,4 +199,6 @@ public class JacksonStreamParser implements JsonStreamParser {
 //		}
 		return taskDefinition;
 	}
+
+
 }

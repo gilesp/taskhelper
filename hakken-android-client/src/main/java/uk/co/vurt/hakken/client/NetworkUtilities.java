@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.co.vurt.hakken.client.json.JacksonStreamParser;
+import uk.co.vurt.hakken.client.json.JobDefinitionHandler;
 import uk.co.vurt.hakken.client.json.JsonStreamParser;
 import uk.co.vurt.hakken.domain.JSONUtil;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
@@ -269,11 +270,10 @@ final public class NetworkUtilities {
 
 	}
 
-	public static List<JobDefinition> fetchJobs(Context context,
-			Account account, String authToken, Date lastUpdated)
-			throws JSONException, ParseException, IOException,
-			AuthenticationException {
-		final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
+	public static void fetchJobs(Context context,
+			Account account, String authToken, Date lastUpdated, 
+			JobDefinitionHandler callback) throws JSONException, ParseException, IOException,
+			AuthenticationException  {
 
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(
 				"yyyy-MM-dd'T'HH:mm:ss");
@@ -290,19 +290,45 @@ final public class NetworkUtilities {
 
 		final HttpResponse httpResponse = getHttpClient().execute(get);
 		JsonStreamParser streamParser = new JacksonStreamParser();
-		jobList.addAll(streamParser.parseJobDefinitionStream(httpResponse.getEntity().getContent()));
 		
-//		String data = fetchData(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap));
-//
-//		Log.d(TAG, "JOBS DATA: " + data);
-//		final JSONArray jobs = new JSONArray(data);
-//
-//		for (int i = 0; i < jobs.length(); i++) {
-//			Log.d(TAG, "JobDefinition: " + jobs.getJSONObject(i).toString());
-//			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
-//		}
-		return jobList;
+		streamParser.parseJobDefinitionStream(httpResponse.getEntity().getContent(), callback);
+		
 	}
+	
+//	public static List<JobDefinition> fetchJobs(Context context,
+//			Account account, String authToken, Date lastUpdated)
+//			throws JSONException, ParseException, IOException,
+//			AuthenticationException {
+//		final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
+//
+//		SimpleDateFormat dateFormatter = new SimpleDateFormat(
+//				"yyyy-MM-dd'T'HH:mm:ss");
+//
+//		Map<String, String> parameterMap = new HashMap<String, String>();
+//		parameterMap.put("username", account.name);
+//		parameterMap.put("timestamp", dateFormatter.format(lastUpdated));
+//
+//		String hmac = HashUtils.hash(parameterMap);
+//		parameterMap.put("hmac", URLUtils.encode(hmac));
+//
+//
+//		final HttpGet get = new HttpGet(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap));
+//
+//		final HttpResponse httpResponse = getHttpClient().execute(get);
+//		JsonStreamParser streamParser = new JacksonStreamParser();
+//		jobList.addAll(streamParser.parseJobDefinitionStream(httpResponse.getEntity().getContent()));
+//		
+////		String data = fetchData(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap));
+////
+////		Log.d(TAG, "JOBS DATA: " + data);
+////		final JSONArray jobs = new JSONArray(data);
+////
+////		for (int i = 0; i < jobs.length(); i++) {
+////			Log.d(TAG, "JobDefinition: " + jobs.getJSONObject(i).toString());
+////			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
+////		}
+//		return jobList;
+//	}
 
 //	private static String fetchData(String url /*, Account account,
 //			String authToken, ArrayList<NameValuePair> params*/)
