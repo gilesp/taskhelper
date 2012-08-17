@@ -58,6 +58,7 @@
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<jackson.version>1.9.6</jackson.version>
+		<junit-version>4.8.1</junit-version>
 	</properties>
 
 	<modules>
@@ -109,6 +110,13 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j-version}</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 </project>
