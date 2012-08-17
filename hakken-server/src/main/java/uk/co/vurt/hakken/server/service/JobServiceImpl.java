@@ -65,12 +65,21 @@ public class JobServiceImpl implements JobService{
 				
 				logger.debug("Total instances: " + instances.size());
 				
+				//to save sending the full definition each time, use an almost 
+				//empty definition for all but the first instance
+				//This will be replaced once taskdefinitions are synched 
+				//separately from jobs.
+				TaskDefinition emptyDefinition = new TaskDefinition();
+				emptyDefinition.setId(definition.getId());
+				emptyDefinition.setName(definition.getName());
+				
+				boolean first = true;
 				for(Instance instance: instances){
 					logger.debug("Instance: " + instance);
 					
 					JobDefinition job = new JobDefinition(instance.getId(),
 							instance.getName(),
-							definition,
+							first ? definition : emptyDefinition, 
 							instance.getCreated(),
 							instance.getDue(),
 							"AWAITING",

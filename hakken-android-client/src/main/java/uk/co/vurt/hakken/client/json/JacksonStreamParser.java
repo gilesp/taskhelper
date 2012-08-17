@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
@@ -144,18 +146,21 @@ public class JacksonStreamParser implements JsonStreamParser {
 		while(jp.nextToken() != JsonToken.END_OBJECT){
 			String itemName = jp.getCurrentName();
 			jp.nextToken();
-			if(itemName.equals("id")){
-				id = jp.getValueAsLong();
-			} else if(itemName.equals("name")){
-				name = jp.getText();
-			} else if(itemName.equals("type")){
-				type = jp.getText();
-			} else if(itemName.equals("value")){
-				value = jp.getText();
-			} else if(itemName.equals("pageName")){
-				pageName = jp.getText();
-			} else {
-				jp.skipChildren(); //something we weren't expecting, so ignore it
+			if(jp.getCurrentToken() != JsonToken.VALUE_NULL){
+				if(itemName.equals("id")){
+					id = jp.getValueAsLong();
+				} else if(itemName.equals("name")){
+					name = jp.getText();
+				} else if(itemName.equals("type")){
+					type = jp.getText();
+				} else if(itemName.equals("value")){
+					
+					value = jp.getText();
+				} else if(itemName.equals("pageName")){
+					pageName = jp.getText();
+				} else {
+					jp.skipChildren(); //something we weren't expecting, so ignore it
+				}
 			}
 		}
 		
@@ -163,9 +168,14 @@ public class JacksonStreamParser implements JsonStreamParser {
 	}
 	
 	private TaskDefinition readTaskDefinition(JsonParser jp) throws IOException, JsonParseException{
-		while(jp.nextToken() != JsonToken.END_OBJECT){
-			jp.skipChildren();
-		}
-		return null;
+		//Use object mapper rather than stream parsing for the time being.
+		ObjectMapper mapper = new ObjectMapper();
+		JsonFactory factory = mapper.getJsonFactory();
+		JsonNode taskNode = mapper.readTree(jp);
+		TaskDefinition taskDefinition = mapper.readValue(taskNode, TaskDefinition.class);
+//		while(jp.nextToken() != JsonToken.END_OBJECT){
+//			jp.skipChildren();
+//		}
+		return taskDefinition;
 	}
 }
