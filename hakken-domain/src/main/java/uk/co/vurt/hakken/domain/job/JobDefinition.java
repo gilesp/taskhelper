@@ -100,6 +100,8 @@ public class JobDefinition implements Serializable{
 		return status;
 	}
 
+
+
 	public boolean isModified() {
 		return modified;
 	}
