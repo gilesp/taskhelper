@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:hakken="urn:jsptagdir:/WEB-INF/tags"
+          xmlns="http://www.w3.org/1999/xhtml">
+    
+    <jsp:directive.attribute name="heading" fragment="false"/>
+    <jsp:directive.attribute name="javascript" fragment="true"/>
+    <jsp:directive.attribute name="title" required="true"/>
+
+     <div class="block">
+        <div class="hd">
+            <h2>Task Definitions</h2>
+        </div>
+        <div class="bd">
+            <h3>Available task definitions</h3>
+            <c:choose>
+                <c:when test="${empty taskDefinitions}">
+                    <p>No task definitions have been loaded</p>
+                </c:when>
+                <c:otherwise>
+                    <ul>
+                        <c:forEach var="task" items="${taskDefinitions}" varStatus="status" >
+                            <li>${status.count}) ${task.name} - ${task.description}</li>
+                        </c:forEach>
+                    </ul>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>              
+</jsp:root>          
