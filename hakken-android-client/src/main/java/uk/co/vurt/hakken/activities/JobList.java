@@ -118,12 +118,11 @@ public class JobList extends ListActivity {
 			info = manager.getPackageInfo(this.getPackageName(), 0);
 			message = "PackageName = " + info.packageName + 
 				     "\nVersionCode = " + info.versionCode + 
-				     "\nVersionName = " + info.versionName + 
-				     "\nPermissions = "+ info.permissions;
+				     "\nVersionName = " + info.versionName;
 		} catch (NameNotFoundException e) {
 			message = "Unable to retrieve package info.";
 		}
-		Toast.makeText( this, message, Toast.LENGTH_SHORT).show();
+		Toast.makeText( this, message, Toast.LENGTH_LONG).show();
 
 	}
 	
