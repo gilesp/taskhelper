@@ -145,7 +145,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			
 			submitCompletedJobs(account, authToken, provider);
 			
-//			syncJobsFromServer(account, authToken, provider);
+			syncJobsFromServer(account, authToken, provider);
 			
 			provider.release(); //do we need to do this?
 		}catch(Exception e){
