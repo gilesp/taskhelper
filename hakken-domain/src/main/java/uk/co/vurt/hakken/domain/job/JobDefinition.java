@@ -23,6 +23,7 @@ public class JobDefinition implements Serializable{
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
 	private boolean modified;
+	private String serverError;
 	
 	public JobDefinition(){}
 	
@@ -177,6 +178,14 @@ public class JobDefinition implements Serializable{
 	
 	public void setDataItems(Set<DataItem> dataItems) {
 		this.dataItems = dataItems;
+	}
+
+	public String getServerError() {
+		return serverError;
+	}
+
+	public void setServerError(String serverError) {
+		this.serverError = serverError;
 	}
 
 	@Override

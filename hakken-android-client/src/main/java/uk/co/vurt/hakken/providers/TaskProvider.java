@@ -31,7 +31,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "tasks.db";
-	private static final int DATABASE_VERSION = 16;
+	private static final int DATABASE_VERSION = 17;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -77,6 +77,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions.GROUP, Job.Definitions.GROUP);
 		jobsProjectionMap.put(Job.Definitions.NOTES, Job.Definitions.NOTES);
 		jobsProjectionMap.put(Job.Definitions.MODIFIED, Job.Definitions.MODIFIED);
+		jobsProjectionMap.put(Job.Definitions.SERVER_ERROR, Job.Definitions.SERVER_ERROR);
 
 		dataitemsProjectionMap = new HashMap<String, String>();
 		dataitemsProjectionMap.put(Dataitem.Definitions._ID, Dataitem.Definitions._ID);
@@ -96,23 +97,14 @@ public class TaskProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			case DEFINITIONS_URI:
 				tableName = DEFINITIONS_TABLE_NAME;
-//				count = db.delete(DEFINITIONS_TABLE_NAME, whereClause, whereArgs);
 				break;
 			case DEFINITION_ID_URI:
 				tableName = DEFINITIONS_TABLE_NAME;
 				whereClause = Task.Definitions._ID + "=?";
 				whereArgs = new String[]{uri.getPathSegments().get(1)};
-//				String definitionId = uri.getPathSegments().get(1);
-//				count = db.delete(DEFINITIONS_TABLE_NAME, Task.Definitions._ID
-//						+ "=?"
-//						/*+ definitionId
-//						+ (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause
-//								+ ')' : "")*/, 
-//						new String[]{definitionId});
 				break;
 			case JOBS_URI:
 				tableName = JOBS_TABLE_NAME;
-//				count = db.delete(JOBS_TABLE_NAME, whereClause, whereArgs);
 				break;
 			case JOB_ID_URI:
 				String jobId = uri.getPathSegments().get(1);
@@ -137,23 +129,14 @@ public class TaskProvider extends ContentProvider {
 				whereClause = Job.Definitions._ID + "=?";
 				whereArgs = new String[]{jobId};
 				
-//				count = db.delete(JOBS_TABLE_NAME, Job.Definitions._ID
-//						+ "=?",
-//						new String[]{jobId});
 				break;
 			case DATAITEMS_URI:
 				tableName = DATAITEMS_TABLE_NAME;
-//				count = db.delete(DATAITEMS_TABLE_NAME, whereClause, whereArgs);
 				break;
 			case DATAITEM_ID_URI:
 				tableName = DATAITEMS_TABLE_NAME;
 				whereClause = Dataitem.Definitions._ID + "=?";
 				whereArgs = new String[]{uri.getPathSegments().get(1)};
-				
-//				String dataitemId = uri.getPathSegments().get(1);
-//				count = db.delete(DATAITEMS_TABLE_NAME, 
-//						Dataitem.Definitions._ID + "=?",
-//						new String[]{dataitemId});
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -194,23 +177,13 @@ public class TaskProvider extends ContentProvider {
 		
 		if (initialValues != null) {
 			values = new ContentValues(initialValues);
-			Log.d(TAG, "Using initial values");
 		} else {
 			values = new ContentValues();
-			Log.d(TAG, "Using empty contentvalues");
 		}
 		
 		switch (uriMatcher.match(uri)){
 			case DEFINITIONS_URI:
 				Log.d(TAG, "Processing Task Definition");
-//				if (initialValues != null) {
-//					values = new ContentValues(initialValues);
-//					Log.d(TAG, "Using initial values for Task Definition");
-//				} else {
-//					values = new ContentValues();
-//					Log.d(TAG, "Using empty contentvalues for Task Definition");
-//				}
-
 				// Ensure all values are set
 				if (values.containsKey(Task.Definitions.NAME)
 						&& values.containsKey(Task.Definitions.DESCRIPTION)
@@ -240,14 +213,7 @@ public class TaskProvider extends ContentProvider {
 				break;
 			case JOBS_URI:
 				Log.d(TAG, "Processing Job");
-//				if(initialValues != null){
-//					values = new ContentValues(initialValues);
-//					Log.d(TAG, "Using initial values for Job");
-//				}else {
-//					values = new ContentValues();
-//					Log.d(TAG, "Using empty contentvalues for Job");
-//				}
-//				
+
 				if(values.containsKey(Job.Definitions.NAME) 
 						&& values.containsKey(Job.Definitions.TASK_DEFINITION_ID)
 						&& values.containsKey(Job.Definitions.CREATED)
@@ -281,26 +247,16 @@ public class TaskProvider extends ContentProvider {
 						&& values.containsKey(Dataitem.Definitions.TYPE)
 						&& values.containsKey(Dataitem.Definitions.VALUE)){
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
-					try{
-						long rowId = db.insert(DATAITEMS_TABLE_NAME, Dataitem.Definitions.NAME, values);
-						if(rowId > 0){
-							Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
-							Log.d(TAG, "Saved dataitem " + dataitemUri);
-							getContext().getContentResolver().notifyChange(dataitemUri, null, false);
-							return dataitemUri;
-						} else {
-							Log.d(TAG, "Dataitem not saved.");
-						}
-					}catch(SQLiteConstraintException sqlce){
-						Log.d(TAG, "Duplicate data item. This shouldn't happen.");
-						Log.d(TAG, "Job Id: " + values.getAsString(Dataitem.Definitions.JOB_ID));
-						Log.d(TAG, "Page name: " + values.getAsString(Dataitem.Definitions.PAGENAME));
-						Log.d(TAG, "Name: " + values.getAsString(Dataitem.Definitions.NAME));
-						Log.d(TAG, "Type: " + values.getAsString(Dataitem.Definitions.TYPE));
-						Log.d(TAG, "Value: " + values.getAsString(Dataitem.Definitions.VALUE));
-					}catch(Exception e){
-						Log.d(TAG, "Unable to insert dataitem", e);
+					long rowId = db.insertOrThrow(DATAITEMS_TABLE_NAME, Dataitem.Definitions.NAME, values);
+					if(rowId > 0){
+						Uri dataitemUri = ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, rowId);
+						Log.d(TAG, "Saved dataitem " + dataitemUri);
+						getContext().getContentResolver().notifyChange(dataitemUri, null, false);
+						return dataitemUri;
+					} else {
+						Log.d(TAG, "Dataitem not saved.");
 					}
+
 				} else {
 					Log.d(TAG, "Missing value.");
 					Log.d(TAG, "Job Id: " + values.containsKey(Dataitem.Definitions.JOB_ID));
@@ -310,8 +266,9 @@ public class TaskProvider extends ContentProvider {
 					Log.d(TAG, "Value: " + values.containsKey(Dataitem.Definitions.VALUE));
 					throw new SQLException("Unable to insert row into " + uri);
 				}
+				break;
 			default:
-				throw new IllegalArgumentException("Unknown URI: " + uri + " MAtched value: " + uriMatcher.match(uri));
+				throw new IllegalArgumentException("Unknown URI: " + uri + " Matched value: " + uriMatcher.match(uri));
 		}
 		return null;
 	}
@@ -405,12 +362,12 @@ public class TaskProvider extends ContentProvider {
 	        case JOB_ID_URI:
 	            count = db.update(JOBS_TABLE_NAME, values, Job.Definitions._ID + "=" + uri.getPathSegments().get(1)
 	                    + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
-	            break;
-	        case DATAITEMS_URI:
-	            count = db.update(DATAITEMS_TABLE_NAME, values, whereClause, whereArgs);
 	            if(values.containsKey(Job.Definitions.MODIFIED)){
 	            	syncToNetwork = true;
 	            }
+	            break;
+	        case DATAITEMS_URI:
+	            count = db.update(DATAITEMS_TABLE_NAME, values, whereClause, whereArgs);
 	            break;
 	        case DATAITEM_ID_URI:
 	            count = db.update(DATAITEMS_TABLE_NAME, values, Dataitem.Definitions._ID + "=" + uri.getPathSegments().get(1)
@@ -455,7 +412,8 @@ public class TaskProvider extends ContentProvider {
 					+ Job.Definitions.NOTES + " TEXT, "
 					+ Job.Definitions.GROUP + " TEXT DEFAULT 'Personal', "
 					+ Job.Definitions.STATUS + " TEXT, " 
-					+ Job.Definitions.MODIFIED + " INTEGER DEFAULT 0 "
+					+ Job.Definitions.MODIFIED + " INTEGER DEFAULT 0, "
+					+ Job.Definitions.SERVER_ERROR + " TEXT"
 					+ ");");
 			
 			//Create dataitems table

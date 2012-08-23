@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 public interface DataConnector<T extends DataConnectorTaskDefinition> {

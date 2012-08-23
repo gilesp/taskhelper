@@ -17,7 +17,7 @@
 	<properties>
 		<android.version>2.3.3</android.version>
 		<android.platform>13</android.platform>
-		<android.support.version>r6</android.support.version>
+		<android.support.version>r7</android.support.version>
 		<android.emulator.name>HTCDesire</android.emulator.name>
 		<maven.android.plugin.version>3.1.1</maven.android.plugin.version>
 		<parent.dir>${project.basedir}/../</parent.dir>

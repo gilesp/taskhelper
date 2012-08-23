@@ -60,10 +60,7 @@ public class JobList extends ListActivity {
         // Perform a managed query. The Activity will handle closing and requerying the cursor
         // when needed.
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
-        
-        
-        //TODO: Replace this simplecursoradapter with our own custom adapter that extends CursorAdapter. Joy.
-        
+
         // Used to map task definition entries from the database to views
         adapter = new JobDomainAdapter(this, R.layout.selectjob_list_item, cursor,
 				new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 

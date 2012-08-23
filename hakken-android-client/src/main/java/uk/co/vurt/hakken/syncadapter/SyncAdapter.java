@@ -2,7 +2,6 @@ package uk.co.vurt.hakken.syncadapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import uk.co.vurt.hakken.domain.JSONUtil;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.providers.Dataitem;
 import uk.co.vurt.hakken.providers.Job;
@@ -31,7 +31,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,15 +102,37 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			
 			try{
 				provider.insert(Dataitem.Definitions.CONTENT_URI, values);
-			}catch(SQLiteException e){
+			}catch(SQLiteConstraintException e){
 				try {
-					provider.update(Dataitem.Definitions.CONTENT_URI, values, null, null);
+					//already present so do an update instead
+					Cursor diCursor = provider.query(Dataitem.Definitions.CONTENT_URI, 
+							new String[]{Dataitem.Definitions._ID,
+							Dataitem.Definitions.VALUE}, 
+							Dataitem.Definitions.PAGENAME + " = ?" +
+							" AND " + Dataitem.Definitions.NAME + " = ?" + 
+							" AND " + Dataitem.Definitions.TYPE + " = ?",
+							new String[] {values.getAsString(Dataitem.Definitions.PAGENAME),
+							values.getAsString(Dataitem.Definitions.NAME),
+							values.getAsString(Dataitem.Definitions.TYPE)}, 
+							Dataitem.Definitions.DEFAULT_SORT_ORDER);
+					if(diCursor != null){
+						diCursor.moveToFirst();
+						//only update if the value has changed.
+						if(!dataItem.getValue().equals(diCursor.getString(1))){
+							ContentValues value = new ContentValues();
+							value.put(Dataitem.Definitions.VALUE, dataItem.getValue());
+							provider.update(ContentUris.withAppendedId(Dataitem.Definitions.CONTENT_URI, diCursor.getLong(0)), value, null, null);
+						}
+						diCursor.close();
+						diCursor = null;
+					}
 				} catch (RemoteException re) {
 					Log.e(TAG, "RemoteException", re);
 				}
 			}catch(RemoteException re){
 				Log.e(TAG, "RemoteException", re);
 			}
+			values = null;
 		}
 	}
 
@@ -170,16 +192,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				}
 
 				//send completed job to server
-				boolean submitted = NetworkUtilities.submitData(context, account, authToken, submission);
+				SubmissionStatus status = NetworkUtilities.submitData(context, account, authToken, submission);
 				//if successful, delete completed job and dataitems.
-				if(submitted){
-					Log.d(TAG, "Deleting old dataitems");
-					provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
-					Log.d(TAG, "Deleting job: " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()));
-					provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
-				} else {
-					Log.d(TAG, "Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
-					throw new IOException("Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
+				if(status != null){
+					if(status.isValid()){
+						Log.d(TAG, "Deleting old dataitems");
+						provider.delete(Dataitem.Definitions.CONTENT_URI, Dataitem.Definitions.JOB_ID + " = ?", new String[]{""+submission.getJobId()});
+						Log.d(TAG, "Deleting job: " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()));
+						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
+					} else {
+						Log.d(TAG, "Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
+//						throw new IOException("Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
+						ContentValues values = new ContentValues();
+						values.put(Job.Definitions.STATUS, "SERVER_ERROR");
+						values.put(Job.Definitions.SERVER_ERROR, status.getMessage());
+						provider.update(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), values, null, null);
+					}
 				}
 				jobCursor.moveToNext();
 			}
@@ -190,8 +218,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
-		//get a list of jobs currently on the device (currentJobs)
-//		List<JobDefinition> currentJobs = new ArrayList<JobDefinition>();
 		
 		List<Long> oldJobIds = new ArrayList<Long>();
 		
@@ -199,17 +225,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			while(!jobCursor.isAfterLast()){
-				//int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group
-				//_ID, NAME, TASK_DEFINITION_ID, CREATED, DUE, STATUS, GROUP, NOTES, MODIFIED
-//				JobDefinition job = new JobDefinition(jobCursor.getLong(0),
-//						jobCursor.getString(1),
-//						null, //do we need to retrieve the taskdefinition as well?
-//						new Date(jobCursor.getLong(4)),
-//						new Date(jobCursor.getLong(5)),
-//						jobCursor.getString(6),
-//						jobCursor.getString(7));
-//
-//				currentJobs.add(job);
 				
 				oldJobIds.add(jobCursor.getLong(0));
 				jobCursor.moveToNext();
@@ -217,8 +232,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			jobCursor.close();
 			jobCursor = null;
 		}
-		//get list of jobs from server (newJobs)
-//		List<JobDefinition> newJobs = NetworkUtilities.fetchJobs(context, account, authToken, new Date(getLastUpdatedDate(account)));
+
 		JobDefinitionAdapter jobAdapter = new JobDefinitionAdapter(provider, oldJobIds);
 		
 		NetworkUtilities.fetchJobs(context,  account,  authToken,  new Date(getLastUpdatedDate(account)), jobAdapter);
@@ -229,67 +243,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		for(Long jobToDeleteId: oldJobIds){
 			provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDeleteId), null, null);
 		}
-//		//delete any current jobs that aren't in the new jobs list (as this means they will have been completed elsewhere
-//		//TODO: Check this assumption - will need modifying if we switch to only sending new jobs, rather than all jobs
-//		if(currentJobs.size() > 0){
-//			Collection<JobDefinition> jobsToDelete = new ArrayList<JobDefinition>(currentJobs);
-//			jobsToDelete.removeAll(newJobs);
-//			for(JobDefinition jobToDelete: jobsToDelete){
-//				provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDelete.getId()), null, null);
-//			}
-//		}
-		
-//		//for each newJob:
-//		if(newJobs.size() > 0 ){
-//			for(JobDefinition newJob: newJobs){
-//				Log.d(TAG, "Adding a job to database: " + newJob);
-//				
-//				
-//				ContentValues values = new ContentValues();
-//				values.put(Job.Definitions._ID, newJob.getId());
-//				values.put(Job.Definitions.NAME, newJob.getName());
-//				values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getDefinition().getId());
-//				values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
-//				values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
-//				if(newJob.getDue() != null){
-//					values.put(Job.Definitions.DUE, newJob.getDue().getTime());
-//				} else {
-//					Log.e(TAG, "Job has no due date!");
-//				}
-//				values.put(Job.Definitions.STATUS, newJob.getStatus());
-//				values.put(Job.Definitions.NOTES, "null".equals(newJob.getNotes()) ? "" : newJob.getNotes());
-//				if(newJob.getGroup() != null){
-//					values.put(Job.Definitions.GROUP, newJob.getGroup());
-//				}
-//				
-//				Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
-//				
-//				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
-//				//  if job not on device, then create it on device
-//				boolean storeDataItems = false;
-//				if(currentJobs.contains(newJob) ){
-//					if(!currentJobs.get(currentJobs.indexOf(newJob)).isModified()){
-//						//update job
-//						Log.d(TAG, "Updating job " + newJob.getId());
-//						provider.update(jobUri, values, null, null);
-//						storeDataItems = true;
-//					}
-//				} else {
-//					storeTaskDefinition(provider, newJob.getDefinition());
-//					//create job
-//					Log.d(TAG, "Inserting new job " + newJob.getId());
-//					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
-//					Log.d(TAG, "Inserted job as " + providerUri);
-//					storeDataItems = true;
-//				}
-//				
-//				if(storeDataItems){
-//					for(DataItem item: newJob.getDataItems()){
-//						storeDataItem(provider, item, newJob);
-//					}
-//				}
-//			}
-//		}
+
 		setLastUpdatedDate(account, newLastUpdated);
 	}
 	
@@ -377,6 +331,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
 				//  if job not on device, then create it on device
 				boolean storeDataItems = false;
+				boolean resetStatus = false;
 				if(oldJobIds.contains(newJob.getId())){
 					Cursor jobCursor = provider.query(jobUri, null, null, null, null);
 					boolean modified = false;
@@ -390,7 +345,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 					if(!modified){
 						//update job
 						Log.d(TAG, "Updating job " + newJob.getId());
+						values.put(Job.Definitions.STATUS, "UPDATING");
 						provider.update(jobUri, values, null, null);
+						resetStatus = true;
 						storeDataItems = true;
 					}
 				} else {
@@ -405,6 +362,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				if(storeDataItems){
 					for(DataItem item: newJob.getDataItems()){
 						storeDataItem(provider, item, newJob);
+					}
+					if(resetStatus){
+						values = new ContentValues();
+						values.put(Job.Definitions.STATUS, newJob.getStatus());
+						provider.update(jobUri, values, null, null);
 					}
 				}
 			}catch(RemoteException re){
