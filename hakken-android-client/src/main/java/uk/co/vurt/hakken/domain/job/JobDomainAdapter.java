@@ -80,9 +80,13 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 		
 		//set the appropriate status indicator
 		if("COMPLETED".equals(status)){
-			holder.status.setImageResource(R.drawable.ic_completed_star);
+			holder.status.setImageResource(R.drawable.orange_star);
+		}else if("SERVER_ERROR".equals(status)){
+			holder.status.setImageResource(R.drawable.red_warning);
+		}else if("UPDATING".equals(status)){
+			holder.status.setImageResource(R.drawable.refresh);
 		}else{
-			holder.status.setImageResource(R.drawable.ic_uncompleted_star);
+			holder.status.setImageResource(R.drawable.outline_star);
 		}
 
 		return convertView;

@@ -163,11 +163,11 @@ public class RunJob extends Activity {
 		RunJob.this.finish();
 	}
 
-	private void showErrorPopUp(String errorMessage) {
-		Log.d(TAG, "Creating error dialog: " + errorMessage);
+	private void showErrorPopUp(String title, String errorMessage){
+		Log.d(TAG, "Creating error dialog: " + title + ": " + errorMessage);
 		
 		AlertDialog.Builder errorBuilder = new AlertDialog.Builder(this);
-		errorBuilder.setTitle("Error"); //ugh
+		errorBuilder.setTitle(title);
 		errorBuilder.setMessage(errorMessage);
 		errorBuilder.setPositiveButton("Ok",
 				new DialogInterface.OnClickListener() {
@@ -178,6 +178,9 @@ public class RunJob extends Activity {
 
 		AlertDialog errorDialog = errorBuilder.create();
 		errorDialog.show();
+	}
+	private void showErrorPopUp(String errorMessage) {
+		showErrorPopUp("Validation Error", errorMessage);
 	}
 	
 	protected void savePage(Page page){
@@ -373,7 +376,9 @@ public class RunJob extends Activity {
 			}
 
 			//display error message if validation errors exists
-			if(!ignoreErrors && missingValues != null && missingValues.size() > 0){
+			if(!jobProcessor.previousPages() && jobProcessor.showServerError()){
+				showErrorPopUp("Server Error", "This job could not be submitted because of the following server error:\n\n" + jobProcessor.getServerError());
+			}else if(!ignoreErrors && missingValues != null && missingValues.size() > 0){
 				StringBuffer errorBuffer = new StringBuffer("The following fields require a value:\n");
 				for(String missingField: missingValues){
 					errorBuffer.append(" ");

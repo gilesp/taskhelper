@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.server.service.SubmissionService;
 
 @Controller
@@ -40,8 +41,8 @@ public class SubmissionAdminController {
 	public String resubmit(@PathVariable Long id,Model model) {
 		Submission submission = submissionService.get(id);
 		if(submission != null){
-			boolean success = submissionService.submit(submission);
-			logger.debug("Resubmitted " + id + ": " + success);
+			SubmissionStatus status = submissionService.submit(submission);
+			logger.debug("Resubmitted " + id + ": " + status.isValid());
 		}
 		return "redirect:/admin/submission/";
 	}

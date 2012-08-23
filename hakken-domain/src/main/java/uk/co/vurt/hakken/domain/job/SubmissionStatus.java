@@ -1,4 +1,4 @@
-package uk.co.vurt.hakken.server.connector;
+package uk.co.vurt.hakken.domain.job;
 
 public class SubmissionStatus {
 

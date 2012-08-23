@@ -30,7 +30,7 @@ public class Job {
 		public static final String GROUP = "groupname";
 		public static final String NOTES = "notes";
 		public static final String MODIFIED = "modified";
-		
+		public static final String SERVER_ERROR = "serv_error";
 		
 		public static final String DEFAULT_SORT_ORDER = GROUP + ", " + DUE + " ASC";
 		
@@ -44,7 +44,8 @@ public class Job {
 			STATUS,
 			GROUP,
 			NOTES,
-			MODIFIED
+			MODIFIED,
+			SERVER_ERROR
 		};
 	}
 	
