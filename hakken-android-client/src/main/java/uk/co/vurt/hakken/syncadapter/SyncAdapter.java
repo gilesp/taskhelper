@@ -333,16 +333,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				boolean storeDataItems = false;
 				boolean resetStatus = false;
 				if(oldJobIds.contains(newJob.getId())){
-					Cursor jobCursor = provider.query(jobUri, null, null, null, null);
+					
+					Cursor jobCursor = provider.query(jobUri, new String[]{Job.Definitions.MODIFIED, Job.Definitions.STATUS}, null, null, null);
 					boolean modified = false;
+					String status = null;
 					if(jobCursor != null){
 						jobCursor.moveToFirst();
-						modified = Boolean.valueOf(jobCursor.getString(7));
+						modified = Boolean.valueOf(jobCursor.getString(0));
+						status = jobCursor.getString(1);
 						jobCursor.close();
 						jobCursor = null;
 					}
 					
-					if(!modified){
+					if(!modified && !"SERVER_ERROR".equals(status)){
 						//update job
 						Log.d(TAG, "Updating job " + newJob.getId());
 						values.put(Job.Definitions.STATUS, "UPDATING");

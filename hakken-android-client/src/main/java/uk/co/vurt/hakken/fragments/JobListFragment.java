@@ -60,12 +60,12 @@ public class JobListFragment extends ListFragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		adapter.swapCursor(cursor);
+	    //		adapter.swapCursor(cursor);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		adapter.swapCursor(null);
+	    //		adapter.swapCursor(null);
 	}
 
 	@Override
