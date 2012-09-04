@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.security.HashUtils;
-import uk.co.vurt.hakken.server.connector.DataConnector;
 import uk.co.vurt.hakken.server.exception.HakkenException;
-import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
-import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.service.DataConnectorService;
 import uk.co.vurt.hakken.server.service.JobService;
 import uk.co.vurt.hakken.server.service.MappingService;
@@ -43,10 +41,9 @@ public class SubmissionController extends RESTController{
 	DataConnectorService connectorService;
 	
 	@RequestMapping(value = "from/{username}", method = RequestMethod.POST)
-	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public boolean handleSubmission(@PathVariable String username, @RequestParam String hmac, @RequestBody Submission submission) throws HakkenException{
-		boolean success = false;
+	public @ResponseBody SubmissionStatus handleSubmission(@PathVariable String username, @RequestParam String hmac, @RequestBody Submission submission) throws HakkenException{
+		SubmissionStatus status;
 		Map<String, String>parameterMap = new HashMap<String, String>();
 		parameterMap.put("username", username);
 
@@ -61,9 +58,9 @@ public class SubmissionController extends RESTController{
 	
 			service.store(submission);
 
-			success = service.submit(submission);
+			status = service.submit(submission);
 			
-			logger.debug("Submission status: " + success );
+			logger.debug("Submission status: " + status );
 			
 			//if sent to dataconnector successfully, then update submission entry
 			//use a separate audit table for this?
@@ -72,7 +69,7 @@ public class SubmissionController extends RESTController{
 			logger.warn("Woop Woop! Invalid request received!");
 			throw new HakkenException("Invalid request received");
 		}
-		return success;
+		return status;
 	}
 	
 }

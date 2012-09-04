@@ -26,13 +26,15 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.vurt.hakken.client.json.JacksonStreamParser;
+import uk.co.vurt.hakken.client.json.JobDefinitionHandler;
+import uk.co.vurt.hakken.client.json.JsonStreamParser;
 import uk.co.vurt.hakken.domain.JSONUtil;
-import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.security.HashUtils;
 import uk.co.vurt.hakken.security.model.LoginResponse;
@@ -62,27 +64,9 @@ final public class NetworkUtilities {
 
 	public static final int REQUEST_TIMEOUT_MS = 300 * 1000; // ms
 
-	// public static final String BASE_URL = "http://dev.vurt.co.uk/taskhelper";
-	// /**TODO: Load Server URL from resource file?? */
-
-	// public static final String BASE_URL =
-	// "http://10.32.48.36:8080/taskhelper_server"; /**TODO: Load Server URL
-	// from resource file?? */
-	// public static final String BASE_URL =
-	// "http://appsdev.wmfs.net:8280/taskhelper_server"; /**TODO: Load Server
-	// URL from resource file?? */
-
 	public static final String AUTH_URI = "/auth/login";
 
 	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/since/[timestamp]?hmac=[hmac]";
-	
-	//getBaseUrl(context) + FETCH_JOBS_URI + "/"
-	//+ parameterMap.get("username") + "/"
-	//+ HashUtils.hash(parameterMap) + "/since/"
-	//+ parameterMap.get("timestamp")
-	
-	// public static final String FETCH_TASK_DEFINITIONS_URI =
-	// "/taskdefinitions";
 
 	/*
 	 * The trailing slash after the username is required (due to idosyncrasies in the Spring MVC implementation of the server)
@@ -181,24 +165,8 @@ final public class NetworkUtilities {
 					response.setReason(e.getMessage());
 					Log.e(TAG, "Unable to parse login response", e);
 				}
-
-				// InputStream inputStream = (resp.getEntity() != null) ?
-				// resp.getEntity().getContent() : null;
-				// if(inputStream != null){
-				// BufferedReader reader = new BufferedReader(new
-				// InputStreamReader(inputStream));
-				// authToken = reader.readLine().trim();
-				// }
 			}
-			// if((authToken != null) && (authToken.length() > 0)){
-			// if (Log.isLoggable(TAG, Log.INFO)) {
-			// Log.i(TAG, "Successful authentication: " + authToken);
-			// }
-			// } else {
-			// if (Log.isLoggable(TAG, Log.INFO)) {
-			// Log.i(TAG, "Error authenticating" + resp.getStatusLine());
-			// }
-			// }
+
 			if (Log.isLoggable(TAG, Log.INFO)) {
 				Log.i(TAG, "Login Response: " + response);
 			}
@@ -224,10 +192,10 @@ final public class NetworkUtilities {
 	 * @param authToken
 	 * @return
 	 */
-	public static boolean submitData(Context context, Account account,
+	public static SubmissionStatus submitData(Context context, Account account,
 			String authToken, Submission submission) {
 		
-		boolean success = false;
+		SubmissionStatus status = null;
 		
 		StringEntity stringEntity;
 		try {
@@ -248,15 +216,15 @@ final public class NetworkUtilities {
 			post.setHeader("Content-type", "application/json");
 			
 			final HttpResponse httpResponse = getHttpClient().execute(post);
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+//			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 				String response = EntityUtils.toString(httpResponse.getEntity());
+				
+				status = JSONUtil.getInstance().parseSubmissionStatus(response);
 				Log.d(TAG, "Response: " + response);
-				success = Boolean.parseBoolean(response);
-			} else {
-				Log.w(TAG, "Data submission failed: "
-						+ httpResponse.getStatusLine().getStatusCode());
-				success = false;
-			}
+//			} else {
+//				Log.w(TAG, "Data submission failed: "
+//						+ httpResponse.getStatusLine().getStatusCode());
+//			}
 		} catch (UnsupportedEncodingException e) {
 			Log.e(TAG, "Unable to convert submission to JSON", e);
 		} catch (ClientProtocolException e) {
@@ -264,15 +232,14 @@ final public class NetworkUtilities {
 		} catch (IOException e) {
 			Log.e(TAG, "Error submitting json", e);
 		}
-		return success;
+		return status;
 
 	}
 
-	public static List<JobDefinition> fetchJobs(Context context,
-			Account account, String authToken, Date lastUpdated)
-			throws JSONException, ParseException, IOException,
-			AuthenticationException {
-		final ArrayList<JobDefinition> jobList = new ArrayList<JobDefinition>();
+	public static void fetchJobs(Context context,
+			Account account, String authToken, Date lastUpdated, 
+			JobDefinitionHandler callback) throws JSONException, ParseException, IOException,
+			AuthenticationException  {
 
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(
 				"yyyy-MM-dd'T'HH:mm:ss");
@@ -283,45 +250,15 @@ final public class NetworkUtilities {
 
 		String hmac = HashUtils.hash(parameterMap);
 		parameterMap.put("hmac", URLUtils.encode(hmac));
-		
-		String data = fetchData(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap)/*, null, null, null*/);
-//				getBaseUrl(context) + FETCH_JOBS_URI + "/"
-//						+ parameterMap.get("username") + "/"
-//						+ HashUtils.hash(parameterMap) + "/since/"
-//						+ parameterMap.get("timestamp"), null, null, null);
 
-		Log.d(TAG, "JOBS DATA: " + data);
-		final JSONArray jobs = new JSONArray(data);
 
-		for (int i = 0; i < jobs.length(); i++) {
-			Log.d(TAG, "JobDefinition: " + jobs.getJSONObject(i).toString());
-			jobList.add(JSONUtil.getInstance().parseJobDefinition(jobs.getJSONObject(i).toString()));
-		}
-		return jobList;
-	}
-
-	private static String fetchData(String url /*, Account account,
-			String authToken, ArrayList<NameValuePair> params*/)
-			throws ClientProtocolException, IOException,
-			AuthenticationException {
-		Log.d(TAG, "Fetching data from: " + url);
-		String data = null;
-
-		final HttpGet get = new HttpGet(url);
+		final HttpGet get = new HttpGet(StringUtils.replaceTokens(getBaseUrl(context) + FETCH_JOBS_URI, parameterMap));
 
 		final HttpResponse httpResponse = getHttpClient().execute(get);
-		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			data = EntityUtils.toString(httpResponse.getEntity());
-		} else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-			Log.e(TAG,
-					"Authentication exception in fetching remote task definitions");
-			throw new AuthenticationException();
-		} else {
-			Log.e(TAG, "Server error in fetching remote task definitions: "
-					+ httpResponse.getStatusLine());
-			throw new IOException();
-		}
-		return data;
+		JsonStreamParser streamParser = new JacksonStreamParser();
+		
+		streamParser.parseJobDefinitionStream(httpResponse.getEntity().getContent(), callback);
+		
 	}
 
 	public static List<TaskDefinition> fetchTaskDefinitions(Account account,

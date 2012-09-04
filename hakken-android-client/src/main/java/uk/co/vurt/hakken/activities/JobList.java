@@ -1,14 +1,17 @@
 package uk.co.vurt.hakken.activities;
 
+import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.job.JobDomainAdapter;
 import uk.co.vurt.hakken.providers.Job;
 import uk.co.vurt.hakken.providers.TaskProvider;
-import uk.co.vurt.hakken.R;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class JobList extends ListActivity {
 
@@ -56,10 +60,7 @@ public class JobList extends ListActivity {
         // Perform a managed query. The Activity will handle closing and requerying the cursor
         // when needed.
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
-        
-        
-        //TODO: Replace this simplecursoradapter with our own custom adapter that extends CursorAdapter. Joy.
-        
+
         // Used to map task definition entries from the database to views
         adapter = new JobDomainAdapter(this, R.layout.selectjob_list_item, cursor,
 				new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
@@ -98,11 +99,30 @@ public class JobList extends ListActivity {
 	    	case R.id.preferences:
 				startActivity(new Intent(this, PreferencesActivity.class));
 	    		return true;
+	    	case R.id.version:
+	    		showVersionInfo();
+	    		return true;
 	    	default:
 	    		return super.onOptionsItemSelected(item);
 	    }
 	}
 
+	private void showVersionInfo(){
+		PackageManager manager = this.getPackageManager();
+		PackageInfo info;
+		String message;
+		try {
+			info = manager.getPackageInfo(this.getPackageName(), 0);
+			message = "PackageName = " + info.packageName + 
+				     "\nVersionCode = " + info.versionCode + 
+				     "\nVersionName = " + info.versionName;
+		} catch (NameNotFoundException e) {
+			message = "Unable to retrieve package info.";
+		}
+		Toast.makeText( this, message, Toast.LENGTH_LONG).show();
+
+	}
+	
 	private void synchronise(){
 		Log.d(TAG, "synchronise() called.");
 		Bundle bundle = new Bundle();

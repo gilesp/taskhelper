@@ -41,6 +41,7 @@ public class DispatcherActivity extends Activity {
 			//Account found, so carry on as normal.
 			intent = new Intent(this, JobList.class);
 			Bundle bundle = new Bundle();
+			//900 seconds = 15 minutes
 			ContentResolver.addPeriodicSync(accounts[0], TaskProvider.AUTHORITY, bundle, 900); //TODO make this period configurable and handle multiple accounts
 		}
 		startActivity(intent);
