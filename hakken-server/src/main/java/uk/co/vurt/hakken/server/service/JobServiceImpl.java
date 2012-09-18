@@ -71,7 +71,8 @@ public class JobServiceImpl implements JobService{
 				//separately from jobs.
 				TaskDefinition emptyDefinition = new TaskDefinition();
 				emptyDefinition.setId(definition.getId());
-				emptyDefinition.setName(definition.getName());
+				emptyDefinition.setName(definition.getName());				
+				//TODO: RP/Kash skip this stuff above and just set the definition id
 				
 				boolean first = true;
 				for(Instance instance: instances){

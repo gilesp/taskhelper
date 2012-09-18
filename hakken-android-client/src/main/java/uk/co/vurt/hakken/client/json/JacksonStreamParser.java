@@ -78,6 +78,10 @@ public class JacksonStreamParser implements JsonStreamParser {
 	}
 	
 	private JobDefinition readJob(JsonParser jp) throws IOException, JsonParseException{
+	    
+	    /*TODO: RP/Kash - need to change this as definition won't be returned in JSON response,
+	     * only the definition id */
+	    
 		Long id = null;
 		String name = null;
 		TaskDefinition definition = null;

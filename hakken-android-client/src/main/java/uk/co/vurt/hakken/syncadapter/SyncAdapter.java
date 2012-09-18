@@ -147,6 +147,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			
 			syncJobsFromServer(account, authToken, provider);
 			
+			/*
+			 * TODO: RP/Kash - we need separate syncTaskDefinitionsFromServer method
+			 */
+			
 			provider.release(); //do we need to do this?
 		}catch(Exception e){
 			handleException(e, authToken, syncResult);

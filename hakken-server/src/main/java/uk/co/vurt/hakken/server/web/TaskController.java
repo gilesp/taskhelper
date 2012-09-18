@@ -27,4 +27,6 @@ public class TaskController {
 	public @ResponseBody TaskDefinition getTaskByName(@PathVariable String name){
 		return taskRegistry.getTask(name);
 	}
+	
+	//TODO: RP/Kash - method to return all task definitions
 }

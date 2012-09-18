@@ -9,6 +9,8 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 //import android.util.Log;
 
+//TODO: RP/Kash - remove definition field, add "definition id" field
+
 public class JobDefinition implements Serializable{
 
 	private final static String TAG = "JobDefinition";
