@@ -1,12 +1,14 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
+
 import uk.co.vurt.hakken.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-public class LabelledCheckBox extends AbstractLabelledWidget {
+public class LabelledCheckBox extends AbstractLabelledWidget implements Serializable{
 
 	private CheckBox checkBox;
 	

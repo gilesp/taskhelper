@@ -18,4 +18,5 @@ public abstract class AbstractDataConnector<T extends DataConnectorTaskDefinitio
 		return this.getClass().getSimpleName();
 	}
 	
+	
 }

@@ -28,6 +28,10 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 			visitDataItemExpression(name.substring(9), nodeItemExpression);
 		} else if("NOW".equals(name)){
 			visitCurrentDateExpression();
+		} else if ("NOT".equals(name)) {
+			visitNotExpression(nodeItemExpression);
+		} else if ("NULL".equals(name)) {
+			visitNullExpression();
 		} else {
 			throw new ExpressionException("custom node " + name
 					+ " is not allowed");
@@ -67,6 +71,16 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 		result = sdf.format(new Date());
 	}
 	
+	protected void visitNotExpression(CustomItemExpression expr)
+			throws ExpressionException {
+		expr.arg(0).accept(this);
+		Boolean o = (Boolean) result;
+
+		result = Boolean.valueOf(!o.booleanValue());
+	}
+	protected void visitNullExpression() throws ExpressionException {
+		result = null;
+	}
 	public void setJobProcessor(JobProcessor jobProcessor) {
 		this.jobProcessor = jobProcessor;
 	}

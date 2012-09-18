@@ -40,6 +40,7 @@ public class WidgetFactory {
 		boolean readonly = PageItemProcessor.getBooleanAttribute(item, "readonly");
 		boolean hidden = PageItemProcessor.getBooleanAttribute(item, "hidden");
 		boolean required = PageItemProcessor.getBooleanAttribute(item, "required");
+		String condition = PageItemProcessor.getStringAttribute(item, "condition");
 		
 		// create new widget and add it to the map
 		if ("LABEL".equals(item.getType())) {
@@ -124,6 +125,6 @@ public class WidgetFactory {
 
 		
 		
-		return new WidgetWrapper(widget, required, readonly, hidden);
+		return new WidgetWrapper(widget, required, condition, readonly, hidden);
 	}
 }

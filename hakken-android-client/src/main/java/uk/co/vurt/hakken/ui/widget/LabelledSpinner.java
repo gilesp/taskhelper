@@ -1,5 +1,6 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class LabelledSpinner extends AbstractLabelledWidget {
+public class LabelledSpinner extends AbstractLabelledWidget implements Serializable{
 
 	private static final String TAG = "LabelledSpinner";
 	

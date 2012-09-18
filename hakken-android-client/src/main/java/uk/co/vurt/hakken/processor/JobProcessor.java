@@ -42,7 +42,8 @@ public class JobProcessor {
 		Job.Definitions.DUE,
 		Job.Definitions.STATUS,
 		Job.Definitions.NOTES,
-		Job.Definitions.MODIFIED
+		Job.Definitions.MODIFIED,
+		Job.Definitions.SERVER_ERROR
 	};
 	
 	private static final int COLUMN_INDEX_JOB_ID = 0;
@@ -53,6 +54,7 @@ public class JobProcessor {
 	private static final int COLUMN_INDEX_JOB_STATUS = 5;
 	private static final int COLUMN_INDEX_JOB_NOTES = 6;
 	private static final int COLUMN_INDEX_JOB_MODIFIED = 7;
+	private static final int COLUMN_INDEX_SERVER_ERROR = 8;
 
 	private ContentResolver contentResolver;
 	private Cursor cursor;
@@ -84,12 +86,14 @@ public class JobProcessor {
 			Date jobDue = new Date(cursor.getLong(COLUMN_INDEX_JOB_DUE));
 			String jobStatus = cursor.getString(COLUMN_INDEX_JOB_STATUS);
 			String notes = cursor.getString(COLUMN_INDEX_JOB_NOTES);
-
+			String serverError = cursor.getString(COLUMN_INDEX_SERVER_ERROR);
+			
 			//initialise the TaskProcessor
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, cursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID));
 			taskProcessor = new TaskProcessor(contentResolver, definitionUri);
 			
 			jobDefinition = new JobDefinition(jobId, jobName, taskProcessor.getTaskDefinition(), jobCreated, jobDue, jobStatus, notes);
+			jobDefinition.setServerError(serverError);
 			
 			pages = taskProcessor.getPages();
 			pageHistory =  new ArrayList<Integer>();
@@ -184,6 +188,12 @@ public class JobProcessor {
 		}
 		pageHistory.add(currentPagePosition);
 		pageHistoryPosition++;
+	}
+	
+	public boolean evaluateCondition(String condition) throws ExpressionException{
+		Expression expression = expressionFactory.createCondition(condition);
+		expressionVisitor.setExpression(expression);
+		return expressionVisitor.evaluateCondition();
 	}
 	
 	public String evaluateExpression(String expression){
@@ -349,4 +359,11 @@ public class JobProcessor {
 		return dataitem;
 	}
 	
+	public boolean showServerError(){
+		return "SERVER_ERROR".equals(jobDefinition.getStatus());
+	}
+	
+	public String getServerError(){
+		return jobDefinition.getServerError();
+	}
 }

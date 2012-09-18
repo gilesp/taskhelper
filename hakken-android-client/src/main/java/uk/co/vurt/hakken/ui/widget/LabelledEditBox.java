@@ -1,5 +1,7 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
+
 import uk.co.vurt.hakken.R;
 import android.content.Context;
 import android.text.method.KeyListener;
@@ -7,7 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class LabelledEditBox extends AbstractLabelledWidget {
+public class LabelledEditBox extends AbstractLabelledWidget implements Serializable{
 
 	private EditText textBox;
 	

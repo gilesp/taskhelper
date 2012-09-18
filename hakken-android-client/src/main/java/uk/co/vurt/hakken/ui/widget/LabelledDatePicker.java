@@ -1,5 +1,7 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
+
 import uk.co.vurt.hakken.R;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class LabelledDatePicker extends AbstractLabelledWidget {
+public class LabelledDatePicker extends AbstractLabelledWidget implements Serializable{
 
 	private EditText textBox;
 	private Button pickDateButton;

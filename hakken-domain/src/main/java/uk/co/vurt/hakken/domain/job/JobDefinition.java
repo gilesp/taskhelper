@@ -23,6 +23,7 @@ public class JobDefinition implements Serializable{
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
 	private boolean modified;
+	private String serverError;
 	
 	public JobDefinition(){}
 	
@@ -38,6 +39,22 @@ public class JobDefinition implements Serializable{
 		this.notes = notes;
 	}
 
+	public JobDefinition(Long id, String name, TaskDefinition definition,
+			Date created, Date due, String status, String group, String notes,
+			Set<DataItem> dataItems, boolean modified) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.definition = definition;
+		this.created = created;
+		this.due = due;
+		this.status = status;
+		this.group = group;
+		this.notes = notes;
+		this.dataItems = dataItems;
+		this.modified = modified;
+	}
+	
 //	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
 //		this(id, name, definition, created, due, status, notes);
 //		this.group = group;
@@ -78,9 +95,13 @@ public class JobDefinition implements Serializable{
 //		return null;
 //	}
 
+	
+
 	public String getStatus() {
 		return status;
 	}
+
+
 
 	public boolean isModified() {
 		return modified;
@@ -157,6 +178,14 @@ public class JobDefinition implements Serializable{
 	
 	public void setDataItems(Set<DataItem> dataItems) {
 		this.dataItems = dataItems;
+	}
+
+	public String getServerError() {
+		return serverError;
+	}
+
+	public void setServerError(String serverError) {
+		this.serverError = serverError;
 	}
 
 	@Override

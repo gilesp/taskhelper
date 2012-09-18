@@ -3,6 +3,7 @@ package uk.co.vurt.hakken.server.service;
 import java.util.List;
 
 import uk.co.vurt.hakken.domain.job.Submission;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 
 public interface SubmissionService extends Service<Long, Submission> {
 
@@ -12,5 +13,5 @@ public interface SubmissionService extends Service<Long, Submission> {
 	
 	void delete(long id);
 	
-	boolean submit(Submission submission);
+	SubmissionStatus submit(Submission submission);
 }

@@ -1,12 +1,13 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
 import java.util.List;
 
 import uk.co.vurt.hakken.domain.NameValue;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-public class NameValueAdapter extends ArrayAdapter<NameValue> {
+public class NameValueAdapter extends ArrayAdapter<NameValue> implements Serializable{
 
 	private List<NameValue> values;
 	

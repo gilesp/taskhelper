@@ -12,15 +12,20 @@ public class WidgetWrapper implements Serializable {
 	private boolean required;
 	private boolean readOnly;
 	private boolean hidden;
+	private String condition;
 	
-	public WidgetWrapper(View widget, boolean required, boolean readOnly, boolean hidden){
+	public WidgetWrapper(View widget, boolean required, String condition, boolean readOnly, boolean hidden){
 		this.widget = widget;
 		this.required = required;
+		if(condition != null && condition.length() > 0){
+			this.condition = condition;
+		}
 		this.readOnly = readOnly;
 		this.hidden = hidden;
 	}
+	
 	public WidgetWrapper(View widget, boolean required){
-		this(widget, required, false, false);
+		this(widget, required, null, false, false);
 	}
 	
 	public WidgetWrapper(View widget){
@@ -42,6 +47,15 @@ public class WidgetWrapper implements Serializable {
 	public void setRequired(boolean required) {
 		this.required = required;
 	}
+	
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -54,5 +68,7 @@ public class WidgetWrapper implements Serializable {
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}
-	
+	public boolean hasCondition(){
+		return condition != null && condition.length() > 0;
+	}
 }

@@ -1,5 +1,6 @@
 package uk.co.vurt.hakken.ui.widget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +14,10 @@ import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.Spinner;
 
 public class MultiSelectSpinner extends Spinner implements
-		OnMultiChoiceClickListener, OnCancelListener {
+		OnMultiChoiceClickListener, OnCancelListener, Serializable {
 
 	private static final String TAG = "MultiSelectSpinner";
 	

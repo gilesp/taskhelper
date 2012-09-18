@@ -1,8 +1,6 @@
 package uk.co.vurt.hakken.domain;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Date;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
@@ -10,6 +8,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 public class JSONUtil {
@@ -95,4 +94,21 @@ public class JSONUtil {
 //		return gson.fromJson(json, JobDefinition.class);
 	}
 	
+	public SubmissionStatus parseSubmissionStatus(String json) {
+		
+		SubmissionStatus status = null;
+		try {
+			status = mapper.readValue(json, SubmissionStatus.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return status;
+	}
 }
