@@ -48,6 +48,20 @@ public class JacksonStreamParser implements JsonStreamParser {
 		}
 	}
 	
+	@Override
+	public List<TaskDefinition> parseTaskDefinitionStream(InputStream in)
+			throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void parseTaskDefinitionStream(InputStream in,
+			TaskDefinitionHandler callback) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private List<JobDefinition> readJobsArray(JsonParser jp, JobDefinitionHandler callback) throws IOException{
 		List<JobDefinition> jobs = new ArrayList<JobDefinition>();
 		
@@ -79,12 +93,13 @@ public class JacksonStreamParser implements JsonStreamParser {
 	
 	private JobDefinition readJob(JsonParser jp) throws IOException, JsonParseException{
 	    
-	    /*TODO: RP/Kash - need to change this as definition won't be returned in JSON response,
+	    /*TODO: RP/Kash - DONE - need to change this as definition won't be returned in JSON response,
 	     * only the definition id */
 	    
 		Long id = null;
 		String name = null;
-		TaskDefinition definition = null;
+		//TaskDefinition definition = null;
+		Long taskDefintionId = null;
 		Date created = null;
 		Date due = null;
 		String status = null;
@@ -113,7 +128,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 					name = jp.getText();
 	//				System.out.println("Name:" + name);
 				} else if(itemName.equals("definition")){
-					definition = readTaskDefinition(jp);
+					taskDefintionId = jp.getValueAsLong();
 	//				System.out.println("Definition:" + definition);
 				} else if(itemName.equals("created")){
 					created = new Date(Long.parseLong(jp.getText()));
@@ -143,7 +158,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 				}
 			}
 		}
-		return new JobDefinition(id, name, definition, created, due, status, group, notes, dataItems, modified);
+		return new JobDefinition(id, name, taskDefintionId, created, due, status, group, notes, dataItems, modified);
 	}
 	
 	private List<DataItem> readDataItemsArray(JsonParser jp) throws IOException, JsonParseException {
@@ -203,6 +218,8 @@ public class JacksonStreamParser implements JsonStreamParser {
 //		}
 		return taskDefinition;
 	}
+
+
 
 
 }

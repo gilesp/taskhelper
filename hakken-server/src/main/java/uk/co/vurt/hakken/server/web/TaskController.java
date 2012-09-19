@@ -1,5 +1,7 @@
 package uk.co.vurt.hakken.server.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,5 +30,9 @@ public class TaskController {
 		return taskRegistry.getTask(name);
 	}
 	
-	//TODO: RP/Kash - method to return all task definitions
+	//TODO: RP/Kash - DONE - method to return all task definitions
+	@RequestMapping("list")
+	public @ResponseBody List<TaskDefinition> getTaskDefinitions(){
+		return taskRegistry.getAllTasks();
+	}
 }

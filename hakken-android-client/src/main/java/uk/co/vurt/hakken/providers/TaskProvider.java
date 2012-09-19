@@ -31,7 +31,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "tasks.db";
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 18;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";
@@ -70,7 +70,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions._ID, Job.Definitions._ID);
 		jobsProjectionMap.put(Job.Definitions.NAME, Job.Definitions.NAME);
 		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_ID, Job.Definitions.TASK_DEFINITION_ID);
-		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_NAME, Job.Definitions.TASK_DEFINITION_NAME);
+//		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_NAME, Job.Definitions.TASK_DEFINITION_NAME);
 		jobsProjectionMap.put(Job.Definitions.CREATED, Job.Definitions.CREATED);
 		jobsProjectionMap.put(Job.Definitions.DUE, Job.Definitions.DUE);
 		jobsProjectionMap.put(Job.Definitions.STATUS, Job.Definitions.STATUS);
@@ -406,7 +406,7 @@ public class TaskProvider extends ContentProvider {
 					+ Job.Definitions._ID + " INTEGER PRIMARY KEY, "
 					+ Job.Definitions.NAME + " TEXT, "
 					+ Job.Definitions.TASK_DEFINITION_ID + " INTEGER REFERENCES " + DEFINITIONS_TABLE_NAME + " (" + Task.Definitions._ID + "), "
-					+ Job.Definitions.TASK_DEFINITION_NAME + " TEXT, "
+					//+ Job.Definitions.TASK_DEFINITION_NAME + " TEXT, "
 					+ Job.Definitions.CREATED + " INTEGER, "
 					+ Job.Definitions.DUE + " INTEGER, "
 					+ Job.Definitions.NOTES + " TEXT, "

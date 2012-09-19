@@ -9,7 +9,7 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 //import android.util.Log;
 
-//TODO: RP/Kash - remove definition field, add "definition id" field
+//TODO: RP/Kash - DONE - remove definition field, add "definition id" field
 
 public class JobDefinition implements Serializable{
 
@@ -17,7 +17,8 @@ public class JobDefinition implements Serializable{
 	
 	private Long id;
 	private String name;
-	private TaskDefinition definition;
+	//private TaskDefinition definition;
+	private Long taskDefintionId;
 	private Date created;
 	private Date due;
 	private String status;
@@ -29,25 +30,25 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(Long id, String name, TaskDefinition definition, Date created,
+	public JobDefinition(Long id, String name, Long taskDefintionId, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.definition = definition;
+		this.taskDefintionId = taskDefintionId;
 		this.created = created;
 		this.due = due;
 		this.status = status;
 		this.notes = notes;
 	}
 
-	public JobDefinition(Long id, String name, TaskDefinition definition,
+	public JobDefinition(Long id, String name, Long taskDefintionId,
 			Date created, Date due, String status, String group, String notes,
 			Set<DataItem> dataItems, boolean modified) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.definition = definition;
+		this.taskDefintionId = taskDefintionId;
 		this.created = created;
 		this.due = due;
 		this.status = status;
@@ -125,9 +126,9 @@ public class JobDefinition implements Serializable{
 		return name;
 	}
 
-	public TaskDefinition getDefinition() {
-		return definition;
-	}
+//	public TaskDefinition getDefinition() {
+//		return definition;
+//	}
 
 	public Date getCreated() {
 		return created;
@@ -153,9 +154,9 @@ public class JobDefinition implements Serializable{
 		this.name = name;
 	}
 
-	public void setDefinition(TaskDefinition definition) {
-		this.definition = definition;
-	}
+//	public void setDefinition(TaskDefinition definition) {
+//		this.definition = definition;
+//	}
 
 	public void setCreated(Date created) {
 		this.created = created;
@@ -193,10 +194,18 @@ public class JobDefinition implements Serializable{
 	@Override
 	public String toString() {
 		return "JobDefinition [id=" + id + ", name=" + name + ", definition_id="
-				+ definition.getId() + ", created=" + created + ", due=" + due
+				+ taskDefintionId + ", created=" + created + ", due=" + due
 				+ ", status=" + status + "]";
 	}
 	
+	public Long getTaskDefintionId() {
+		return taskDefintionId;
+	}
+
+	public void setTaskDefintionId(Long taskDefintionId) {
+		this.taskDefintionId = taskDefintionId;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
