@@ -27,7 +27,7 @@ public final class TaskDefinition {
 		setPages(pages);
 	}
 	
-	// TODO: RP/Kash finish valueof method?
+	// TODO: RP/Kash - DONE - finish valueof method?
 	public static TaskDefinition valueOf(JSONObject task) {
 		final int id = (Integer) task.get("id");
 		final String name = (String) task.get("name");

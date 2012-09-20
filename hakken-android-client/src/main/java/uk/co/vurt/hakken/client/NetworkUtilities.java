@@ -73,9 +73,9 @@ final public class NetworkUtilities {
 
 	public static final String FETCH_JOBS_URI = "/jobs/for/[username]/since/[timestamp]?hmac=[hmac]";
 	
-	//TODO: RP/Kash Figure out where this URI needs to go to0
+	//TODO: RP/Kash - DONE - Figure out where this URI needs to go to0
 	
-	public static final String FETCH_TASK_DEFINITIONS_URI = "/tasks/list/";
+	public static final String FETCH_TASK_DEFINITIONS_URI = "/tasks/list";
 
 	/*
 	 * The trailing slash after the username is required (due to idosyncrasies
@@ -276,7 +276,7 @@ final public class NetworkUtilities {
 	}
 
 	/*
-	 * TODO: RP/Kash - we need to bring the commented out method below back into
+	 * TODO: RP/Kash - DONE - we need to bring the commented out method below back into
 	 * play.
 	 */
 	public static void fetchTaskDefinitions(Context context, Account account,

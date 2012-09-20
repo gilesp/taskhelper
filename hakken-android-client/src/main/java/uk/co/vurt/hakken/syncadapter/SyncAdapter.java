@@ -149,7 +149,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			submitCompletedJobs(account, authToken, provider);
 
 			/*
-			 * TODO: RP/Kash - we need separate syncTaskDefinitionsFromServer method
+			 * TODO: RP/Kash - DONE - we need separate syncTaskDefinitionsFromServer method
 			 */
 			syncTaskDefinitions(account, authToken, provider);
 			
@@ -226,7 +226,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	}
 	
 
-	// TODO: RP/Kash - implement syncTaskDefntiuons method
+	// TODO: RP/Kash - DONE - implement syncTaskDefntiuons method
 	private synchronized void syncTaskDefinitions(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		
 		//TODO:delete all existing task definitions
