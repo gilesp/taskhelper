@@ -27,17 +27,6 @@ public class JobListFragment extends ListFragment implements
 	private OnJobSelectedListener listener;
 
 	private final static int JOB_LOADER = 0;
-	/**
-	 * The columns from the data base that we are interested in
-	 */
-	private static final String[] PROJECTION = new String[] {
-			Job.Definitions._ID, // 0
-			Job.Definitions.NAME, // 1
-			Job.Definitions.DUE, // 2
-			Job.Definitions.STATUS, // 3
-			Job.Definitions.GROUP, //4
-			Job.Definitions.NOTES //5
-	};
 
 	private JobDomainAdapter adapter;
 
@@ -71,7 +60,7 @@ public class JobListFragment extends ListFragment implements
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		Log.d(TAG, "Attempting to create cursor loader");
 		return new CursorLoader(getActivity(), Job.Definitions.CONTENT_URI,
-				PROJECTION, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
+				Job.Definitions.ALL, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
 	}
 
 	@Override

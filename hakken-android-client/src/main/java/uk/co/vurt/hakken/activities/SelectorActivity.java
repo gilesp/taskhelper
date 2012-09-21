@@ -5,9 +5,11 @@ import java.util.HashMap;
 import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -41,11 +43,11 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 		
 		tabManager = new TabManager(this, tabHost, R.id.realtabcontent);
 		
-		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("To Do"),
+		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("Jobs"),
 				JobListFragment.class, null);
 		
-		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Tasks"),
-				JobListFragment.class, null);
+		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions"),
+				TaskDefinitionsListFragment.class, null);
 	}
 	
 	@Override
@@ -220,7 +222,14 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 
 	@Override
 	public void onJobSelected(Uri jobUri) {
-		// TODO Auto-generated method stub
-		
+        String action = getIntent().getAction();
+        if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)) {
+            // The caller is waiting for us to return a task definition selected by
+            // the user.  They have clicked on one, so return it now.
+            setResult(RESULT_OK, new Intent().setData(jobUri));
+        } else {
+            // Launch activity to view/edit the currently selected item
+            startActivity(new Intent(Intent.ACTION_RUN, jobUri));
+        }
 	}
 }
