@@ -12,60 +12,69 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class JobListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-	private OnJobSelectedListener listener;
-	private boolean isTablet = false;
-	private int currentSelectedItemIndex = -1;
+	private static final String TAG = "JobListFragment";
 
-	private final static int TASK_LOADER = 1;
-	/**
-	 * The columns from the data base that we are interested in
-	 */
-	private static final String[] PROJECTION = new String[] {
-			Job.Definitions._ID, // 0
-			Job.Definitions.NAME, // 1
-			Job.Definitions.DUE, // 2
-			Job.Definitions.STATUS // 3
-	};
+	private OnJobSelectedListener listener;
+
+	private final static int JOB_LOADER = 0;
 
 	private JobDomainAdapter adapter;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		getLoaderManager().initLoader(TASK_LOADER, null, this);
-
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		setRetainInstance(true);
+		getLoaderManager().initLoader(JOB_LOADER, null, this);
 		// Create an empty adapter we will use to display the loaded data.
 		// We pass null for the cursor, then update it in onLoadFinished()
 		// Used to map task definition entries from the database to views
-		adapter = new JobDomainAdapter(super.getActivity(), R.layout.selectjob_list_item,
-				null, new String[] { Job.Definitions.NAME, Job.Definitions.DUE,
-						Job.Definitions.STATUS }, new int[] {
+		adapter = new JobDomainAdapter(super.getActivity().getApplicationContext(),
+				R.layout.selectjob_list_item, null, new String[] {
+						Job.Definitions.NAME, Job.Definitions.DUE,
+						Job.Definitions.STATUS, Job.Definitions.GROUP,
+						Job.Definitions.NOTES}, new int[] {
 						R.id.joblist_entry_name, R.id.joblist_entry_duedate,
-						R.id.joblist_entry_completed });
+						R.id.joblist_entry_completed, R.id.joblist_section_header,
+						R.id.joblist_entry_notes},
+						CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setListAdapter(adapter);
+		
+	}
+
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View root = inflater.inflate(R.layout.fragment_job_list, null);
+		return root;
 	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		Log.d(TAG, "Attempting to create cursor loader");
 		return new CursorLoader(getActivity(), Job.Definitions.CONTENT_URI,
-				PROJECTION, null, null, null);
+				Job.Definitions.ALL, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-	    //		adapter.swapCursor(cursor);
+		Log.d(TAG, "onLoadFinished called: " + cursor);
+		adapter.swapCursor(cursor);
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-	    //		adapter.swapCursor(null);
+		Log.d(TAG, "onLoaderReset called.");
+		adapter.swapCursor(null);
+		adapter.notifyDataSetInvalidated();
 	}
 
 	@Override

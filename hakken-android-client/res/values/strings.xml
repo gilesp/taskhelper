@@ -68,4 +68,8 @@
 	<string name="settings_sync_server_prompt">Specify the server to sync with.</string>
 	
 	<string name="preferences_ok_button">OK</string>
+	
+	<!-- Tab labels -->
+	<string name="tab_jobs">Your Jobs</string>
+	<string name="tab_task_definitions">Task Definitions</string>
 </resources>

@@ -15,13 +15,14 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class JobList extends ListActivity {
@@ -64,7 +65,8 @@ public class JobList extends ListActivity {
         // Used to map task definition entries from the database to views
         adapter = new JobDomainAdapter(this, R.layout.selectjob_list_item, cursor,
 				new String[] { Job.Definitions.NAME, Job.Definitions.DUE, Job.Definitions.STATUS }, 
-				new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed});
+				new int[] { R.id.joblist_entry_name, R.id.joblist_entry_duedate, R.id.joblist_entry_completed}, 
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         
         setListAdapter(adapter);
 	}

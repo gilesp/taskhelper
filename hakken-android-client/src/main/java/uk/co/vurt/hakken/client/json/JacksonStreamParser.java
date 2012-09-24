@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.task.Page;
+import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
+import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 
 public class JacksonStreamParser implements JsonStreamParser {
 
@@ -51,15 +55,23 @@ public class JacksonStreamParser implements JsonStreamParser {
 	@Override
 	public List<TaskDefinition> parseTaskDefinitionStream(InputStream in)
 			throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		JsonParser jp = jsonFactory.createJsonParser(in);
+		try{
+			return readTaskDefinitionArray(jp, null);
+		}finally{
+			jp.close();
+		}
 	}
 
 	@Override
 	public void parseTaskDefinitionStream(InputStream in,
 			TaskDefinitionHandler callback) throws IOException {
-		// TODO Auto-generated method stub
-		
+		JsonParser jp = jsonFactory.createJsonParser(in);
+		try{
+			readTaskDefinitionArray(jp, callback);
+		}finally{
+			jp.close();
+		}
 	}
 	
 	private List<JobDefinition> readJobsArray(JsonParser jp, JobDefinitionHandler callback) throws IOException{
@@ -69,14 +81,12 @@ public class JacksonStreamParser implements JsonStreamParser {
 		
 		try{
 			current = jp.nextToken();
-//			System.out.println("1 Current: " + current.toString());
 			if(current != JsonToken.START_ARRAY){
 				throw new IOException("Error: root should be array.");
 			}
 			
 			current = jp.nextToken();
 			while(current != null && current != JsonToken.END_ARRAY){
-//				System.out.println("2 Current: " + current.toString());
 				if(callback != null){
 					callback.handle(readJob(jp));
 				}else {
@@ -91,14 +101,36 @@ public class JacksonStreamParser implements JsonStreamParser {
 		return jobs;
 	}
 	
+	private List<TaskDefinition> readTaskDefinitionArray(JsonParser jp, TaskDefinitionHandler callback) throws IOException{
+		List<TaskDefinition> taskDefinitions = new ArrayList<TaskDefinition>();
+		
+		JsonToken current;
+		
+		try{
+			current = jp.nextToken();
+			if(current != JsonToken.START_ARRAY){
+				throw new IOException("Error: root should be array.");
+			}
+			
+			current = jp.nextToken();
+			while(current != null && current != JsonToken.END_ARRAY){
+				if(callback != null){
+					callback.handle(readTaskDefinition(jp));
+				}else {
+					taskDefinitions.add(readTaskDefinition(jp));
+				}
+				current = jp.nextToken();
+			}
+		}catch(JsonParseException jpe){
+			throw new IOException(jpe.getMessage(), jpe);
+		}
+		
+		return taskDefinitions;
+	}
+	
 	private JobDefinition readJob(JsonParser jp) throws IOException, JsonParseException{
-	    
-	    /*TODO: RP/Kash - DONE - need to change this as definition won't be returned in JSON response,
-	     * only the definition id */
-	    
 		Long id = null;
 		String name = null;
-		//TaskDefinition definition = null;
 		Long taskDefintionId = null;
 		Date created = null;
 		Date due = null;
@@ -109,58 +141,44 @@ public class JacksonStreamParser implements JsonStreamParser {
 		boolean modified = false;
 		
 		JsonToken current = jp.getCurrentToken();
-//		System.out.println("3 Current: " + current.toString());
 		if(current != JsonToken.START_OBJECT){
-//			System.out.println("3 Current: " + current.toString());
 			throw new IOException("Error: expected start of object, instead found " + current.asString());
 		}
 		while(jp.nextToken() != JsonToken.END_OBJECT){
-//			System.out.println("4 Current: " + jp.getCurrentToken().toString());
 			String itemName = jp.getCurrentName();
-//			System.out.println("Item Name: '" + itemName + "'");
 			//move to value token
 			jp.nextToken();
 			if(jp.getCurrentToken() != JsonToken.VALUE_NULL){
 				if(itemName.equals("id")){
 					id = jp.getValueAsLong();
-	//				System.out.println("ID:" + id);
 				} else if(itemName.equals("name")){
 					name = jp.getText();
-	//				System.out.println("Name:" + name);
-				} else if(itemName.equals("definition")){
+				} else if(itemName.equals("taskDefintionId")){
 					taskDefintionId = jp.getValueAsLong();
-	//				System.out.println("Definition:" + definition);
 				} else if(itemName.equals("created")){
 					created = new Date(Long.parseLong(jp.getText()));
-	//				System.out.println("Created:" + created);
 				} else if(itemName.equals("due")){
 					due = new Date(Long.parseLong(jp.getText()));
-	//				System.out.println("Due:" + due);
 				} else if(itemName.equals("status")){
 					status = jp.getText();
-	//				System.out.println("Status:" + status);
 				} else if(itemName.equals("group")){
 					group = jp.getText();
-	//				System.out.println("Group:" + group);
 				} else if(itemName.equals("notes")){
 					notes = jp.getText();
-	//				System.out.println("Notes:" + notes);
 				} else if(itemName.equals("dataItems")){
 					dataItems.addAll(readDataItemsArray(jp));
-	//				System.out.println("DataItems:" + dataItems);
 				} else if(itemName.equals("modified")){
 					modified = jp.getBooleanValue();
-	//				System.out.println("Modified:" + modified);
 				} else {
 					//something we weren't expecting so just skip it.
 					jp.skipChildren();
-	//				System.out.println("Skipping...");
 				}
 			}
 		}
 		return new JobDefinition(id, name, taskDefintionId, created, due, status, group, notes, dataItems, modified);
 	}
-	
+
+
 	private List<DataItem> readDataItemsArray(JsonParser jp) throws IOException, JsonParseException {
 		List<DataItem> dataItems = new ArrayList<DataItem>();
 		JsonToken current = jp.getCurrentToken();
@@ -206,20 +224,13 @@ public class JacksonStreamParser implements JsonStreamParser {
 		
 		return new DataItem(id, pageName, name, type, value);
 	}
-	
+
 	private TaskDefinition readTaskDefinition(JsonParser jp) throws IOException, JsonParseException{
 		//Use object mapper rather than stream parsing for the time being.
 		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory factory = mapper.getJsonFactory();
 		JsonNode taskNode = mapper.readTree(jp);
 		TaskDefinition taskDefinition = mapper.readValue(taskNode, TaskDefinition.class);
-//		while(jp.nextToken() != JsonToken.END_OBJECT){
-//			jp.skipChildren();
-//		}
 		return taskDefinition;
 	}
-
-
-
 
 }
