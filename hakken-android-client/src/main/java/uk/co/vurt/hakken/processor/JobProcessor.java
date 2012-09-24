@@ -82,6 +82,7 @@ public class JobProcessor {
 
 			Long jobId = cursor.getLong(COLUMN_INDEX_JOB_ID);
 			String jobName = cursor.getString(COLUMN_INDEX_JOB_NAME);
+			Long taskDefinitionId = cursor.getLong(COLUMN_INDEX_JOB_TASKDEFINITION_ID);
 			Date jobCreated = new Date(cursor.getLong(COLUMN_INDEX_JOB_CREATED));
 			Date jobDue = new Date(cursor.getLong(COLUMN_INDEX_JOB_DUE));
 			String jobStatus = cursor.getString(COLUMN_INDEX_JOB_STATUS);
@@ -92,7 +93,7 @@ public class JobProcessor {
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, cursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID));
 			taskProcessor = new TaskProcessor(contentResolver, definitionUri);
 			
-			jobDefinition = new JobDefinition(jobId, jobName, taskProcessor.getTaskDefinition().getId(), jobCreated, jobDue, jobStatus, notes);
+			jobDefinition = new JobDefinition(jobId, jobName, taskDefinitionId, jobCreated, jobDue, jobStatus, notes);
 			jobDefinition.setServerError(serverError);
 			
 			pages = taskProcessor.getPages();
