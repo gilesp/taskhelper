@@ -13,6 +13,7 @@ import java.util.List;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
 //import android.util.JsonReader;
 //import android.util.JsonToken;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 /**
  * This class requires functionality only present in API Level >= 11 (Android 3+)
@@ -135,6 +136,20 @@ public class JsonReaderStreamParser implements JsonStreamParser{
 	@Override
 	public void parseJobDefinitionStream(InputStream in,
 			JobDefinitionHandler callback) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<TaskDefinition> parseTaskDefinitionStream(InputStream in)
+			throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void parseTaskDefinitionStream(InputStream in,
+			TaskDefinitionHandler callback) throws IOException {
 		// TODO Auto-generated method stub
 		
 	}

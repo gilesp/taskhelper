@@ -22,7 +22,7 @@ public class Job {
 		public static final String NAME = "name";
 		
 		public static final String TASK_DEFINITION_ID = "task_definition_id";
-		public static final String TASK_DEFINITION_NAME = "task_definition_name";
+//		public static final String TASK_DEFINITION_NAME = "task_definition_name";
 		
 		public static final String CREATED = "created";
 		public static final String DUE = "due";
@@ -38,7 +38,7 @@ public class Job {
 			_ID,
 			NAME,
 			TASK_DEFINITION_ID,
-			TASK_DEFINITION_NAME,
+//			TASK_DEFINITION_NAME,
 			CREATED,
 			DUE,
 			STATUS,
