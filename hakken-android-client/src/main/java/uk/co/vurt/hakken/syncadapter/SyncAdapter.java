@@ -8,8 +8,6 @@ import java.util.List;
 import org.apache.http.auth.AuthenticationException;
 import org.json.JSONException;
 
-import com.google.gson.Gson;
-
 import uk.co.vurt.hakken.Constants;
 import uk.co.vurt.hakken.authenticator.AuthenticatorActivity;
 import uk.co.vurt.hakken.client.NetworkUtilities;
