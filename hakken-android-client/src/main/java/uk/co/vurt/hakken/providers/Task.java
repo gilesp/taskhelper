@@ -53,6 +53,13 @@ public final class Task {
         
         //TODO: Figure out how to store the page definitions.
         //Probably another table? Linked on definition id?
+        
+		public static final String[] ALL = new String[]{
+			_ID,
+			NAME,
+			DESCRIPTION,
+			JSON
+		};
 	}
 	
 	public final static class Instance implements BaseColumns {

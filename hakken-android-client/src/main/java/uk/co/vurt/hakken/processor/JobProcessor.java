@@ -92,7 +92,7 @@ public class JobProcessor {
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, cursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID));
 			taskProcessor = new TaskProcessor(contentResolver, definitionUri);
 			
-			jobDefinition = new JobDefinition(jobId, jobName, taskProcessor.getTaskDefinition(), jobCreated, jobDue, jobStatus, notes);
+			jobDefinition = new JobDefinition(jobId, jobName, taskProcessor.getTaskDefinition().getId(), jobCreated, jobDue, jobStatus, notes);
 			jobDefinition.setServerError(serverError);
 			
 			pages = taskProcessor.getPages();

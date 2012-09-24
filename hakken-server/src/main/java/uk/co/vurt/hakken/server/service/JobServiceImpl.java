@@ -69,17 +69,23 @@ public class JobServiceImpl implements JobService{
 				//empty definition for all but the first instance
 				//This will be replaced once taskdefinitions are synched 
 				//separately from jobs.
+				/*
 				TaskDefinition emptyDefinition = new TaskDefinition();
 				emptyDefinition.setId(definition.getId());
 				emptyDefinition.setName(definition.getName());
-				
 				boolean first = true;
+				*/				
+				//TODO: RP/Kash - DONE - skip this stuff above and just set the definition id
+				
+				
+
 				for(Instance instance: instances){
 					logger.debug("Instance: " + instance);
 					
 					JobDefinition job = new JobDefinition(instance.getId(),
 							instance.getName(),
-							first ? definition : emptyDefinition, 
+//							first ? definition : emptyDefinition,
+							definition.getId(),
 							instance.getCreated(),
 							instance.getDue(),
 							"AWAITING",

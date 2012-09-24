@@ -24,6 +24,11 @@
 	</properties>
 
 	<dependencies>
+<!-- 	     <dependency> -->
+<!-- 			<groupId>com.google.code.gson</groupId> -->
+<!-- 			<artifactId>gson</artifactId> -->
+<!-- 			<version>1.7.1</version> -->
+<!--   		</dependency> -->
 		<!-- Android gubbins -->
 		<dependency>
 			<groupId>com.google.android</groupId>
@@ -79,7 +84,7 @@
 		<dependency>
 			<groupId>net.wmfs.coalesce</groupId>
 			<artifactId>net.wmfs.coalesce.csql</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 
 		<!-- Json parser -->

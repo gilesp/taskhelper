@@ -102,7 +102,7 @@ public class JacksonStreamParserTest {
 			assertEquals(41,dataItems.size());
 			assertFalse(testJob.isModified());
 			
-			TaskDefinition definition = testJob.getDefinition();
+			TaskDefinition definition = null;//testJob.getDefinition();
 			assertNotNull(definition);
 			assertEquals(0l, definition.getId());
 			assertEquals("hfrc_assessment", definition.getName());
