@@ -28,7 +28,6 @@ public class TaskProcessor {
 	
 	public TaskProcessor(ContentResolver contentResolver, Uri taskUri){
 		Log.d(TAG, "Instantiating with uri: " + taskUri);
-		
 		Cursor definitionCursor = contentResolver.query(taskUri, TaskProcessor.PROJECTION, null, null, null);
 		if(definitionCursor != null){
 			definitionCursor.moveToFirst();

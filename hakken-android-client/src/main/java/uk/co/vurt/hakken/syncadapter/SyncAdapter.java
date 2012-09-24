@@ -48,16 +48,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	
 	private final AccountManager accountManager;
 	private final Context context;
-	
-	
-//	private Date lastUpdated;
-	
+
 	public SyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
 		this.context = context;
 		accountManager = AccountManager.get(context);
 	}
-/*
+
 	private void storeTaskDefinition(ContentProviderClient provider, TaskDefinition definition){
 		if(definition != null){
 			Log.d(TAG, "Adding a definition to database: " + definition);
@@ -92,7 +89,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			Log.d(TAG, "Null definition");
 		}
 	}
-	*/
+	
 	private void storeDataItem(ContentProviderClient provider, DataItem dataItem, JobDefinition job){
 		if(dataItem.getValue() != null && !"null".equals(dataItem.getValue())){
 			Log.d(TAG, "Storing a dataitem for a job.");
@@ -148,13 +145,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			
 			submitCompletedJobs(account, authToken, provider);
 
-			/*
-			 * TODO: RP/Kash - DONE - we need separate syncTaskDefinitionsFromServer method
-			 */
 			syncTaskDefinitions(account, authToken, provider);
 			
 			syncJobsFromServer(account, authToken, provider);
-			
 			
 			provider.release(); //do we need to do this?
 		}catch(Exception e){
@@ -192,7 +185,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 					diCursor.moveToFirst();
 					while(!diCursor.isAfterLast()){
 						DataItem dataItem = new DataItem(diCursor.getString(0),diCursor.getString(1),diCursor.getString(2),diCursor.getString(3));
-//						Log.d(TAG, "Adding DataItem: " + dataItem);
 						submission.addDataItem(dataItem);
 						diCursor.moveToNext();
 					}
@@ -211,7 +203,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 						provider.delete(Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()), null, null);
 					} else {
 						Log.d(TAG, "Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
-//						throw new IOException("Submitting job " + Uri.withAppendedPath(Job.Definitions.CONTENT_URI, ""+submission.getJobId()) + " failed.");
 						ContentValues values = new ContentValues();
 						values.put(Job.Definitions.STATUS, "SERVER_ERROR");
 						values.put(Job.Definitions.SERVER_ERROR, status.getMessage());
@@ -226,22 +217,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	}
 	
 
-	// TODO: RP/Kash - DONE - implement syncTaskDefntiuons method
 	private synchronized void syncTaskDefinitions(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		Log.d(TAG, "syncTaskDefintions() called.");
-//		//TODO:delete all existing task definitions
-//		List<Long> oldTaskIds = new ArrayList<Long>();
-//		Cursor taskCursor = provider.query(Task.Definitions.CONTENT_URI, Task.Definitions.ALL, null, null, null);
-//		if(taskCursor != null){
-//			taskCursor.moveToFirst();
-//			while(!taskCursor.isAfterLast()){
-//				
-//				oldTaskIds.add(taskCursor.getLong(0));
-//				taskCursor.moveToNext();
-//			}
-//			taskCursor.close();
-//			taskCursor = null;
-//		}
 		
 		// delete existing
 		provider.delete(Task.Definitions.CONTENT_URI, null, null);
@@ -249,17 +226,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		//insert again
 		TaskDefinitionAdapter taskAdapter = new TaskDefinitionAdapter(provider);		
 		NetworkUtilities.fetchTaskDefinitions(context, account, authToken, new Date(getLastUpdatedDate(account)), taskAdapter);
-		
-		//long newLastUpdated = System.currentTimeMillis();
-		
-		//oldTaskIds.removeAll(taskAdapter.getAddedTaskIds());
-		//for(Long taskToDeleteId: oldTaskIds){
-		//	provider.delete(ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, taskToDeleteId), null, null);
-		//}
-
-		//setLastUpdatedDate(account, newLastUpdated);
-		
-		
 	}
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
@@ -331,42 +297,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	}
 
 	
-private class TaskDefinitionAdapter implements TaskDefinitionHandler {
-		
+	private class TaskDefinitionAdapter implements TaskDefinitionHandler {
 		private ContentProviderClient provider;
-		private List<Long> addedTaskIds;
 		
 		public TaskDefinitionAdapter(ContentProviderClient provider){
 			this.provider = provider;
-			addedTaskIds = new ArrayList<Long>();
 		}
 				
 		@Override
 		public void handle(TaskDefinition newTask) {
-			Log.d(TAG, "Adding a task to database: " + newTask);
-			addedTaskIds.add(newTask.getId());
-			
-			ContentValues values = new ContentValues();
-			values.put(Task.Definitions._ID, newTask.getId());
-			values.put(Task.Definitions.NAME, newTask.getName());
-			values.put(Task.Definitions.DESCRIPTION, newTask.getDescription());
-			//TODO: serialise defintition to json
-			Gson gson = new Gson();
-			values.put(Task.Definitions.JSON, gson.toJson(newTask));
-			
-			Uri taskUri = Task.Definitions.CONTENT_URI;
-			//TODO: provider.insert
-			try {
-				
-				Log.d(TAG, "Storing a task defintion");
-				Log.d(TAG, taskUri.toString());
-				provider.insert(taskUri, values);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				Log.d(TAG, "It all went wrong trying to store a task defintion, look in syncadapter");
-				e.printStackTrace();
-			}
-			
+			storeTaskDefinition(provider, newTask);
 		}
 	}
 	
