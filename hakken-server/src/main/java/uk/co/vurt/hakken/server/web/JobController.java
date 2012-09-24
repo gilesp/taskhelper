@@ -35,6 +35,11 @@ public class JobController extends RESTController{
 	public @ResponseBody JobDefinition getJobById(@PathVariable long id){
 		return service.get(id);
 	}
+
+	@RequestMapping("test")
+	public @ResponseBody List<JobDefinition> getJobsList(){
+		return service.getForUserSince("j.brookes", new Date());
+	}
 	
 	@RequestMapping(value="for/{username}/since/{timestamp}", method=RequestMethod.GET)
 	public @ResponseBody List<JobDefinition> getJobsForUserSince(@PathVariable String username, @RequestParam String hmac, @PathVariable String timestamp) throws HakkenException{

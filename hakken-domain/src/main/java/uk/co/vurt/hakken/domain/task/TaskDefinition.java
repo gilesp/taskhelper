@@ -27,15 +27,15 @@ public final class TaskDefinition {
 		setPages(pages);
 	}
 	
-	// TODO: RP/Kash - DONE - finish valueof method?
-	public static TaskDefinition valueOf(JSONObject task) {
-		final int id = (Integer) task.get("id");
-		final String name = (String) task.get("name");
-		final String description = (String) task.get("description");
-		final List<Page> pages = (List<Page>) task.get("pages");
-		TaskDefinition taskDefinition;
-		return new TaskDefinition(id, name, description, pages);
-	}
+//	// TODO: RP/Kash - DONE - finish valueof method?
+//	public static TaskDefinition valueOf(JSONObject task) {
+//		final int id = (Integer) task.get("id");
+//		final String name = (String) task.get("name");
+//		final String description = (String) task.get("description");
+//		final List<Page> pages = (List<Page>) task.get("pages");
+//		TaskDefinition taskDefinition;
+//		return new TaskDefinition(id, name, description, pages);
+//	}
 
 	public long getId() {
 		return id;

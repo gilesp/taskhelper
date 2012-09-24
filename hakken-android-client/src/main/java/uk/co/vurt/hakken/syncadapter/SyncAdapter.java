@@ -57,7 +57,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		this.context = context;
 		accountManager = AccountManager.get(context);
 	}
-
+/*
 	private void storeTaskDefinition(ContentProviderClient provider, TaskDefinition definition){
 		if(definition != null){
 			Log.d(TAG, "Adding a definition to database: " + definition);
@@ -92,7 +92,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			Log.d(TAG, "Null definition");
 		}
 	}
-	
+	*/
 	private void storeDataItem(ContentProviderClient provider, DataItem dataItem, JobDefinition job){
 		if(dataItem.getValue() != null && !"null".equals(dataItem.getValue())){
 			Log.d(TAG, "Storing a dataitem for a job.");
@@ -228,33 +228,36 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
 	// TODO: RP/Kash - DONE - implement syncTaskDefntiuons method
 	private synchronized void syncTaskDefinitions(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
+		Log.d(TAG, "syncTaskDefintions() called.");
+//		//TODO:delete all existing task definitions
+//		List<Long> oldTaskIds = new ArrayList<Long>();
+//		Cursor taskCursor = provider.query(Task.Definitions.CONTENT_URI, Task.Definitions.ALL, null, null, null);
+//		if(taskCursor != null){
+//			taskCursor.moveToFirst();
+//			while(!taskCursor.isAfterLast()){
+//				
+//				oldTaskIds.add(taskCursor.getLong(0));
+//				taskCursor.moveToNext();
+//			}
+//			taskCursor.close();
+//			taskCursor = null;
+//		}
 		
-		//TODO:delete all existing task definitions
-		List<Long> oldTaskIds = new ArrayList<Long>();
-		Cursor taskCursor = provider.query(Task.Definitions.CONTENT_URI, Task.Definitions.ALL, null, null, null);
-		if(taskCursor != null){
-			taskCursor.moveToFirst();
-			while(!taskCursor.isAfterLast()){
-				
-				oldTaskIds.add(taskCursor.getLong(0));
-				taskCursor.moveToNext();
-			}
-			taskCursor.close();
-			taskCursor = null;
-		}
+		// delete existing
+		provider.delete(Task.Definitions.CONTENT_URI, null, null);
 		
-		TaskDefinitionAdapter taskAdapter = new TaskDefinitionAdapter(provider, oldTaskIds);
+		//insert again
+		TaskDefinitionAdapter taskAdapter = new TaskDefinitionAdapter(provider);		
+		NetworkUtilities.fetchTaskDefinitions(context, account, authToken, new Date(getLastUpdatedDate(account)), taskAdapter);
 		
-		NetworkUtilities.fetchTaskDefinitions(context, account,  authToken, new Date(getLastUpdatedDate(account)), taskAdapter);
+		//long newLastUpdated = System.currentTimeMillis();
 		
-		long newLastUpdated = System.currentTimeMillis();
-		
-		oldTaskIds.removeAll(taskAdapter.getAddedTaskIds());
-		for(Long taskToDeleteId: oldTaskIds){
-			provider.delete(ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, taskToDeleteId), null, null);
-		}
+		//oldTaskIds.removeAll(taskAdapter.getAddedTaskIds());
+		//for(Long taskToDeleteId: oldTaskIds){
+		//	provider.delete(ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, taskToDeleteId), null, null);
+		//}
 
-		setLastUpdatedDate(account, newLastUpdated);
+		//setLastUpdatedDate(account, newLastUpdated);
 		
 		
 	}
@@ -332,18 +335,12 @@ private class TaskDefinitionAdapter implements TaskDefinitionHandler {
 		
 		private ContentProviderClient provider;
 		private List<Long> addedTaskIds;
-		private List<Long> oldTaskIds;
 		
-		public TaskDefinitionAdapter(ContentProviderClient provider, List<Long> oldTaskIds){
+		public TaskDefinitionAdapter(ContentProviderClient provider){
 			this.provider = provider;
-			this.oldTaskIds = oldTaskIds;
 			addedTaskIds = new ArrayList<Long>();
 		}
-		
-		public List<Long> getAddedTaskIds(){
-			return addedTaskIds;
-		}
-		
+				
 		@Override
 		public void handle(TaskDefinition newTask) {
 			Log.d(TAG, "Adding a task to database: " + newTask);
@@ -357,12 +354,16 @@ private class TaskDefinitionAdapter implements TaskDefinitionHandler {
 			Gson gson = new Gson();
 			values.put(Task.Definitions.JSON, gson.toJson(newTask));
 			
-			Uri taskUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, newTask.getId());
+			Uri taskUri = Task.Definitions.CONTENT_URI;
 			//TODO: provider.insert
 			try {
+				
+				Log.d(TAG, "Storing a task defintion");
+				Log.d(TAG, taskUri.toString());
 				provider.insert(taskUri, values);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
+				Log.d(TAG, "It all went wrong trying to store a task defintion, look in syncadapter");
 				e.printStackTrace();
 			}
 			

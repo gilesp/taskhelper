@@ -139,9 +139,9 @@ final public class NetworkUtilities {
 			throw new AssertionError(e);
 		}
 		String baseUrl = getBaseUrl(context);
-		if (Log.isLoggable(TAG, Log.INFO)) {
+//		if (Log.isLoggable(TAG, Log.INFO)) {
 			Log.i(TAG, "Authentication to: " + baseUrl + AUTH_URI);
-		}
+		//}
 		final HttpPost post = new HttpPost(baseUrl + AUTH_URI);
 		post.addHeader(entity.getContentType());
 		post.setEntity(entity);
@@ -267,6 +267,8 @@ final public class NetworkUtilities {
 		final HttpGet get = new HttpGet(StringUtils.replaceTokens(
 				getBaseUrl(context) + FETCH_JOBS_URI, parameterMap));
 
+		Log.d(TAG, get.toString());
+		
 		final HttpResponse httpResponse = getHttpClient().execute(get);
 		JsonStreamParser streamParser = new JacksonStreamParser();
 
