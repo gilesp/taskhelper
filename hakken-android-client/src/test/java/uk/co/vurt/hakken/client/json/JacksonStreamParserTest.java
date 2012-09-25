@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
+import uk.co.vurt.hakken.domain.task.Page;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
 /**
@@ -93,21 +94,41 @@ public class JacksonStreamParserTest {
 			assertEquals(1, jobs.size());
 			JobDefinition testJob = jobs.get(0);
 			assertNotNull(testJob);
-			assertEquals(61057l, testJob.getId().longValue());
-			assertEquals("HSC/22231 - Status: Appointment", testJob.getName());
+			assertEquals(132236, testJob.getId().longValue());
+			assertEquals("HSC/132236 - Status: Appointment Passed", testJob.getName());
 			assertEquals("AWAITING", testJob.getStatus());
-			assertEquals("123 ANY STREET, SOMETOWN, A12 3BC <b>(validated)</b>", testJob.getNotes());
+			assertEquals("kfjkfjklfjkfvmkmkxv;mkmk <b>(non validated)</b>", testJob.getNotes());
 			Set<DataItem> dataItems = testJob.getDataItems();
 			assertNotNull(dataItems);
-			assertEquals(41,dataItems.size());
+			assertEquals(49,dataItems.size());
 			assertFalse(testJob.isModified());
 			
-			TaskDefinition definition = null;//testJob.getDefinition();
-			assertNotNull(definition);
-			assertEquals(0l, definition.getId());
-			assertEquals("hfrc_assessment", definition.getName());
-			assertEquals("HFRC Workbook", definition.getDescription());
-			assertEquals(23, definition.getPages().size());
+			assertEquals(1,	testJob.getTaskDefintionId().longValue());
+			
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testParseTaskDefinitionStream() {
+		in = new BufferedInputStream(getClass().getResourceAsStream(
+				"/task_definition.js"));
+		
+		JacksonStreamParser streamParser = new JacksonStreamParser();
+		try {
+			List<TaskDefinition> tasks = streamParser.parseTaskDefinitionStream(in);
+			assertEquals(5, tasks.size());
+			
+			TaskDefinition testTask = tasks.get(0);
+			assertNotNull(testTask);
+			assertEquals(1, testTask.getId());
+			assertEquals("hfrc_assessment", testTask.getName());
+			assertEquals("HFRC Workbook", testTask.getDescription());
+			
+			List<Page> pages = (List<Page>) testTask.getPages();
+			assertNotNull(pages);
+			assertEquals(25,pages.size());
 			
 		} catch (IOException e) {
 			fail(e.getMessage());
