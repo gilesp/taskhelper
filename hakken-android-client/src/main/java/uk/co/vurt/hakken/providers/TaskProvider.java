@@ -219,7 +219,7 @@ public class TaskProvider extends ContentProvider {
 						&& values.containsKey(Job.Definitions.CREATED)
 						&& values.containsKey(Job.Definitions.DUE)
 						&& values.containsKey(Job.Definitions.STATUS)
-						&& values.containsKey(Job.Definitions._ID)){
+						/*&& values.containsKey(Job.Definitions._ID)*/){
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
 					long rowId = db.insert(JOBS_TABLE_NAME, Job.Definitions.NAME, values);
 					if(rowId > 0){
