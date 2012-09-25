@@ -257,7 +257,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
         	String jobName = "Ad Hoc " + jobId;
         	
         	ContentValues values = new ContentValues();
-			values.put(Job.Definitions._ID, jobId);
+//			values.put(Job.Definitions._ID, jobId);
 			values.put(Job.Definitions.NAME, jobName);
 			values.put(Job.Definitions.CREATED, now);
 			values.put(Job.Definitions.DUE, now);
