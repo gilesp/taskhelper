@@ -77,7 +77,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
         Intent intent = new Intent(null, getIntent().getData());
         intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
         menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
-                new ComponentName(this, TaskList.class), null, intent, 0, null);
+                new ComponentName(this, SelectorActivity.class), null, intent, 0, null);
 
         return true;
     }
