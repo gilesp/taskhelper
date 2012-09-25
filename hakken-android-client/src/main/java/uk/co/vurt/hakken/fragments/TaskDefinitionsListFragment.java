@@ -48,12 +48,12 @@ public class TaskDefinitionsListFragment extends ListFragment implements
 						R.id.tasklist_entry_name},
 						CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setListAdapter(adapter);
-		
+				
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.fragment_job_list, null);
+		View root = inflater.inflate(R.layout.fragment_task_list, null);
 		return root;
 	}
 
