@@ -239,6 +239,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
             startActivity(new Intent(Intent.ACTION_RUN, jobUri));
         }
 	}
+
 	@Override
 	public void onTaskDefintionSelected(Uri definitionUri) {
 		String action = getIntent().getAction();
