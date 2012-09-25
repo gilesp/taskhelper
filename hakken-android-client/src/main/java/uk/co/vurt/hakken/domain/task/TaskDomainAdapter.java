@@ -17,9 +17,9 @@ public class TaskDomainAdapter extends SimpleCursorAdapter {
 	LayoutInflater inflater;
 	
 	public TaskDomainAdapter(Context context, int layout, Cursor cursor,
-			String[] from, int[] to) {
-		super(context, layout, cursor, from, to);
-		this.cursor = cursor;
+			String[] from, int[] to, int flag) {
+		super(context, layout, cursor, from, to, flag);
+//		this.cursor = cursor;
 		this.inflater = LayoutInflater.from(context);
 	}
 

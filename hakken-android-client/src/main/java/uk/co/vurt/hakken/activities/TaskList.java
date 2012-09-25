@@ -15,6 +15,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,7 +63,8 @@ public class TaskList extends ListActivity {
         // Used to map task definition entries from the database to views
         adapter = new TaskDomainAdapter(this, R.layout.selecttask_list_item, cursor,
 				new String[] { Task.Definitions.NAME }, 
-				new int[] { R.id.tasklist_entry_name});
+				new int[] { R.id.tasklist_entry_name},
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         
         setListAdapter(adapter);
 	}

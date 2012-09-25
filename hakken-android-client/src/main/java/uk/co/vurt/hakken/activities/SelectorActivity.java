@@ -6,6 +6,7 @@ import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -28,7 +29,7 @@ import android.view.View;
 import android.widget.TabHost;
 import android.widget.Toast;
 
-public class SelectorActivity extends FragmentActivity implements OnJobSelectedListener{
+public class SelectorActivity extends FragmentActivity implements OnJobSelectedListener, OnTaskDefintionSelectedListener{
 	
 	private final static String TAG = "SelectorActivity";
 	
@@ -231,5 +232,11 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
             // Launch activity to view/edit the currently selected item
             startActivity(new Intent(Intent.ACTION_RUN, jobUri));
         }
+	}
+
+	@Override
+	public void onTaskDefintionSelected(Uri jobUri) {
+		// TODO Auto-generated method stub
+		
 	}
 }
