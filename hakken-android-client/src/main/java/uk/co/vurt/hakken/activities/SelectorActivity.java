@@ -11,6 +11,7 @@ import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
 import uk.co.vurt.hakken.processor.TaskProcessor;
 import uk.co.vurt.hakken.providers.Job;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -34,7 +35,7 @@ import android.view.View;
 import android.widget.TabHost;
 import android.widget.Toast;
 
-public class SelectorActivity extends FragmentActivity implements OnJobSelectedListener{
+public class SelectorActivity extends FragmentActivity implements OnJobSelectedListener, OnTaskDefintionSelectedListener{
 	
 	private final static String TAG = "SelectorActivity";
 	
@@ -238,8 +239,8 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
             startActivity(new Intent(Intent.ACTION_RUN, jobUri));
         }
 	}
-	
-	public void onTaskDefinitionSelected(Uri definitionUri) {
+	@Override
+	public void onTaskDefintionSelected(Uri definitionUri) {
 		String action = getIntent().getAction();
 		if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)) {
             // The caller is waiting for us to return a task definition selected by
@@ -273,6 +274,5 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 				Toast.makeText( this, "Unable to create job instance:\n" + sqle.getMessage(), Toast.LENGTH_LONG).show();
 			}
         }
-		
 	}
 }
