@@ -1,21 +1,27 @@
 package uk.co.vurt.hakken.activities;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import uk.co.vurt.hakken.R;
+import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
+import uk.co.vurt.hakken.processor.TaskProcessor;
+import uk.co.vurt.hakken.providers.Job;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -235,15 +241,39 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 	}
 
 	@Override
-	public void onTaskDefintionSelected(Uri taskUri) {
-        String action = getIntent().getAction();
-        if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)) {
+	public void onTaskDefintionSelected(Uri definitionUri) {
+		String action = getIntent().getAction();
+		if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)) {
             // The caller is waiting for us to return a task definition selected by
             // the user.  They have clicked on one, so return it now.
-            setResult(RESULT_OK, new Intent().setData(taskUri));
+            setResult(RESULT_OK, new Intent().setData(definitionUri));
         } else {
-            // Launch activity to view/edit the currently selected item
-            startActivity(new Intent(Intent.ACTION_RUN, taskUri));
+        	//create a new job instance based on the task definition
+        	TaskProcessor taskProcessor = new TaskProcessor(getContentResolver(), definitionUri);
+        	TaskDefinition definition = taskProcessor.getTaskDefinition();
+
+        	DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
+
+        	long now = System.currentTimeMillis();
+        	String jobId = definition.getName() + " " + dateFormat.format(new Date(now));
+        	String jobName = "Ad Hoc " + jobId;
+        	
+        	ContentValues values = new ContentValues();
+//			values.put(Job.Definitions._ID, jobId);
+			values.put(Job.Definitions.NAME, jobName);
+			values.put(Job.Definitions.CREATED, now);
+			values.put(Job.Definitions.DUE, now);
+			values.put(Job.Definitions.TASK_DEFINITION_ID, definition.getId());
+			values.put(Job.Definitions.STATUS, "AWAITING");
+			
+			try{
+				Uri jobUri = getContentResolver().insert(Job.Definitions.CONTENT_URI, values);
+				
+	            // Launch activity to view/edit the newly created job
+	            startActivity(new Intent(Intent.ACTION_RUN, jobUri));
+			}catch(SQLException sqle){
+				Toast.makeText( this, "Unable to create job instance:\n" + sqle.getMessage(), Toast.LENGTH_LONG).show();
+			}
         }
 	}
 }
