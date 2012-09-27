@@ -265,6 +265,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 			values.put(Job.Definitions.DUE, now);
 			values.put(Job.Definitions.TASK_DEFINITION_ID, definition.getId());
 			values.put(Job.Definitions.STATUS, "AWAITING");
+			values.put(Job.Definitions.ADHOC, true);
 			
 			try{
 				Uri jobUri = getContentResolver().insert(Job.Definitions.CONTENT_URI, values);

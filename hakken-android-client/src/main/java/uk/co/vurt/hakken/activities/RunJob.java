@@ -41,7 +41,7 @@ public class RunJob extends Activity {
 
 	private static final String TAG = "RunJob";
 	private static final String WIDGET_MAP_KEY = TAG + "-widget_map";
-	
+
 	// Shouldn't this be an enum?
 	private static final int STATE_RUN = 0;
 
@@ -57,7 +57,7 @@ public class RunJob extends Activity {
 	private Button finishButton;
 	private Button nextButton;
 	private Button previousButton;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,24 +82,26 @@ public class RunJob extends Activity {
 		pageContent = (LinearLayout) findViewById(R.id.pageContent);
 
 		// Get the job definition
-		if(savedInstanceState != null){
-			jobProcessor = new JobProcessor(contentResolver, intent.getData(), savedInstanceState);
-		}else {
+		if (savedInstanceState != null) {
+			jobProcessor = new JobProcessor(contentResolver, intent.getData(),
+					savedInstanceState);
+		} else {
 			jobProcessor = new JobProcessor(contentResolver, intent.getData());
 		}
 
-		if(savedInstanceState != null && savedInstanceState.containsKey(WIDGET_MAP_KEY)){
-			widgetWrapperMap = (HashMap)savedInstanceState.getSerializable(WIDGET_MAP_KEY);
+		if (savedInstanceState != null
+				&& savedInstanceState.containsKey(WIDGET_MAP_KEY)) {
+			widgetWrapperMap = (HashMap) savedInstanceState
+					.getSerializable(WIDGET_MAP_KEY);
 		} else {
 			widgetWrapperMap = new HashMap<String, WidgetWrapper>();
 		}
 
-		
 		// Setup buttons
-		previousButton = (Button)findViewById(R.id.previousButton);
-		nextButton = (Button)findViewById(R.id.nextButton);
-		finishButton = (Button)findViewById(R.id.finishButton);
-		
+		previousButton = (Button) findViewById(R.id.previousButton);
+		nextButton = (Button) findViewById(R.id.nextButton);
+		finishButton = (Button) findViewById(R.id.finishButton);
+
 		previousButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
@@ -114,7 +116,7 @@ public class RunJob extends Activity {
 		nextButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
-				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
+				if (saveAndValidatePage(jobProcessor.getCurrentPage())) {
 					jobProcessor.nextPage();
 				}
 				drawPage(false);
@@ -126,9 +128,9 @@ public class RunJob extends Activity {
 		finishButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View view) {
-				if(saveAndValidatePage(jobProcessor.getCurrentPage())){
+				if (saveAndValidatePage(jobProcessor.getCurrentPage())) {
 					finishJob();
-				}else{
+				} else {
 					drawPage(false);
 				}
 				return;
@@ -140,18 +142,19 @@ public class RunJob extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		drawPage(true); //should we ignore errors here?
+		drawPage(true); // should we ignore errors here?
 	}
 
-	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		jobProcessor.saveInstanceState(outState);
-		if(widgetWrapperMap != null){
-			for(WidgetWrapper wrapper: widgetWrapperMap.values()){
-				if(wrapper.getWidget() != null && wrapper.getWidget().getParent() != null){
-					((ViewGroup)wrapper.getWidget().getParent()).removeView(wrapper.getWidget());
+		if (widgetWrapperMap != null) {
+			for (WidgetWrapper wrapper : widgetWrapperMap.values()) {
+				if (wrapper.getWidget() != null
+						&& wrapper.getWidget().getParent() != null) {
+					((ViewGroup) wrapper.getWidget().getParent())
+							.removeView(wrapper.getWidget());
 				}
 			}
 			outState.putSerializable(WIDGET_MAP_KEY, widgetWrapperMap);
@@ -163,36 +166,38 @@ public class RunJob extends Activity {
 		RunJob.this.finish();
 	}
 
-	private void showErrorPopUp(String title, String errorMessage){
+	private void showErrorPopUp(String title, String errorMessage) {
 		Log.d(TAG, "Creating error dialog: " + title + ": " + errorMessage);
-		
+
 		AlertDialog.Builder errorBuilder = new AlertDialog.Builder(this);
 		errorBuilder.setTitle(title);
 		errorBuilder.setMessage(errorMessage);
 		errorBuilder.setPositiveButton("Ok",
 				new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				// 	Do nothing but close the dialog
-			}
-		});
+					public void onClick(DialogInterface dialog, int which) {
+						// Do nothing but close the dialog
+					}
+				});
 
 		AlertDialog errorDialog = errorBuilder.create();
 		errorDialog.show();
 	}
+
 	private void showErrorPopUp(String errorMessage) {
 		showErrorPopUp("Validation Error", errorMessage);
 	}
-	
-	protected void savePage(Page page){
-		//simply ignore the validation status returned
+
+	protected void savePage(Page page) {
+		// simply ignore the validation status returned
 		saveAndValidatePage(page);
 	}
+
 	private List<String> missingValues;
-	
+
 	protected boolean saveAndValidatePage(Page page) {
 		boolean valid = true;
 		missingValues = new ArrayList<String>();
-		
+
 		Log.d(TAG, "Saving page: " + page);
 		List<PageItem> items = page.getItems();
 		for (PageItem item : items) {
@@ -200,14 +205,14 @@ public class RunJob extends Activity {
 			WidgetWrapper wrapper = widgetWrapperMap.get(widgetKey);
 			View widget = wrapper.getWidget();
 
-			if(!wrapper.isReadOnly()){
+			if (!wrapper.isReadOnly()) {
 				if (widget != null) {
 					String value = null;
 					if ("TEXT".equals(item.getType())) {
 						LabelledEditBox editBox = (LabelledEditBox) widget;
 						value = editBox.getValue();
-					} else if ("DIGITS".equals(item.getType()) ||
-							"NUMERIC".equals(item.getType())) {
+					} else if ("DIGITS".equals(item.getType())
+							|| "NUMERIC".equals(item.getType())) {
 						LabelledEditBox editBox = (LabelledEditBox) widget;
 						value = editBox.getValue();
 					} else if ("DATETIME".equals(item.getType())) {
@@ -233,55 +238,65 @@ public class RunJob extends Activity {
 						} else {
 							value = spinner.getSelectedValue();
 						}
-	
+
 					}
 
-					//Not sure if this it  the best place to do this but...
-					//is there an expression we need to evaluate fo rthe value?
-					String expression = PageItemProcessor.getStringAttribute(item, "expression");
-					if(expression != null){
+					// Not sure if this it the best place to do this but...
+					// is there an expression we need to evaluate fo rthe value?
+					String expression = PageItemProcessor.getStringAttribute(
+							item, "expression");
+					if (expression != null) {
 						value = jobProcessor.evaluateExpression(expression);
 					}
-					
-					if (value != null) {
-						
-						//compare to previous value
-						DataItem previousValue = retrieveDataItem(jobProcessor.getPageName(),
-								 item.getName(), 
-								 item.getType());
 
-						//only store a dataitem if the value has changed.
-						if((previousValue == null) || 
-								(previousValue != null && (!previousValue.getValue().equals(value)))){
-							Log.d(TAG, "Previous value: " + (previousValue != null ? previousValue.getValue() : "null") + " New value: " + value);
-							
+					if (value != null) {
+
+						// compare to previous value
+						DataItem previousValue = retrieveDataItem(
+								jobProcessor.getPageName(), item.getName(),
+								item.getType());
+
+						// only store a dataitem if the value has changed.
+						if ((previousValue == null)
+								|| (previousValue != null && (!previousValue
+										.getValue().equals(value)))) {
+							Log.d(TAG,
+									"Previous value: "
+											+ (previousValue != null ? previousValue
+													.getValue() : "null")
+											+ " New value: " + value);
+
 							DataItem dataItem = new DataItem(page.getName(),
 									item.getName(), item.getType(), value);
-							Uri dataItemUri = jobProcessor.storeDataItem(dataItem);
+							Uri dataItemUri = jobProcessor
+									.storeDataItem(dataItem);
 							Log.d(TAG, "Stored dataitem: " + dataItemUri);
 						}
 					}
-					
-					if(wrapper.isRequired()){
+
+					if (wrapper.isRequired()) {
 						boolean checkValue = true;
-						
-						if(wrapper.hasCondition()){
+
+						if (wrapper.hasCondition()) {
 							try {
-								checkValue = jobProcessor.evaluateCondition(wrapper.getCondition());
+								checkValue = jobProcessor
+										.evaluateCondition(wrapper
+												.getCondition());
 							} catch (ExpressionException e) {
 								Log.e(TAG, "Unable to evaluate condition", e);
 							}
 						}
-						if(checkValue && 
-								(value == null || value.length() <= 0)){
+						if (checkValue
+								&& (value == null || value.length() <= 0)) {
 							missingValues.add(item.getLabel());
 							valid = false;
 						}
-	//					valid = valid & (value != null);
+						// valid = valid & (value != null);
 					}
-					
+
 				} else {
-					Log.e(TAG, "Unable to retrieve widget with key: " + widgetKey);
+					Log.e(TAG, "Unable to retrieve widget with key: "
+							+ widgetKey);
 				}
 			}
 		}
@@ -302,90 +317,97 @@ public class RunJob extends Activity {
 		Log.d(TAG, "state: " + state);
 		if (state == STATE_RUN) {
 
-			pageContent.removeAllViewsInLayout();
+			if (jobProcessor.isCurrentPageVisible()) {
 
-			setTitle(jobProcessor.getPageTitle());
+				pageContent.removeAllViewsInLayout();
 
-			List<PageItem> items = jobProcessor.getPageItems();
+				setTitle(jobProcessor.getPageTitle());
 
-			if (items != null) {
-				Log.d(TAG, "Items: " + items.size());
-				for (PageItem item : items) {
-					Log.d(TAG, "Current item: " + item);
-					String widgetKey = createWidgetKey(
-							jobProcessor.getPageName(), item);
+				List<PageItem> items = jobProcessor.getPageItems();
 
-					
-					WidgetWrapper wrapper = null;
-					if (widgetWrapperMap.containsKey(widgetKey)) {
-						// retrieve widget from map
-						wrapper = widgetWrapperMap.get(widgetKey);
-					} else {
-						// new widget, so create it
-						wrapper = WidgetFactory.createWidget(
-								this,
-								item,
-								retrieveDataItem(jobProcessor.getPageName(),
-												 item.getName(), 
-												 item.getType()));
+				if (items != null) {
+					Log.d(TAG, "Items: " + items.size());
+					for (PageItem item : items) {
+						Log.d(TAG, "Current item: " + item);
+						String widgetKey = createWidgetKey(
+								jobProcessor.getPageName(), item);
 
-						// TODO: Figure out better way of handling this,
-						// hopefully within the widget factory itself.
-						if ("DATETIME".equals(item.getType())) {
-							final LabelledDatePicker datePicker = ((LabelledDatePicker) wrapper.getWidget());
-							datePicker
-									.setOnClickListener(new View.OnClickListener() {
-										@Override
-										public void onClick(View v) {
-											showDatePickerDialog(datePicker);
-										}
-									});
+						WidgetWrapper wrapper = null;
+						if (widgetWrapperMap.containsKey(widgetKey)) {
+							// retrieve widget from map
+							wrapper = widgetWrapperMap.get(widgetKey);
+						} else {
+							// new widget, so create it
+							wrapper = WidgetFactory.createWidget(
+									this,
+									item,
+									retrieveDataItem(
+											jobProcessor.getPageName(),
+											item.getName(), item.getType()));
+
+							// TODO: Figure out better way of handling this,
+							// hopefully within the widget factory itself.
+							if ("DATETIME".equals(item.getType())) {
+								final LabelledDatePicker datePicker = ((LabelledDatePicker) wrapper
+										.getWidget());
+								datePicker
+										.setOnClickListener(new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												showDatePickerDialog(datePicker);
+											}
+										});
+							}
+							widgetWrapperMap.put(widgetKey, wrapper);
 						}
-						widgetWrapperMap.put(widgetKey, wrapper);
+						if (!wrapper.isHidden()) {
+							pageContent.addView(wrapper.getWidget());
+						}
 					}
-					if(!wrapper.isHidden()){
-						pageContent.addView(wrapper.getWidget());
-					}
-				}
-			} else {
-				TextView errorLabel = new TextView(this);
-				errorLabel.setText("No items were defined for this page.");
-				pageContent.addView(errorLabel);
-				Log.d(TAG, "No items defined for this page.");
-			}
-
-			// define next/previous/finish buttons
-//			buttonBar.removeAllViewsInLayout();
-			
-			if (jobProcessor.previousPages()) {
-//				buttonBar.addView(previousButton);
-				previousButton.setVisibility(View.VISIBLE);
-			} else {
-				previousButton.setVisibility(View.GONE);
-			}
-			if (jobProcessor.morePages()) {
-				if (jobProcessor.lastPage()) {
-//					buttonBar.addView(finishButton);
-					finishButton.setVisibility(View.VISIBLE);
-					nextButton.setVisibility(View.GONE);
 				} else {
-//					buttonBar.addView(nextButton);
-					nextButton.setVisibility(View.VISIBLE);
-					finishButton.setVisibility(View.GONE);
+					TextView errorLabel = new TextView(this);
+					errorLabel.setText("No items were defined for this page.");
+					pageContent.addView(errorLabel);
+					Log.d(TAG, "No items defined for this page.");
 				}
-			}
 
-			//display error message if validation errors exists
-			if(!jobProcessor.previousPages() && jobProcessor.showServerError()){
-				showErrorPopUp("Server Error", "This job could not be submitted because of the following server error:\n\n" + jobProcessor.getServerError());
-			}else if(!ignoreErrors && missingValues != null && missingValues.size() > 0){
-				StringBuffer errorBuffer = new StringBuffer("The following fields require a value:\n");
-				for(String missingField: missingValues){
-					errorBuffer.append(" ");
-					errorBuffer.append(missingField);
-					errorBuffer.append("\n");
+				if (jobProcessor.previousPages()) {
+					previousButton.setVisibility(View.VISIBLE);
+				} else {
+					previousButton.setVisibility(View.GONE);
 				}
-				showErrorPopUp(errorBuffer.toString());
+				if (jobProcessor.morePages()) {
+					if (jobProcessor.lastPage()) {
+						finishButton.setVisibility(View.VISIBLE);
+						nextButton.setVisibility(View.GONE);
+					} else {
+						nextButton.setVisibility(View.VISIBLE);
+						finishButton.setVisibility(View.GONE);
+					}
+				}
+
+				// display error message if validation errors exists
+				if (!jobProcessor.previousPages()
+						&& jobProcessor.showServerError()) {
+					showErrorPopUp("Server Error",
+							"This job could not be submitted because of the following server error:\n\n"
+									+ jobProcessor.getServerError());
+				} else if (!ignoreErrors && missingValues != null
+						&& missingValues.size() > 0) {
+					StringBuffer errorBuffer = new StringBuffer(
+							"The following fields require a value:\n");
+					for (String missingField : missingValues) {
+						errorBuffer.append(" ");
+						errorBuffer.append(missingField);
+						errorBuffer.append("\n");
+					}
+					showErrorPopUp(errorBuffer.toString());
+				}
+
+			} else {
+				// skip the current page
+				jobProcessor.nextPage();
+				drawPage(true);
 			}
 		}
 	}
