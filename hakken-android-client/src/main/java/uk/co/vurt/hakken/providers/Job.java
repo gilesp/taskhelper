@@ -24,6 +24,7 @@ public class Job {
 		public static final String TASK_DEFINITION_ID = "task_definition_id";
 //		public static final String TASK_DEFINITION_NAME = "task_definition_name";
 		
+		public static final String REMOTE_ID = "remote_id";
 		public static final String CREATED = "created";
 		public static final String DUE = "due";
 		public static final String STATUS = "status";
@@ -36,8 +37,9 @@ public class Job {
 		
 		public static final String[] ALL = new String[]{
 			_ID,
+			REMOTE_ID,
 			NAME,
-			TASK_DEFINITION_ID,
+			TASK_DEFINITION_ID,			
 //			TASK_DEFINITION_NAME,
 			CREATED,
 			DUE,

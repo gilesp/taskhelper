@@ -16,6 +16,7 @@ public class JobDefinition implements Serializable{
 	private final static String TAG = "JobDefinition";
 	
 	private Long id;
+	private String remoteId;
 	private String name;
 	//private TaskDefinition definition;
 	private Long taskDefintionId;
@@ -30,10 +31,11 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(Long id, String name, Long taskDefintionId, Date created,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefintionId, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
+		this.remoteId = remoteId;
 		this.name = name;
 		this.taskDefintionId = taskDefintionId;
 		this.created = created;
@@ -42,11 +44,12 @@ public class JobDefinition implements Serializable{
 		this.notes = notes;
 	}
 
-	public JobDefinition(Long id, String name, Long taskDefintionId,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefintionId,
 			Date created, Date due, String status, String group, String notes,
 			Set<DataItem> dataItems, boolean modified) {
 		super();
 		this.id = id;
+		this.remoteId = remoteId;
 		this.name = name;
 		this.taskDefintionId = taskDefintionId;
 		this.created = created;
@@ -121,6 +124,10 @@ public class JobDefinition implements Serializable{
 	public Long getId() {
 		return id;
 	}
+	
+	public String getRemoteId() {
+	    return remoteId;
+	}
 
 	public String getName() {
 		return name;
@@ -148,6 +155,10 @@ public class JobDefinition implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public void setRemoteId(String remoteId) {
+	    this.remoteId = remoteId;
 	}
 
 	public void setName(String name) {

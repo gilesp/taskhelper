@@ -36,6 +36,7 @@ public class JobProcessor {
 	
 	public static final String[] JOB_PROJECTION = new String[] {
 		Job.Definitions._ID,
+		Job.Definitions.REMOTE_ID,
 		Job.Definitions.NAME,
 		Job.Definitions.TASK_DEFINITION_ID,
 		Job.Definitions.CREATED,
@@ -46,15 +47,16 @@ public class JobProcessor {
 		Job.Definitions.SERVER_ERROR
 	};
 	
-	private static final int COLUMN_INDEX_JOB_ID = 0;
-	private static final int COLUMN_INDEX_JOB_NAME = 1;
-	private static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 2;
-	private static final int COLUMN_INDEX_JOB_CREATED = 3;
-	private static final int COLUMN_INDEX_JOB_DUE = 4;
-	private static final int COLUMN_INDEX_JOB_STATUS = 5;
-	private static final int COLUMN_INDEX_JOB_NOTES = 6;
-	private static final int COLUMN_INDEX_JOB_MODIFIED = 7;
-	private static final int COLUMN_INDEX_SERVER_ERROR = 8;
+	public static final int COLUMN_INDEX_JOB_ID = 0;
+	public static final int COLUMN_INDEX_JOB_REMOTE_ID = 1;
+	public static final int COLUMN_INDEX_JOB_NAME = 2;
+	public static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 3;
+	public static final int COLUMN_INDEX_JOB_CREATED = 4;
+	public static final int COLUMN_INDEX_JOB_DUE = 5;
+	public static final int COLUMN_INDEX_JOB_STATUS = 6;
+	public static final int COLUMN_INDEX_JOB_NOTES = 7;
+	public static final int COLUMN_INDEX_JOB_MODIFIED = 8;
+	public static final int COLUMN_INDEX_SERVER_ERROR = 9;
 
 	private ContentResolver contentResolver;
 	private Cursor cursor;
@@ -81,6 +83,7 @@ public class JobProcessor {
 			cursor.moveToFirst();
 
 			Long jobId = cursor.getLong(COLUMN_INDEX_JOB_ID);
+			String remoteId = cursor.getString(COLUMN_INDEX_JOB_REMOTE_ID);
 			String jobName = cursor.getString(COLUMN_INDEX_JOB_NAME);
 			Long taskDefinitionId = cursor.getLong(COLUMN_INDEX_JOB_TASKDEFINITION_ID);
 			Date jobCreated = new Date(cursor.getLong(COLUMN_INDEX_JOB_CREATED));
@@ -93,7 +96,7 @@ public class JobProcessor {
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, cursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID));
 			taskProcessor = new TaskProcessor(contentResolver, definitionUri);
 			
-			jobDefinition = new JobDefinition(jobId, jobName, taskDefinitionId, jobCreated, jobDue, jobStatus, notes);
+			jobDefinition = new JobDefinition(jobId, remoteId, jobName, taskDefinitionId, jobCreated, jobDue, jobStatus, notes);
 			jobDefinition.setServerError(serverError);
 			
 			pages = taskProcessor.getPages();

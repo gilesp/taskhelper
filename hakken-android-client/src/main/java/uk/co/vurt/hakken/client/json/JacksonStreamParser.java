@@ -130,6 +130,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 	
 	private JobDefinition readJob(JsonParser jp) throws IOException, JsonParseException{
 		Long id = null;
+		String remoteId = null;
 		String name = null;
 		Long taskDefintionId = null;
 		Date created = null;
@@ -151,6 +152,8 @@ public class JacksonStreamParser implements JsonStreamParser {
 			if(jp.getCurrentToken() != JsonToken.VALUE_NULL){
 				if(itemName.equals("id")){
 					id = jp.getValueAsLong();
+				} else if(itemName.equals("remoteId")) {
+				    remoteId = jp.getText();
 				} else if(itemName.equals("name")){
 					name = jp.getText();
 				} else if(itemName.equals("taskDefintionId")){
@@ -175,7 +178,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 				}
 			}
 		}
-		return new JobDefinition(id, name, taskDefintionId, created, due, status, group, notes, dataItems, modified);
+		return new JobDefinition(id, remoteId, name, taskDefintionId, created, due, status, group, notes, dataItems, modified);
 	}
 
 

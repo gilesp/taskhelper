@@ -84,7 +84,8 @@ public class JobServiceImpl implements JobService{
 					
 					logger.debug("Task Definition ID: " + definition.getId());
 					
-					JobDefinition job = new JobDefinition(instance.getId(),
+					JobDefinition job = new JobDefinition(null,
+					        instance.getId(),
 							instance.getName(),
 //							first ? definition : emptyDefinition,
 							definition.getId(),
