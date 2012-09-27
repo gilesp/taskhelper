@@ -157,7 +157,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		Log.d(TAG, "submitCompletedJobs() called.");
 		//Find which jobs have been completed.
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, 
-				new String[]{Job.Definitions._ID},//, Job.Definitions.TASK_DEFINITION_NAME}, 
+				new String[]{Job.Definitions._ID, Job.Definitions.TASK_DEFINITION_ID}, 
 				Job.Definitions.STATUS + " = ?", 
 				new String[]{"COMPLETED"}, null);
 		if(jobCursor != null){
@@ -168,9 +168,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				Log.d(TAG, "creating submission for job " + jobId);
 				
 				Submission submission = new Submission();
-//				submission.setId(jobId);
 				submission.setJobId(jobId);
-				submission.setTaskDefinitionName(jobCursor.getString(1));
+				
+				String taskDefinitionName = "unknown";
+				Cursor taskDefCursor = provider.query(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, jobCursor.getString(1)), 
+						new String[]{Task.Definitions.NAME}, null, null, null);
+				if(taskDefCursor != null){
+					taskDefCursor.moveToFirst();
+					taskDefinitionName = taskDefCursor.getString(0);
+				}
+				taskDefCursor.close();
+				taskDefCursor = null;
+				submission.setTaskDefinitionName(taskDefinitionName); 
 				submission.setUsername(account.name);
 
 				// retrieve dataitems for them and combine into a submission
@@ -235,7 +244,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			jobCursor.moveToFirst();
 			while(!jobCursor.isAfterLast()){
 				
-				oldJobIds.add(jobCursor.getLong(0));
+				boolean adhoc = jobCursor.getInt(9)>0;
+				long oldJobId = jobCursor.getLong(0);
+				if(!adhoc){
+					Log.d(TAG, "Marking old job: " + oldJobId);
+					oldJobIds.add(oldJobId);
+				}else {
+					Log.d(TAG, "skipping adhoc job: " + oldJobId);
+				}
 				jobCursor.moveToNext();
 			}
 			jobCursor.close();
@@ -334,7 +350,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			values.put(Job.Definitions._ID, newJob.getId());
 			values.put(Job.Definitions.NAME, newJob.getName());
 			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
-			//values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
 			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
 			if(newJob.getDue() != null){
 				values.put(Job.Definitions.DUE, newJob.getDue().getTime());

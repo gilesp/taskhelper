@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -18,13 +17,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.job.JobDefinition;
-import uk.co.vurt.hakken.domain.task.Page;
-import uk.co.vurt.hakken.domain.task.PageSelector;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
-import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
+import android.util.Log;
 
 public class JacksonStreamParser implements JsonStreamParser {
 
+	private final static String TAG = "JacksonStreamParser";
+	
 	private JsonFactory jsonFactory;
 	
 	public JacksonStreamParser(){
@@ -131,7 +130,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 	private JobDefinition readJob(JsonParser jp) throws IOException, JsonParseException{
 		Long id = null;
 		String name = null;
-		Long taskDefintionId = null;
+		Long taskDefinitionId = null;
 		Date created = null;
 		Date due = null;
 		String status = null;
@@ -154,7 +153,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 				} else if(itemName.equals("name")){
 					name = jp.getText();
 				} else if(itemName.equals("taskDefinitionId")){
-					taskDefintionId = jp.getValueAsLong();
+					taskDefinitionId = jp.getValueAsLong();
 				} else if(itemName.equals("created")){
 					created = new Date(Long.parseLong(jp.getText()));
 				} else if(itemName.equals("due")){
@@ -175,7 +174,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 				}
 			}
 		}
-		return new JobDefinition(id, name, taskDefintionId, created, due, status, group, notes, dataItems, modified);
+		return new JobDefinition(id, name, taskDefinitionId, created, due, status, group, notes, dataItems, modified);
 	}
 
 
