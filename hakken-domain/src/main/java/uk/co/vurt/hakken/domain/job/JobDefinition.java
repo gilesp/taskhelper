@@ -10,6 +10,7 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 public class JobDefinition implements Serializable{
 	
 	private Long id;
+	private String remoteId;
 	private String name;
 	private Long taskDefinitionId;
 	private Date created;
@@ -24,10 +25,11 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(Long id, String name, Long taskDefinitionId, Date created,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
+		this.remoteId = remoteId;
 		this.name = name;
 		this.taskDefinitionId = taskDefinitionId;
 		this.created = created;
@@ -36,20 +38,23 @@ public class JobDefinition implements Serializable{
 		this.notes = notes;
 	}
 
-	public JobDefinition(Long id, String name, Long taskDefinitionId,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId,
 			Date created, Date due, String status, String group, String notes,
 			Set<DataItem> dataItems, boolean modified) {
-		this(id, name, taskDefinitionId, created, due, status, notes);
+        this(id, remoteId, name, taskDefinitionId, created, due, status, notes);
+		this.created = created;
+		this.due = due;
+		this.status = status;
 		this.group = group;
 		this.dataItems = dataItems;
 		this.modified = modified;
 	}
 	
-	public JobDefinition(Long id, String name, Long taskDefinitionId,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId,
 			Date created, Date due, String status, boolean adhoc, String group,
 			String notes, Set<DataItem> dataItems, boolean modified,
 			String serverError) {
-		this(id, name, taskDefinitionId, created, due, status, group, notes, dataItems, modified);
+		this(id, remoteId, name, taskDefinitionId, created, due, status, group, notes, dataItems, modified);
 		this.adhoc = adhoc;
 		this.serverError = serverError;
 	}
@@ -72,6 +77,10 @@ public class JobDefinition implements Serializable{
 
 	public Long getId() {
 		return id;
+	}
+	
+	public String getRemoteId() {
+	    return remoteId;
 	}
 
 	public String getName() {
@@ -96,6 +105,10 @@ public class JobDefinition implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public void setRemoteId(String remoteId) {
+	    this.remoteId = remoteId;
 	}
 
 	public void setName(String name) {

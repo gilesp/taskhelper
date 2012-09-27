@@ -71,6 +71,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions.NAME, Job.Definitions.NAME);
 		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_ID, Job.Definitions.TASK_DEFINITION_ID);
 //		jobsProjectionMap.put(Job.Definitions.TASK_DEFINITION_NAME, Job.Definitions.TASK_DEFINITION_NAME);
+		jobsProjectionMap.put(Job.Definitions.REMOTE_ID, Job.Definitions.REMOTE_ID);
 		jobsProjectionMap.put(Job.Definitions.CREATED, Job.Definitions.CREATED);
 		jobsProjectionMap.put(Job.Definitions.DUE, Job.Definitions.DUE);
 		jobsProjectionMap.put(Job.Definitions.STATUS, Job.Definitions.STATUS);
@@ -402,6 +403,7 @@ public class TaskProvider extends ContentProvider {
 			//Create Jobs table
 			db.execSQL("CREATE TABLE IF NOT EXISTS " + JOBS_TABLE_NAME + " ("
 					+ Job.Definitions._ID + " INTEGER PRIMARY KEY, "
+					+ Job.Definitions.REMOTE_ID + " TEXT, "
 					+ Job.Definitions.NAME + " TEXT, "
 					+ Job.Definitions.TASK_DEFINITION_ID + " INTEGER REFERENCES " + DEFINITIONS_TABLE_NAME + " (" + Task.Definitions._ID + "), "
 					+ Job.Definitions.CREATED + " INTEGER, "

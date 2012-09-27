@@ -93,7 +93,7 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 						dataItems.put(metaData.getColumnName(i), rs.getString(i));
 					}
 					//TODO: fix this id;
-					instances.add(new Instance(id, username, new Date(), new Date(), "", dataItems));
+					instances.add(new Instance(String.valueOf(id), username, new Date(), new Date(), "", dataItems));
 					id++;
 				}
 			}catch(SQLException sqle){

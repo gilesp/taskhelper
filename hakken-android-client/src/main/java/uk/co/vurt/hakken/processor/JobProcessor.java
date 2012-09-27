@@ -32,18 +32,19 @@ public class JobProcessor {
 	private static final String CURRENT_PAGE_KEY = TAG + "-current_page";
 	private static final String PREVIOUS_PAGE_POSITION_KEY = TAG + "-previous_position";
 	private static final String HISTORY_KEY = TAG + "-history";
-	
-	private static final int COLUMN_INDEX_JOB_ID = 0;
-	private static final int COLUMN_INDEX_JOB_NAME = 1;
-	private static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 2;
-	private static final int COLUMN_INDEX_JOB_CREATED = 3;
-	private static final int COLUMN_INDEX_JOB_DUE = 4;
-	private static final int COLUMN_INDEX_JOB_STATUS = 5;
-	private static final int COLUMN_INDEX_JOB_GROUP = 6;
-	private static final int COLUMN_INDEX_JOB_NOTES = 7;
-	private static final int COLUMN_INDEX_JOB_MODIFIED = 8;
-	private static final int COLUMN_INDEX_JOB_ADHOC = 9;
-	private static final int COLUMN_INDEX_SERVER_ERROR = 10;
+
+	public static final int COLUMN_INDEX_JOB_ID = 0;
+	public static final int COLUMN_INDEX_JOB_REMOTE_ID = 1;
+	public static final int COLUMN_INDEX_JOB_NAME = 2;
+	public static final int COLUMN_INDEX_JOB_TASKDEFINITION_ID = 3;
+	public static final int COLUMN_INDEX_JOB_CREATED = 4;
+	public static final int COLUMN_INDEX_JOB_DUE = 5;
+	public static final int COLUMN_INDEX_JOB_STATUS = 6;
+    public static final int COLUMN_INDEX_JOB_GROUP = 7;	
+	public static final int COLUMN_INDEX_JOB_NOTES = 8;
+	public static final int COLUMN_INDEX_JOB_MODIFIED = 9;
+    public static final int COLUMN_INDEX_JOB_ADHOC = 10;	
+	public static final int COLUMN_INDEX_SERVER_ERROR = 11;
 
 	private ContentResolver contentResolver;
 	private Cursor cursor;
@@ -69,20 +70,23 @@ public class JobProcessor {
 		if(cursor != null){
 			cursor.moveToFirst();
 
-			jobDefinition = new JobDefinition(cursor.getLong(COLUMN_INDEX_JOB_ID), 
+			jobDefinition = new JobDefinition(
+			        cursor.getLong(COLUMN_INDEX_JOB_ID),
+			        cursor.getString(COLUMN_INDEX_JOB_REMOTE_ID),
 					cursor.getString(COLUMN_INDEX_JOB_NAME), 
 					cursor.getLong(COLUMN_INDEX_JOB_TASKDEFINITION_ID), 
 					new Date(cursor.getLong(COLUMN_INDEX_JOB_CREATED)), 
 					new Date(cursor.getLong(COLUMN_INDEX_JOB_DUE)), 
 					cursor.getString(COLUMN_INDEX_JOB_STATUS), 
 					cursor.getString(COLUMN_INDEX_JOB_NOTES));
+			
 			jobDefinition.setAdhoc(cursor.getInt(COLUMN_INDEX_JOB_ADHOC)>0);
 			jobDefinition.setServerError(cursor.getString(COLUMN_INDEX_SERVER_ERROR));
-			
+	
 			//initialise the TaskProcessor
 			Uri definitionUri = ContentUris.withAppendedId(Task.Definitions.CONTENT_URI, cursor.getInt(COLUMN_INDEX_JOB_TASKDEFINITION_ID));
 			taskProcessor = new TaskProcessor(contentResolver, definitionUri);
-			
+
 			pages = taskProcessor.getPages();
 			pageHistory =  new ArrayList<Integer>();
 			pageHistory.add(currentPagePosition);

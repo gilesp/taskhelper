@@ -19,6 +19,7 @@ import uk.co.vurt.hakken.domain.job.JobDefinition;
 import uk.co.vurt.hakken.domain.job.Submission;
 import uk.co.vurt.hakken.domain.job.SubmissionStatus;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
+import uk.co.vurt.hakken.processor.JobProcessor;
 import uk.co.vurt.hakken.providers.Dataitem;
 import uk.co.vurt.hakken.providers.Job;
 import uk.co.vurt.hakken.providers.Task;
@@ -31,6 +32,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.ParseException;
@@ -157,9 +159,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		Log.d(TAG, "submitCompletedJobs() called.");
 		//Find which jobs have been completed.
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, 
-				new String[]{Job.Definitions._ID, Job.Definitions.TASK_DEFINITION_ID}, 
+				new String[]{Job.Definitions._ID, Job.Definitions.REMOTE_ID, Job.Definitions.TASK_DEFINITION_ID}, 
 				Job.Definitions.STATUS + " = ?", 
 				new String[]{"COMPLETED"}, null);
+		
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			//for each completed job:
@@ -169,17 +172,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				
 				Submission submission = new Submission();
 				submission.setJobId(jobId);
+				submission.setRemoteId(jobCursor.getString(1));
 				
 				String taskDefinitionName = "unknown";
-				Cursor taskDefCursor = provider.query(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, jobCursor.getString(1)), 
-						new String[]{Task.Definitions.NAME}, null, null, null);
+				Cursor taskDefCursor = provider.query(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, 
+				        String.valueOf(jobCursor.getLong(2))), new String[]{Task.Definitions.NAME}, null, 
+				        null, null);
 				if(taskDefCursor != null){
-					taskDefCursor.moveToFirst();
-					taskDefinitionName = taskDefCursor.getString(0);
+				     taskDefCursor.moveToFirst();
+				     taskDefinitionName = taskDefCursor.getString(0);
 				}
 				taskDefCursor.close();
 				taskDefCursor = null;
-				submission.setTaskDefinitionName(taskDefinitionName); 
+				
+				submission.setTaskDefinitionName(taskDefinitionName);
+
 				submission.setUsername(account.name);
 
 				// retrieve dataitems for them and combine into a submission
@@ -237,21 +244,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		
-		List<Long> oldJobIds = new ArrayList<Long>();
+		List<JobDefinitionId> oldJobIds = new ArrayList<JobDefinitionId>();
 		
 		Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, Job.Definitions.ALL, null, null, null);
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			while(!jobCursor.isAfterLast()){
+
+				boolean adhoc = jobCursor.getInt(JobProcessor.COLUMN_INDEX_JOB_ADHOC)>0;
+				long oldJobId = jobCursor.getLong(JobProcessor.COLUMN_INDEX_JOB_ID);
 				
-				boolean adhoc = jobCursor.getInt(9)>0;
-				long oldJobId = jobCursor.getLong(0);
 				if(!adhoc){
 					Log.d(TAG, "Marking old job: " + oldJobId);
-					oldJobIds.add(oldJobId);
+	                oldJobIds.add(new JobDefinitionId(
+	                        jobCursor.getLong(JobProcessor.COLUMN_INDEX_JOB_TASKDEFINITION_ID), 
+	                        jobCursor.getString(JobProcessor.COLUMN_INDEX_JOB_REMOTE_ID)));
 				}else {
 					Log.d(TAG, "skipping adhoc job: " + oldJobId);
 				}
+
 				jobCursor.moveToNext();
 			}
 			jobCursor.close();
@@ -265,8 +276,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		long newLastUpdated = System.currentTimeMillis();
 		
 		oldJobIds.removeAll(jobAdapter.getAddedJobIds());
-		for(Long jobToDeleteId: oldJobIds){
-			provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDeleteId), null, null);
+		
+		for(JobDefinitionId jobToDeleteId: oldJobIds){
+//			provider.delete(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, jobToDeleteId), null, null);
+		    
+		    Log.d(TAG, "Deleting " + jobToDeleteId);
+		    
+		    provider.delete(Job.Definitions.CONTENT_URI, 
+		            Job.Definitions.TASK_DEFINITION_ID + " = ? and " + Job.Definitions.REMOTE_ID + " = ?", 
+		            new String[] {String.valueOf(jobToDeleteId.taskDefinitionId), jobToDeleteId.remoteId});	            
 		}
 
 		setLastUpdatedDate(account, newLastUpdated);
@@ -328,26 +346,29 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	private class JobDefinitionAdapter implements JobDefinitionHandler {
 		
 		private ContentProviderClient provider;
-		private List<Long> addedJobIds;
-		private List<Long> oldJobIds;
+		private List<JobDefinitionId> addedJobIds;
+		private List<JobDefinitionId> oldJobIds;
 		
-		public JobDefinitionAdapter(ContentProviderClient provider, List<Long> oldJobIds){
+		public JobDefinitionAdapter(ContentProviderClient provider, List<JobDefinitionId> oldJobIds){
 			this.provider = provider;
 			this.oldJobIds = oldJobIds;
-			addedJobIds = new ArrayList<Long>();
+			addedJobIds = new ArrayList<JobDefinitionId>();
 		}
 		
-		public List<Long> getAddedJobIds(){
+		public List<JobDefinitionId> getAddedJobIds(){
 			return addedJobIds;
 		}
-		
+
 		@Override
 		public void handle(JobDefinition newJob) {
 			Log.d(TAG, "Adding a job to database: " + newJob);
-			addedJobIds.add(newJob.getId());
+			
+			JobDefinitionId newJobId = new JobDefinitionId(newJob.getTaskDefinitionId(), newJob.getRemoteId()); 
+			
+			addedJobIds.add(newJobId);
 			
 			ContentValues values = new ContentValues();
-			values.put(Job.Definitions._ID, newJob.getId());
+			values.put(Job.Definitions.REMOTE_ID, newJob.getRemoteId());
 			values.put(Job.Definitions.NAME, newJob.getName());
 			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
 			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
@@ -362,14 +383,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				values.put(Job.Definitions.GROUP, newJob.getGroup());
 			}
 			
-			Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
+//			Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
+			Uri jobUri = Job.Definitions.CONTENT_URI;
 			
 			try{
 				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
 				//  if job not on device, then create it on device
 				boolean storeDataItems = false;
 				boolean resetStatus = false;
-				if(oldJobIds.contains(newJob.getId())){
+				if(oldJobIds.contains(newJobId)){
 					
 					Cursor jobCursor = provider.query(jobUri, new String[]{Job.Definitions.MODIFIED, Job.Definitions.STATUS}, null, null, null);
 					boolean modified = false;
@@ -393,11 +415,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				} else {
 					//storeTaskDefinition(provider, newJob.getDefinition());
 					//create job
-					Log.d(TAG, "Inserting new job " + newJob.getId());
+					Log.d(TAG, "Inserting new job " + newJobId);
 					Uri providerUri = provider.insert(Job.Definitions.CONTENT_URI, values);
 					Log.d(TAG, "Inserted job as " + providerUri);
 					storeDataItems = true;
+					
+					// set the id to the last part of the provider uri
+					// TODO: improve this
+					Long jobId = Long.valueOf(providerUri.toString().substring(
+                            providerUri.toString().lastIndexOf("/") + 1));
+					Log.i(TAG, "New job id=" + jobId);
+					newJob.setId(jobId);
 				}
+				
+				
 				
 				if(storeDataItems){
 					for(DataItem item: newJob.getDataItems()){
@@ -413,5 +444,50 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				Log.e(TAG, "Unable to store job definition.", re);
 			}
 		}
+	}
+	
+	private static class JobDefinitionId {
+	    
+        private Long taskDefinitionId;
+	    private String remoteId;
+	    
+	    JobDefinitionId(Long taskDefinitionId, String remoteId) {
+	        this.taskDefinitionId = taskDefinitionId;
+	        this.remoteId = remoteId;
+	    }
+
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((remoteId == null) ? 0 : remoteId.hashCode());
+            result = prime * result
+                    + ((taskDefinitionId == null) ? 0 : taskDefinitionId.hashCode());
+            return result;
+        }
+
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            JobDefinitionId other = (JobDefinitionId) obj;
+            if (remoteId == null) {
+                if (other.remoteId != null)
+                    return false;
+            } else if (!remoteId.equals(other.remoteId))
+                return false;
+            if (taskDefinitionId == null) {
+                if (other.taskDefinitionId != null)
+                    return false;
+            } else if (!taskDefinitionId.equals(other.taskDefinitionId))
+                return false;
+            return true;
+        }
+        
+        public String toString() {
+            return remoteId + " (taskDefinitionId " + taskDefinitionId + ")";
+        }
 	}
 }

@@ -18,6 +18,8 @@ public class Job {
 		
 		public static final String NAME = "name";
 		public static final String TASK_DEFINITION_ID = "task_definition_id";
+		public static final String REMOTE_ID = "remote_id";
+
 		public static final String CREATED = "created";
 		public static final String DUE = "due";
 		public static final String STATUS = "status";
@@ -31,16 +33,17 @@ public class Job {
 		
 		public static final String[] ALL = new String[]{
 			_ID, //0
-			NAME, //1
-			TASK_DEFINITION_ID, //2
-			CREATED, //3
-			DUE, //4
-			STATUS, //5
-			GROUP, //6
-			NOTES, //7
-			MODIFIED, //8
-			ADHOC, //9
-			SERVER_ERROR //10
+            REMOTE_ID, //1
+			NAME, //2
+			TASK_DEFINITION_ID, //3
+			CREATED, //4
+			DUE, //5
+			STATUS, //6
+			GROUP, //7
+			NOTES, //8
+			MODIFIED, //9
+			ADHOC, //10
+			SERVER_ERROR //11
 		};
 	}
 	
