@@ -169,7 +169,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				
 				Submission submission = new Submission();
 				submission.setJobId(jobId);
-				submission.setTaskDefinitionName(jobCursor.getString(1)); //TODO: Fix this to actually retrieve the task definition name again.
+				
+				String taskDefinitionName = "unknown";
+				Cursor taskDefCursor = provider.query(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, jobCursor.getString(1)), 
+						new String[]{Task.Definitions.NAME}, null, null, null);
+				if(taskDefCursor != null){
+					taskDefCursor.moveToFirst();
+					taskDefinitionName = taskDefCursor.getString(0);
+				}
+				taskDefCursor.close();
+				taskDefCursor = null;
+				submission.setTaskDefinitionName(taskDefinitionName); 
 				submission.setUsername(account.name);
 
 				// retrieve dataitems for them and combine into a submission
