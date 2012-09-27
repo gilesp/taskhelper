@@ -18,7 +18,7 @@ public class JobDefinition implements Serializable{
 	private Long id;
 	private String name;
 	//private TaskDefinition definition;
-	private Long taskDefintionId;
+	private Long taskDefinitionId;
 	private Date created;
 	private Date due;
 	private String status;
@@ -30,25 +30,25 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(Long id, String name, Long taskDefintionId, Date created,
+	public JobDefinition(Long id, String name, Long taskDefinitionId, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.taskDefintionId = taskDefintionId;
+		this.taskDefinitionId = taskDefinitionId;
 		this.created = created;
 		this.due = due;
 		this.status = status;
 		this.notes = notes;
 	}
 
-	public JobDefinition(Long id, String name, Long taskDefintionId,
+	public JobDefinition(Long id, String name, Long taskDefinitionId,
 			Date created, Date due, String status, String group, String notes,
 			Set<DataItem> dataItems, boolean modified) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.taskDefintionId = taskDefintionId;
+		this.taskDefinitionId = taskDefinitionId;
 		this.created = created;
 		this.due = due;
 		this.status = status;
@@ -194,16 +194,16 @@ public class JobDefinition implements Serializable{
 	@Override
 	public String toString() {
 		return "JobDefinition [id=" + id + ", name=" + name + ", definition_id="
-				+ taskDefintionId + ", created=" + created + ", due=" + due
+				+ taskDefinitionId + ", created=" + created + ", due=" + due
 				+ ", status=" + status + "]";
 	}
 	
-	public Long getTaskDefintionId() {
-		return taskDefintionId;
+	public Long getTaskDefinitionId() {
+		return taskDefinitionId;
 	}
 
-	public void setTaskDefintionId(Long taskDefintionId) {
-		this.taskDefintionId = taskDefintionId;
+	public void setTaskDefintionId(Long taskDefinitionId) {
+		this.taskDefinitionId = taskDefinitionId;
 	}
 
 	@Override

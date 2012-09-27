@@ -153,7 +153,7 @@ public class JacksonStreamParser implements JsonStreamParser {
 					id = jp.getValueAsLong();
 				} else if(itemName.equals("name")){
 					name = jp.getText();
-				} else if(itemName.equals("taskDefintionId")){
+				} else if(itemName.equals("taskDefinitionId")){
 					taskDefintionId = jp.getValueAsLong();
 				} else if(itemName.equals("created")){
 					created = new Date(Long.parseLong(jp.getText()));
