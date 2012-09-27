@@ -1,10 +1,7 @@
 package uk.co.vurt.hakken.fragments;
 
 import uk.co.vurt.hakken.R;
-import uk.co.vurt.hakken.domain.job.JobDomainAdapter;
 import uk.co.vurt.hakken.domain.task.TaskDomainAdapter;
-import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
-import uk.co.vurt.hakken.providers.Job;
 import uk.co.vurt.hakken.providers.Task;
 import android.app.Activity;
 import android.content.ContentUris;
