@@ -333,7 +333,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			ContentValues values = new ContentValues();
 			values.put(Job.Definitions._ID, newJob.getId());
 			values.put(Job.Definitions.NAME, newJob.getName());
-			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefintionId());
+			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
 			//values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
 			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
 			if(newJob.getDue() != null){
