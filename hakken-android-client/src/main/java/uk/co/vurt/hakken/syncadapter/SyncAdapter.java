@@ -171,11 +171,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				Log.d(TAG, "creating submission for job " + jobId);
 				
 				Submission submission = new Submission();
-//				submission.setId(jobId);
 				submission.setJobId(jobId);
 				submission.setRemoteId(jobCursor.getString(1));
 				
-				// Giles' solution to correctly retrieve the task definition name 
 				String taskDefinitionName = "unknown";
 				Cursor taskDefCursor = provider.query(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, 
 				        String.valueOf(jobCursor.getLong(2))), new String[]{Task.Definitions.NAME}, null, 
@@ -188,7 +186,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				taskDefCursor = null;
 				
 				submission.setTaskDefinitionName(taskDefinitionName);
-				
+
 				submission.setUsername(account.name);
 
 				// retrieve dataitems for them and combine into a submission
@@ -252,10 +250,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		if(jobCursor != null){
 			jobCursor.moveToFirst();
 			while(!jobCursor.isAfterLast()){
+
+				boolean adhoc = jobCursor.getInt(JobProcessor.COLUMN_INDEX_JOB_ADHOC)>0;
+				long oldJobId = jobCursor.getLong(JobProcessor.COLUMN_INDEX_JOB_ID);
 				
-				oldJobIds.add(new JobDefinitionId(
-				        jobCursor.getLong(JobProcessor.COLUMN_INDEX_JOB_TASKDEFINITION_ID), 
-				        jobCursor.getString(JobProcessor.COLUMN_INDEX_JOB_REMOTE_ID)));
+				if(!adhoc){
+					Log.d(TAG, "Marking old job: " + oldJobId);
+	                oldJobIds.add(new JobDefinitionId(
+	                        jobCursor.getLong(JobProcessor.COLUMN_INDEX_JOB_TASKDEFINITION_ID), 
+	                        jobCursor.getString(JobProcessor.COLUMN_INDEX_JOB_REMOTE_ID)));
+				}else {
+					Log.d(TAG, "skipping adhoc job: " + oldJobId);
+				}
+
 				jobCursor.moveToNext();
 			}
 			jobCursor.close();
@@ -356,15 +363,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		public void handle(JobDefinition newJob) {
 			Log.d(TAG, "Adding a job to database: " + newJob);
 			
-			JobDefinitionId newJobId = new JobDefinitionId(newJob.getTaskDefintionId(), newJob.getRemoteId()); 
+			JobDefinitionId newJobId = new JobDefinitionId(newJob.getTaskDefinitionId(), newJob.getRemoteId()); 
 			
 			addedJobIds.add(newJobId);
 			
 			ContentValues values = new ContentValues();
 			values.put(Job.Definitions.REMOTE_ID, newJob.getRemoteId());
 			values.put(Job.Definitions.NAME, newJob.getName());
-			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefintionId());
-			//values.put(Job.Definitions.TASK_DEFINITION_NAME, newJob.getDefinition().getName());
+			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
 			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
 			if(newJob.getDue() != null){
 				values.put(Job.Definitions.DUE, newJob.getDue().getTime());

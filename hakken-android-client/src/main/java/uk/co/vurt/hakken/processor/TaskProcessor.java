@@ -16,12 +16,12 @@ public class TaskProcessor {
 	private static final String TAG = "TaskProcessor";
 	
 	private static final String[] PROJECTION = new String[] {
-		Task.Definitions._ID,
+//		Task.Definitions._ID,
 		Task.Definitions.JSON
 	};
 	
-	private static final int COLUMN_INDEX_TASKDEFINITION_ID = 0;
-	private static final int COLUMN_INDEX_TASKDEFINITION_JSON = 1;
+//	private static final int COLUMN_INDEX_TASKDEFINITION_ID = 0;
+//	private static final int COLUMN_INDEX_TASKDEFINITION_JSON = 1;
 	
 	private TaskDefinition taskDefinition;
 	
@@ -31,7 +31,8 @@ public class TaskProcessor {
 		Cursor definitionCursor = contentResolver.query(taskUri, TaskProcessor.PROJECTION, null, null, null);
 		if(definitionCursor != null){
 			definitionCursor.moveToFirst();
-			init(definitionCursor.getString(COLUMN_INDEX_TASKDEFINITION_JSON));
+//			init(definitionCursor.getString(COLUMN_INDEX_TASKDEFINITION_JSON));
+			init(definitionCursor.getString(0));
 			definitionCursor.close();
 		}
 	}

@@ -7,22 +7,16 @@ import java.util.Set;
 
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 
-//import android.util.Log;
-
-//TODO: RP/Kash - DONE - remove definition field, add "definition id" field
-
 public class JobDefinition implements Serializable{
-
-	private final static String TAG = "JobDefinition";
 	
 	private Long id;
 	private String remoteId;
 	private String name;
-	//private TaskDefinition definition;
-	private Long taskDefintionId;
+	private Long taskDefinitionId;
 	private Date created;
 	private Date due;
 	private String status;
+	private boolean adhoc = false;
 	private String group;
 	private String notes;
 	private Set<DataItem> dataItems = new HashSet<DataItem>();
@@ -31,83 +25,43 @@ public class JobDefinition implements Serializable{
 	
 	public JobDefinition(){}
 	
-	public JobDefinition(Long id, String remoteId, String name, Long taskDefintionId, Date created,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId, Date created,
 			Date due, String status, String notes) {
 		super();
 		this.id = id;
 		this.remoteId = remoteId;
 		this.name = name;
-		this.taskDefintionId = taskDefintionId;
+		this.taskDefinitionId = taskDefinitionId;
 		this.created = created;
 		this.due = due;
 		this.status = status;
 		this.notes = notes;
 	}
 
-	public JobDefinition(Long id, String remoteId, String name, Long taskDefintionId,
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId,
 			Date created, Date due, String status, String group, String notes,
 			Set<DataItem> dataItems, boolean modified) {
-		super();
-		this.id = id;
-		this.remoteId = remoteId;
-		this.name = name;
-		this.taskDefintionId = taskDefintionId;
+        this(id, remoteId, name, taskDefinitionId, created, due, status, notes);
 		this.created = created;
 		this.due = due;
 		this.status = status;
 		this.group = group;
-		this.notes = notes;
 		this.dataItems = dataItems;
 		this.modified = modified;
 	}
 	
-//	public JobDefinition(int id, String name, TaskDefinition definition, Date created, Date due, String status, String notes, String group){
-//		this(id, name, definition, created, due, status, notes);
-//		this.group = group;
-//	}
-	
-//	public static JobDefinition valueOf(JSONObject job){
-//		try{
-//			final int id = job.getInt("id");
-//			final String name = job.getString("name");
-//			final TaskDefinition definition = TaskDefinition.valueOf(job.getJSONObject("task"));
-//			final Date created = new Date(job.getLong("created"));
-//			final Date due = new Date(job.getLong("due"));
-//			final String status = job.getString("status");
-//			String notes = null;
-//			if(job.has("notes")){
-//				notes = job.getString("notes");
-//			}
-//			
-//			JobDefinition jobDefinition;
-//			if(job.has("groupname") && !job.getString("groupname").equals("null")){
-//				final String group = job.getString("groupname");
-//				jobDefinition = new JobDefinition(id, name, definition, created, due, status, notes, group);
-//			}else{
-//				jobDefinition = new JobDefinition(id, name, definition, created, due, status, notes); 
-//			}
-//			
-//			if(job.has("dataItems")){
-//				JSONArray diArray = job.getJSONArray("dataItems");
-//				for(int i = 0; i < diArray.length(); i++){
-//					jobDefinition.getDataItems().add(DataItem.valueOf(diArray.getJSONObject(i)));
-//				}
-//			}
-//			return jobDefinition;
-//			
-//		} catch (final Exception e){
-//			Log.i(TAG, "Unable to parse JSON Job object: " + e.toString());
-//		}
-//		return null;
-//	}
-
-	
+	public JobDefinition(Long id, String remoteId, String name, Long taskDefinitionId,
+			Date created, Date due, String status, boolean adhoc, String group,
+			String notes, Set<DataItem> dataItems, boolean modified,
+			String serverError) {
+		this(id, remoteId, name, taskDefinitionId, created, due, status, group, notes, dataItems, modified);
+		this.adhoc = adhoc;
+		this.serverError = serverError;
+	}
 
 	public String getStatus() {
 		return status;
 	}
-
-
 
 	public boolean isModified() {
 		return modified;
@@ -132,10 +86,6 @@ public class JobDefinition implements Serializable{
 	public String getName() {
 		return name;
 	}
-
-//	public TaskDefinition getDefinition() {
-//		return definition;
-//	}
 
 	public Date getCreated() {
 		return created;
@@ -165,10 +115,6 @@ public class JobDefinition implements Serializable{
 		this.name = name;
 	}
 
-//	public void setDefinition(TaskDefinition definition) {
-//		this.definition = definition;
-//	}
-
 	public void setCreated(Date created) {
 		this.created = created;
 	}
@@ -189,7 +135,14 @@ public class JobDefinition implements Serializable{
 		return dataItems;
 	}
 
-	
+	public boolean isAdhoc() {
+		return adhoc;
+	}
+
+	public void setAdhoc(boolean adhoc) {
+		this.adhoc = adhoc;
+	}
+
 	public void setDataItems(Set<DataItem> dataItems) {
 		this.dataItems = dataItems;
 	}
@@ -205,16 +158,16 @@ public class JobDefinition implements Serializable{
 	@Override
 	public String toString() {
 		return "JobDefinition [id=" + id + ", name=" + name + ", definition_id="
-				+ taskDefintionId + ", created=" + created + ", due=" + due
+				+ taskDefinitionId + ", created=" + created + ", due=" + due
 				+ ", status=" + status + "]";
 	}
 	
-	public Long getTaskDefintionId() {
-		return taskDefintionId;
+	public Long getTaskDefinitionId() {
+		return taskDefinitionId;
 	}
 
-	public void setTaskDefintionId(Long taskDefintionId) {
-		this.taskDefintionId = taskDefintionId;
+	public void setTaskDefinitionId(Long taskDefinitionId) {
+		this.taskDefinitionId = taskDefinitionId;
 	}
 
 	@Override

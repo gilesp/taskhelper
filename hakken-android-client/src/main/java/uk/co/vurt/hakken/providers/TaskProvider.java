@@ -78,6 +78,7 @@ public class TaskProvider extends ContentProvider {
 		jobsProjectionMap.put(Job.Definitions.GROUP, Job.Definitions.GROUP);
 		jobsProjectionMap.put(Job.Definitions.NOTES, Job.Definitions.NOTES);
 		jobsProjectionMap.put(Job.Definitions.MODIFIED, Job.Definitions.MODIFIED);
+		jobsProjectionMap.put(Job.Definitions.ADHOC, Job.Definitions.ADHOC);
 		jobsProjectionMap.put(Job.Definitions.SERVER_ERROR, Job.Definitions.SERVER_ERROR);
 
 		dataitemsProjectionMap = new HashMap<String, String>();
@@ -219,8 +220,7 @@ public class TaskProvider extends ContentProvider {
 						&& values.containsKey(Job.Definitions.TASK_DEFINITION_ID)
 						&& values.containsKey(Job.Definitions.CREATED)
 						&& values.containsKey(Job.Definitions.DUE)
-						&& values.containsKey(Job.Definitions.STATUS)
-						/*&& values.containsKey(Job.Definitions._ID)*/){
+						&& values.containsKey(Job.Definitions.STATUS)){
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
 					long rowId = db.insert(JOBS_TABLE_NAME, Job.Definitions.NAME, values);
 					if(rowId > 0){
@@ -230,7 +230,6 @@ public class TaskProvider extends ContentProvider {
 					}
 				} else {
 					Log.d(TAG, "Missing value.");
-					Log.d(TAG, "Id: " + values.containsKey(Task.Definitions._ID));
 					Log.d(TAG, "Name: " + values.containsKey(Job.Definitions.NAME));
 					Log.d(TAG, "Definition ID: " + values.containsKey(Job.Definitions.TASK_DEFINITION_ID));
 					Log.d(TAG, "Created: " + values.containsKey(Job.Definitions.CREATED));
@@ -373,7 +372,6 @@ public class TaskProvider extends ContentProvider {
 	        case DATAITEM_ID_URI:
 	            count = db.update(DATAITEMS_TABLE_NAME, values, Dataitem.Definitions._ID + "=" + uri.getPathSegments().get(1)
 	                    + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), whereArgs);
-//	            syncToNetwork = true;
 	            break;
 	        default:
 	            throw new IllegalArgumentException("Unknown URI " + uri);
@@ -408,13 +406,13 @@ public class TaskProvider extends ContentProvider {
 					+ Job.Definitions.REMOTE_ID + " TEXT, "
 					+ Job.Definitions.NAME + " TEXT, "
 					+ Job.Definitions.TASK_DEFINITION_ID + " INTEGER REFERENCES " + DEFINITIONS_TABLE_NAME + " (" + Task.Definitions._ID + "), "
-					//+ Job.Definitions.TASK_DEFINITION_NAME + " TEXT, "
 					+ Job.Definitions.CREATED + " INTEGER, "
 					+ Job.Definitions.DUE + " INTEGER, "
 					+ Job.Definitions.NOTES + " TEXT, "
 					+ Job.Definitions.GROUP + " TEXT DEFAULT 'Personal', "
 					+ Job.Definitions.STATUS + " TEXT, " 
 					+ Job.Definitions.MODIFIED + " INTEGER DEFAULT 0, "
+					+ Job.Definitions.ADHOC + " INTEGER DEFAULT 0, "
 					+ Job.Definitions.SERVER_ERROR + " TEXT"
 					+ ");");
 			

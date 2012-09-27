@@ -3,6 +3,7 @@ package uk.co.vurt.hakken.domain.task;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.co.vurt.hakken.domain.task.pageitem.PageItem;
 
@@ -12,6 +13,7 @@ public class Page {
 	private LinkedHashMap<String, PageItem> items;
 	private List<PageSelector> nextPages;
 	
+	private Map<String, String> attributes;
 	
 	public Page(){
 		items = new LinkedHashMap<String, PageItem>();
@@ -72,10 +74,18 @@ public class Page {
 		this.nextPages = nextPages;
 	}
 
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, String> attributes) {
+		this.attributes = attributes;
+	}
+	
 	@Override
 	public String toString() {
 		return "Page [name=" + name + ", title=" + title + ", items=" + items
-				+ ", nextPages=" + nextPages + "]";
+				+ ", nextPages=" + nextPages + ", attributes=" + attributes + "]";
 	}
 	
 }

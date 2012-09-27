@@ -49,12 +49,10 @@ public class JobServiceImpl implements JobService{
 	public List<JobDefinition> getForUserSince(String username, Date lastUpdated) {
 		List<JobDefinition> jobs = new ArrayList<JobDefinition>();
 		
-		//TODO: find out which task definitions the user has access to
-		
 		//for each task definition, lookup instance provider/data connector and invoke.
-		List<Instance> instances = new ArrayList<Instance>(); //Should not be String, should be JobDefinition 
 		List<TaskDefinition> taskDefinitions = taskRegistry.getAllTasks();
 		for(TaskDefinition definition: taskDefinitions){
+			List<Instance> instances = new ArrayList<Instance>();
 			ServiceMapping mapping = mappingService.getMappingForTaskDefinition(definition.getName());
 			if(mapping != null){
 				DataConnectorTaskDefinitionMapping dcMapping = mapping.getDataConnectorTaskDefinitionMapping();
@@ -64,20 +62,6 @@ public class JobServiceImpl implements JobService{
 				instances.addAll(connector.getInstances(connector.getDefinition(dcMapping.getTaskDefinitionName()), dcMapping.getProperties(), username, lastUpdated));
 				
 				logger.debug("Total instances: " + instances.size());
-				
-				//to save sending the full definition each time, use an almost 
-				//empty definition for all but the first instance
-				//This will be replaced once taskdefinitions are synched 
-				//separately from jobs.
-				/*
-				TaskDefinition emptyDefinition = new TaskDefinition();
-				emptyDefinition.setId(definition.getId());
-				emptyDefinition.setName(definition.getName());
-				boolean first = true;
-				*/				
-				//TODO: RP/Kash - DONE - skip this stuff above and just set the definition id
-				
-				
 
 				for(Instance instance: instances){
 					logger.debug("Instance: " + instance);
@@ -87,7 +71,6 @@ public class JobServiceImpl implements JobService{
 					JobDefinition job = new JobDefinition(null,
 					        instance.getId(),
 							instance.getName(),
-//							first ? definition : emptyDefinition,
 							definition.getId(),
 							instance.getCreated(),
 							instance.getDue(),
@@ -121,24 +104,6 @@ public class JobServiceImpl implements JobService{
 		}
 		
 		return jobs;
-		
-//		Map<String, String> attributes = new HashMap<String, String>();
-//		attributes.put("required", "true");
-//		
-//		Page page1 = new Page("Page 1", "Page 1", Arrays.asList(new PageItem("Item 1", "Item 1", "TEXT", "This is page 1. The next page should be Page 3", attributes)), Arrays.asList(new PageSelector("Page 3")));
-//		Page page2 = new Page("Page 2", "Page 2", Arrays.asList(new PageItem("Item 2", "Item 2", "TEXT", "This is page 2. You shouldn't be here.")));
-//		Page page3 = new Page("Page 3", "Page 3", Arrays.asList(new PageItem("Item 3", "Item 3", "TEXT", "This is page 3.")));
-//		
-//		TaskDefinition threePageTask = new TaskDefinition(2, "Three Pages", "A task with 3 pages.", Arrays.asList(page1, page2, page3));
-//		
-//		return Arrays.asList(new JobDefinition(1, "Test 3 Page Job", threePageTask, new Date(), new Date(), "AWAITING", 
-//				"Test 3 Page Job"));
-//		
-//		return Arrays.asList(new JobDefinition(1, "Test Job", new TaskDefinition(
-//				1, "Test Task", "Test Task", Arrays.asList(new Page("Page 1", 
-//				"Page 1", Arrays.asList(new PageItem("Item 1", "Item 1", 
-//				"DATETIME", null))))), new Date(), new Date(), "AWAITING", 
-//				"Test Job"));
 	}
 
 	@Override

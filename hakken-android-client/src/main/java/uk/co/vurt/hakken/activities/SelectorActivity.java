@@ -77,7 +77,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
         Intent intent = new Intent(null, getIntent().getData());
         intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
         menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
-                new ComponentName(this, TaskList.class), null, intent, 0, null);
+                new ComponentName(this, SelectorActivity.class), null, intent, 0, null);
 
         return true;
     }
@@ -265,6 +265,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 			values.put(Job.Definitions.DUE, now);
 			values.put(Job.Definitions.TASK_DEFINITION_ID, definition.getId());
 			values.put(Job.Definitions.STATUS, "AWAITING");
+			values.put(Job.Definitions.ADHOC, true);
 			
 			try{
 				Uri jobUri = getContentResolver().insert(Job.Definitions.CONTENT_URI, values);
