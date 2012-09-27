@@ -349,8 +349,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			ContentValues values = new ContentValues();
 			values.put(Job.Definitions._ID, newJob.getId());
 			values.put(Job.Definitions.NAME, newJob.getName());
-			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId()); //TODO: check to see if server isn't setting task definition id??
-
+			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
 			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
 			if(newJob.getDue() != null){
 				values.put(Job.Definitions.DUE, newJob.getDue().getTime());
