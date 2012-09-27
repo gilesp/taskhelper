@@ -376,14 +376,14 @@ public class RunJob extends Activity {
 				} else {
 					previousButton.setVisibility(View.GONE);
 				}
-				if (jobProcessor.morePages()) {
-					if (jobProcessor.lastPage()) {
-						finishButton.setVisibility(View.VISIBLE);
-						nextButton.setVisibility(View.GONE);
-					} else {
-						nextButton.setVisibility(View.VISIBLE);
-						finishButton.setVisibility(View.GONE);
-					}
+				if (jobProcessor.morePages() && !jobProcessor.lastPage()) {
+					Log.d(TAG, "There are more pages; hiding the finish buttons and showing the next button");
+					nextButton.setVisibility(View.VISIBLE);
+					finishButton.setVisibility(View.GONE);
+				} else {
+					Log.d(TAG, "No more pages; hiding the next button and showing the finish button");
+					finishButton.setVisibility(View.VISIBLE);
+					nextButton.setVisibility(View.GONE);
 				}
 
 				// display error message if validation errors exists

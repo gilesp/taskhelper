@@ -132,14 +132,32 @@ public class JobProcessor {
 		return getCurrentPage() != null ? getCurrentPage().getTitle() : "";
 	}
 	
-	//TODO: modify this to take into account visibility of previous pages
 	public boolean previousPages(){
-		return currentPagePosition > 0;
+		Log.d(TAG, "previousPages()");
+		boolean showPreviousPages = false;
+		if(currentPagePosition > 0){
+			//there are previous pages, but we need to check to see if they are visible
+			String currentPageName = getCurrentPage().getName();
+			for(int pageId: pageHistory){
+				Page page = pages.get(pageId);
+				if(!page.getName().equals(currentPageName)){
+					showPreviousPages = showPreviousPages || isPageVisible(page);
+				}
+			}
+		}
+		return showPreviousPages;
 	}
 	
-	//TODO: modify this to take into account visibility of subsequent pages
 	public boolean morePages(){
-		return currentPagePosition < pages.size();
+		Log.d(TAG, "morePages()");
+		boolean morePages = false;
+		if(currentPagePosition < pages.size()){
+			//there are more pages, but we need to check to see if they are visible
+			for(int i = currentPagePosition + 1; i < pages.size(); i++){
+				morePages = morePages || isPageVisible(pages.get(i));
+			}
+		}
+		return morePages;
 	}
 	
 	public boolean lastPage(){
@@ -189,19 +207,25 @@ public class JobProcessor {
 	}
 	
 	public boolean isCurrentPageVisible(){
+		return isPageVisible(getCurrentPage());
+	}
+	
+	private boolean isPageVisible(Page page){
 		boolean visible = true;
-		String visibility = "always";
-		Page currentPage = getCurrentPage();
-		
-		if(currentPage.getAttributes() != null && 
-				currentPage.getAttributes().containsKey("visibility")){
-			visibility = currentPage.getAttributes().get("visibility");
-		}
-		
-		if("adhoc".equals(visibility) && !jobDefinition.isAdhoc()){
+		if("adhoc".equals(getPageVisibility(page)) && !jobDefinition.isAdhoc()){
 			visible = false;
 		}
+		Log.d(TAG, "visibility of page '" + page.getName() + "': " + visible);
 		return visible;
+	}
+	
+	private String getPageVisibility(Page page){
+		String visibility = "always";
+		if(page.getAttributes() != null && 
+				page.getAttributes().containsKey("visibility")){
+			visibility = page.getAttributes().get("visibility");
+		}
+		return visibility;
 	}
 	
 	public boolean evaluateCondition(String condition) throws ExpressionException{
@@ -253,7 +277,6 @@ public class JobProcessor {
 	}
 	
 	public void previousPage(){
-
 		Log.d(TAG, "Previous Page called. pageHistoryPosition: " + pageHistoryPosition);
 		if(pageHistoryPosition > 0){
 			pageHistoryPosition--;
