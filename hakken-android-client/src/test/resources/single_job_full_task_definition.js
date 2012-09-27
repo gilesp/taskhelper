@@ -3,7 +3,7 @@
     {
         "id": 132236,
         "name": "HSC/132236 - Status: Appointment Passed",
-        "taskDefintionId": 1,
+        "taskDefinitionId": 1,
         "created": 1348225629190,
         "due": 1348225560000,
         "status": "AWAITING",
