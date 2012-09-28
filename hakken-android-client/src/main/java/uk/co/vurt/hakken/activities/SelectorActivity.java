@@ -8,6 +8,7 @@ import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsGridFragment;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
 import uk.co.vurt.hakken.processor.TaskProcessor;
 import uk.co.vurt.hakken.providers.Job;
@@ -54,7 +55,7 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 				JobListFragment.class, null);
 		
 		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions"),
-				TaskDefinitionsListFragment.class, null);
+				TaskDefinitionsGridFragment.class, null);
 	}
 	
 	@Override

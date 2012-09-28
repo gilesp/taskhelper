@@ -63,7 +63,7 @@ public class TaskList extends ListActivity {
         // Used to map task definition entries from the database to views
         adapter = new TaskDomainAdapter(this, R.layout.selecttask_list_item, cursor,
 				new String[] { Task.Definitions.NAME }, 
-				new int[] { R.id.tasklist_entry_name},
+				new int[] { R.id.grid_label},
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         
         setListAdapter(adapter);

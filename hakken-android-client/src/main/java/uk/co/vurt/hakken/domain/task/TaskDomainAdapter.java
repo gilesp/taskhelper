@@ -31,7 +31,7 @@ public class TaskDomainAdapter extends SimpleCursorAdapter {
 			convertView = inflater.inflate(R.layout.selecttask_list_item, null);
 			holder = new ViewHolder();
 			holder.name = (TextView) convertView
-					.findViewById(R.id.tasklist_entry_name);
+					.findViewById(R.id.grid_label);
 
 			convertView.setTag(holder);
 

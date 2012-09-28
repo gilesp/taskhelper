@@ -45,7 +45,7 @@ public class TaskDefinitionsListFragment extends ListFragment implements
 		adapter = new TaskDomainAdapter(super.getActivity().getApplicationContext(),
 				R.layout.selecttask_list_item, null, new String[] {
 						Task.Definitions.NAME}, new int[] {
-						R.id.tasklist_entry_name},
+						R.id.grid_label},
 						CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setListAdapter(adapter);
 				
@@ -80,6 +80,7 @@ public class TaskDefinitionsListFragment extends ListFragment implements
 
 	@Override
 	public void onListItemClick(ListView list, View view, int position, long id) {
+		Log.d(TAG, "id" + id);
 		Uri jobUri = ContentUris
 				.withAppendedId(Task.Definitions.CONTENT_URI, id);
 		listener.onTaskDefintionSelected(jobUri);
