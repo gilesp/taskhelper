@@ -26,6 +26,8 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 		String name = nodeItemExpression.getName();
 		if (name.startsWith("DATAITEM.")) {
 			visitDataItemExpression(name.substring(9), nodeItemExpression);
+		} else if("ADHOC".equals(name)){
+			visitIsAdHocExpression();
 		} else if("NOW".equals(name)){
 			visitCurrentDateExpression();
 		} else if ("NOT".equals(name)) {
@@ -58,16 +60,12 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 		Log.d(TAG, "getting value for: " + id + " = " + result);
 	}
 
-	protected void visitCurrentDateExpression() {
-//		Time now = new Time();
-//		result = now.toString();
-//		now = null;
-		//NOTE: using android.text.format.DateFormat rather than java.text version as supposedly more efficient on devices
-		//however it does mean the use of a slightly different format string.
-//		result = DateFormat.format("yyy-mm-dd'T'kk:mm:ssz", new Date());
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ", Locale.US);
+	protected void visitIsAdHocExpression(){
+		jobProcessor.isAdHocJob();
+	}
 	
+	protected void visitCurrentDateExpression() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ", Locale.US);
 		result = sdf.format(new Date());
 	}
 	
@@ -78,9 +76,11 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 
 		result = Boolean.valueOf(!o.booleanValue());
 	}
+	
 	protected void visitNullExpression() throws ExpressionException {
 		result = null;
 	}
+	
 	public void setJobProcessor(JobProcessor jobProcessor) {
 		this.jobProcessor = jobProcessor;
 	}

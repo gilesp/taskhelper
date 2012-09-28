@@ -11,6 +11,7 @@ public class Submission implements Serializable {
 	private Long id;
 	private String username;
 	private Long jobId;
+	private String remoteId;
 	private String taskDefinitionName;
 	private List<DataItem> dataItems;
 	
@@ -74,10 +75,18 @@ public class Submission implements Serializable {
 		this.taskDefinitionName = taskDefinitionName;
 	}
 
-	@Override
+	public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
+    }
+
+    @Override
 	public String toString() {
 		return "Submission [username=" + username + ", jobId=" + jobId
-				+ ", dataItems=" + dataItems + "]";
+				+ ", remoteId=" + remoteId + ", dataItems=" + dataItems + "]";
 	}
 	
 	

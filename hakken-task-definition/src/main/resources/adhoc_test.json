@@ -1,0 +1,30 @@
+{
+  "id": 6,
+  "description":"AdHoc Test",
+  "name":"adhoc",
+  "pages":[
+    {
+      "name":"page1",
+      "title":"Page 1",
+      "items":[
+        {
+            "name":"label",
+            "label":"This is page 1. It should only be visible when creating a new adhoc instance",
+            "type":"LABEL"
+        }
+      ],
+      "attributes":{"visibility":"adhoc"}
+    },
+    {
+      "name":"page2",
+      "title":"Page 2",
+      "items":[
+        {
+            "name":"label",
+            "label":"This is page 2. IT should be the first page viewed when starting a server defined instance.",
+            "type":"LABEL"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,8 @@ package uk.co.vurt.hakken.server.web.admin;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -133,15 +135,8 @@ public class AdminController {
 		String taskName = request.getParameter("taskName");
 		Long dataConnectorTaskDefinitionId = Long.valueOf(request.getParameter("dcTaskDefMappingId"));
 		
-		
-//		logger.info("TaskName: " + taskName + " connectorName: " + connectorName);
-		
 		TaskDefinition task = taskRegistry.getTask(taskName);
 		DataConnectorTaskDefinitionMapping dcTaskDefinitionMapping = definitionMappingService.get(dataConnectorTaskDefinitionId);
-		
-//		DataConnector connector = dataConnectorService.getDataConnector(connectorName);
-//		logger.info("TASK : " + task);
-//		logger.info("CONNECTOR: " + connector);
 		
 		if(task != null && dcTaskDefinitionMapping != null){
 			ServiceMapping mapping = new ServiceMapping();
@@ -159,13 +154,36 @@ public class AdminController {
 			logger.info("MAPPING: " + mapping.toString());
 			mappingService.save(mapping);
 		}
-		return("redirect:/admin/");
+		return "redirect:/admin/";
 	}
 	
 	@RequestMapping(value="/mapping/{id}", method=RequestMethod.GET)
 	public String viewMapping(@PathVariable long id, Model model){
+		ServiceMapping mapping = mappingService.get(id);
+		DataConnectorTaskDefinitionMapping dcTaskDefinitionMapping = mapping.getDataConnectorTaskDefinitionMapping(); 
+		DataConnector dataConnector = dataConnectorService.getDataConnector(dcTaskDefinitionMapping.getDataConnectorName());
+		model.addAttribute("dcTaskDefinition", dataConnector.getDefinition(dcTaskDefinitionMapping.getTaskDefinitionName()));
 		model.addAttribute("mapping", mappingService.get(id));
-		return ("mapping");
+		model.addAttribute("taskDefinition", taskRegistry.getTask(mapping.getTaskDefinitionName()));
+		return "mapping";
+	}
+	
+	@RequestMapping(value="/mapping/update", method=RequestMethod.POST)
+	public String updateMapping(HttpServletRequest request){
+		long id = Long.parseLong(request.getParameter("mappingId"));
+		ServiceMapping mapping = mappingService.get(id);
+		Enumeration parameterNames = request.getParameterNames();
+		Map<String, String> newMappings = new HashMap<String, String>();
+		while(parameterNames.hasMoreElements()){
+			String paramName = (String)parameterNames.nextElement();
+			if(paramName.contains("@@")){
+				newMappings.put(request.getParameter(paramName), paramName);
+			}
+		}
+		mapping.setConnectorToTaskMappings(newMappings);
+		mappingService.save(mapping);
+		
+		return "redirect:/admin/";
 	}
 	
 	@RequestMapping("/reloadTasks")
@@ -177,6 +195,6 @@ public class AdminController {
 	@RequestMapping("/logs")
 	public String viewLogs(Model model){
 		model.addAttribute("logs", logService.getAll());
-		return("viewlogs");
+		return "viewlogs";
 	}
 }

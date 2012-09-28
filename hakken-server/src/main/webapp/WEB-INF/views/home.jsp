@@ -9,7 +9,7 @@
         <div class="holder_content">
             <section class="group1">
                 <h3>Install Android Client</h3>
-                Here is the <a href="/hakken/resources/hakken-signed-aligned.apk">apk required to install the android client</a> 
+                Here is the <a href="/hakken/resources/hakken.apk">apk required to install the android client</a> 
             </section>
         </div>
     </h:page>               

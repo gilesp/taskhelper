@@ -103,7 +103,7 @@ public class JacksonStreamParserTest {
 			assertEquals(49,dataItems.size());
 			assertFalse(testJob.isModified());
 			
-			assertEquals(1,	testJob.getTaskDefintionId().longValue());
+			assertEquals(1,	testJob.getTaskDefinitionId().longValue());
 			
 		} catch (IOException e) {
 			fail(e.getMessage());

@@ -18,20 +18,12 @@ public interface DataConnector<T extends DataConnectorTaskDefinition> {
 	
 	public T getDefinition(String name);
 	
-	public boolean createNew();
-	
-	public SubmissionStatus save(Submission submission, Map<String, String> taskToConnectorMappings, TaskDefinition taskDefinition);
+	public SubmissionStatus save(Submission submission, Map<String, String> taskToConnectorMappings, TaskDefinition taskDefinition, String dcTaskDefinitionName);
 	
 	public String getName();
 	
 	public String getType();
 	
-//	public List<String> getPropertyNames();
-	
 	public String getInfo();
 	
-	
-//	public void init(Properties properties);
-//	
-//	public List<String> getDataItems();
 }
