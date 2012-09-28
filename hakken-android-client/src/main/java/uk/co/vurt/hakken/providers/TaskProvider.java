@@ -31,7 +31,7 @@ public class TaskProvider extends ContentProvider {
 	private static final String TAG = "TaskProvider";
 
 	private static final String DATABASE_NAME = "tasks.db";
-	private static final int DATABASE_VERSION = 20;
+	private static final int DATABASE_VERSION = 21;
 	private static final String DEFINITIONS_TABLE_NAME = "definitions";
 	private static final String JOBS_TABLE_NAME = "jobs";
 	private static final String DATAITEMS_TABLE_NAME = "data_items";

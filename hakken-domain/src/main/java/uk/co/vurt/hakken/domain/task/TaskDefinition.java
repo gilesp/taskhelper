@@ -9,6 +9,8 @@ import org.json.simple.JSONObject;
 
 public final class TaskDefinition {
 
+	public final static String MODULE_IDENTIFIER = "Module$";
+	
 	private long id;
 	private String name;
 	private String description;
