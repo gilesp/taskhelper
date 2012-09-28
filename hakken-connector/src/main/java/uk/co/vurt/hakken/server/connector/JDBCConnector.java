@@ -103,13 +103,6 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 		}
 		return instances;
 	}
-
-	@Override
-	public boolean createNew() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Override
 	public String getInfo() {
 		return INFO_STRING;
@@ -257,7 +250,7 @@ public class JDBCConnector extends AbstractDataConnector<DatabaseTableTaskDefini
 	@Override
 	public SubmissionStatus save(Submission submission,
 			Map<String, String> taskToConnectorMappings,
-			TaskDefinition taskDefinition) {
+			TaskDefinition taskDefinition, String dcTaskDefinitionName) {
 		SubmissionStatus status = new SubmissionStatus();
 		status.setValid(false);
 		status.setMessage("Not implemented yet.");

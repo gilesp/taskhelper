@@ -216,7 +216,7 @@ public class JobProcessor {
 	
 	private boolean isPageVisible(Page page){
 		boolean visible = true;
-		if("adhoc".equals(getPageVisibility(page)) && !jobDefinition.isAdhoc()){
+		if("adhoc".equals(getPageVisibility(page)) && !isAdHocJob()){
 			visible = false;
 		}
 		Log.d(TAG, "visibility of page '" + page.getName() + "': " + visible);
@@ -406,5 +406,9 @@ public class JobProcessor {
 	
 	public String getServerError(){
 		return jobDefinition.getServerError();
+	}
+	
+	public boolean isAdHocJob(){
+		return jobDefinition.isAdhoc();
 	}
 }

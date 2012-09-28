@@ -242,10 +242,19 @@ public class RunJob extends Activity {
 					}
 
 					// Not sure if this it the best place to do this but...
-					// is there an expression we need to evaluate fo rthe value?
+					// is there an expression we need to evaluate for the value?
+					String condition = PageItemProcessor.getStringAttribute(item, "condition");
+					boolean useExpression = true;
+					if(condition != null){
+						try {
+							useExpression = jobProcessor.evaluateCondition(condition);
+						} catch (ExpressionException e) {
+							Log.w(TAG, "Unable to evaluate condition for " + item.getName());
+						}
+					}
 					String expression = PageItemProcessor.getStringAttribute(
 							item, "expression");
-					if (expression != null) {
+					if (expression != null && useExpression) {
 						value = jobProcessor.evaluateExpression(expression);
 					}
 

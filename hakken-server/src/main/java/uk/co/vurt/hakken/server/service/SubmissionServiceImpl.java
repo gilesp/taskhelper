@@ -110,7 +110,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		SubmissionStatus status = connector.save(submission,
 				serviceMapping.getTaskToConnectorMappings(),
-				taskRegistry.getTask(submission.getTaskDefinitionName()));
+				taskRegistry.getTask(submission.getTaskDefinitionName()),
+				dcTaskDefMapping.getTaskDefinitionName());
 		logService.log(
 				submission.getUsername(),
 				"Submitted job "
