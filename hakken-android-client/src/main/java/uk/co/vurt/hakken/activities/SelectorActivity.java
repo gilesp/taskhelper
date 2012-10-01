@@ -9,10 +9,9 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsGridFragment;
-import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsGridFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.processor.TaskProcessor;
 import uk.co.vurt.hakken.providers.Job;
-import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -51,10 +50,10 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 		
 		tabManager = new TabManager(this, tabHost, R.id.realtabcontent);
 		
-		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("Jobs"),
-				JobListFragment.class, null);
 		
-		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions"),
+		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("Jobs", getResources().getDrawable(R.drawable.job_tab)),
+				JobListFragment.class, null);
+		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions", getResources().getDrawable(R.drawable.task_tab)),
 				TaskDefinitionsGridFragment.class, null);
 	}
 	
