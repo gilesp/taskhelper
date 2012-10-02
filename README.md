@@ -42,3 +42,5 @@ Once this is done, you can create a production version of the apk with the follo
     mvn clean install -P release
 
 which will in turn sign and zipalign the apk.
+
+An unsigned version of the apk will be built and packaged in the server war file automatically.
