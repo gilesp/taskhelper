@@ -11,6 +11,8 @@ The project uses Maven to build things, and takes the form of a multi module mav
 
 Development was done using Eclipse, and guidelines found here: http://www.workreloaded.com/2011/09/android-build-automation/ were followed to get Eclipse, ADT and maven playing nicely together. 
 
+An unsigned version of the apk will be built and packaged in the server war file automatically.
+
 Releasing
 =========
 In order to package the apk for release, you need to configure a few things
@@ -43,4 +45,3 @@ Once this is done, you can create a production version of the apk with the follo
 
 which will in turn sign and zipalign the apk.
 
-An unsigned version of the apk will be built and packaged in the server war file automatically.
