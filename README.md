@@ -45,3 +45,4 @@ Once this is done, you can create a production version of the apk with the follo
 
 which will in turn sign and zipalign the apk.
 
+TEST
