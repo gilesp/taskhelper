@@ -50,29 +50,36 @@ LoaderManager.LoaderCallbacks<Cursor> {
 	private static final String TAG = "TaskDefinitionsGridFragment";
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
-		getLoaderManager().initLoader(1, null, this);
-		
-		taskGrid = (GridView) getView().findViewById(R.id.taskGrid);
-
 		adapter = new SimpleCursorAdapter(getActivity(),
 				R.layout.selecttask_grid_item, null,
 				new String[] { Task.Definitions.NAME },
 				new int[] { R.id.gridview_entry_name },
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		taskGrid.setAdapter(adapter);
-		
-		taskGrid.setOnItemClickListener(taskClickListener);
 	}
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_task_grid, container, false);
+		View root = inflater.inflate(R.layout.fragment_task_grid, container, false); 
+		taskGrid = (GridView) root.findViewById(R.id.taskGrid);
+
+		taskGrid.setAdapter(adapter);
+		return root;
 	}
 	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		taskGrid = (GridView) getView().findViewById(R.id.taskGrid);
+		taskGrid.setAdapter(adapter);
+		taskGrid.setOnItemClickListener(taskClickListener);
+		
+		getLoaderManager().initLoader(TASK_LOADER, null, this);
+	}
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "Attempting to create cursor loader");
