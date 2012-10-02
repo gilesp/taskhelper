@@ -32,8 +32,7 @@ public class JobListFragment extends ListFragment implements
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		setRetainInstance(true);
-		getLoaderManager().initLoader(JOB_LOADER, null, this);
+		
 		// Create an empty adapter we will use to display the loaded data.
 		// We pass null for the cursor, then update it in onLoadFinished()
 		// Used to map task definition entries from the database to views
@@ -48,16 +47,18 @@ public class JobListFragment extends ListFragment implements
 						CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setListAdapter(adapter);
 		
+		getLoaderManager().initLoader(JOB_LOADER, null, this);
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_job_list, null);
+		setListAdapter(adapter);
 		return root;
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "Attempting to create cursor loader");
 		return new CursorLoader(getActivity(), Job.Definitions.CONTENT_URI,
 				Job.Definitions.ALL, null, null, Job.Definitions.DEFAULT_SORT_ORDER);
@@ -67,14 +68,12 @@ public class JobListFragment extends ListFragment implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		Log.d(TAG, "onLoadFinished called: " + cursor);
 		adapter.swapCursor(cursor);
-		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(TAG, "onLoaderReset called.");
 		adapter.swapCursor(null);
-		adapter.notifyDataSetInvalidated();
 	}
 
 	@Override
