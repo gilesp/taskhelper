@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uk.co.vurt.hakken.R;
 import uk.co.vurt.hakken.domain.NameValue;
 import uk.co.vurt.hakken.domain.job.DataItem;
 import uk.co.vurt.hakken.domain.task.pageitem.LabelledValue;
@@ -42,42 +43,55 @@ public class WidgetFactory {
 		boolean required = PageItemProcessor.getBooleanAttribute(item, "required");
 		String condition = PageItemProcessor.getStringAttribute(item, "condition");
 		
+		String defaultValue = item.getValue();
+		if(dataItem != null){
+			defaultValue = dataItem.getValue();
+		}
+		
 		// create new widget and add it to the map
 		if ("LABEL".equals(item.getType())) {
 			TextView label = new TextView(context);
 			label.setText(item.getLabel());
 			widget = label;
 		} else if ("TEXT".equals(item.getType())) {
+			if(defaultValue == null){
+				defaultValue = "";
+			}
 			if(readonly){
 				TextView label = new TextView(context);
-				label.setText(item.getLabel() + ": " + (dataItem != null ? dataItem.getValue() : item.getValue()));
+				label.setText(item.getLabel() + ": " + defaultValue);
 				widget = label;
 			}else{
 				LabelledEditBox editBox = new LabelledEditBox(context, 
 															  item.getLabel(), 
-															  dataItem != null ? dataItem.getValue() : item.getValue());
+															  defaultValue);
 				widget = editBox;
 			}
 			
 			
 		} else if ("DIGITS".equals(item.getType())
 				|| "NUMERIC".equals(item.getType())) {
+			boolean noDefault = PageItemProcessor.getBooleanAttribute(item, "nodefault");
+			if(noDefault && defaultValue == null){
+				defaultValue = "";
+			}
 			LabelledEditBox editBox = new LabelledEditBox(context,
-					item.getLabel(), dataItem != null ? dataItem.getValue()
-							: item.getValue());
+					item.getLabel(), 
+					defaultValue != null ? defaultValue : "0");
 			editBox.setKeyListener(new DigitsKeyListener());
 			widget = editBox;
 		} else if ("DATETIME".equals(item.getType())) {
 			final LabelledDatePicker datePicker = new LabelledDatePicker(
 					context, item.getLabel(),
-					dataItem != null ? dataItem.getValue() : item.getValue());
+					defaultValue != null ? defaultValue : "");
 			widget = datePicker;
 		} else if ("YESNO".equals(item.getType())) {
+			
 			
 			LabelledCheckBox checkBox = new LabelledCheckBox(
 					context,
 					item.getLabel(),
-					dataItem != null && (dataItem.getValue().equals("true") || dataItem.getValue().equals("Y")) 
+					defaultValue != null && (defaultValue.equals("true") || defaultValue.equals("Y")) 
 							? true
 							: false);
 			widget = checkBox;
@@ -91,17 +105,20 @@ public class WidgetFactory {
 			//At this point, the value is just a string containing json.
 			//we need to convert that to something usable by the spinner.
 			ArrayList<NameValue> spinnerArray = new ArrayList<NameValue>();
-			spinnerArray.add(new NameValue("",null)); //add a blank entry to avoid the first item being pre-selected.
+			if(!multiSelect){
+				spinnerArray.add(new NameValue(context.getResources().getString(R.string.spinner_none_selected),null)); //add a blank entry to avoid the first item being pre-selected.
+			}
 
 			ArrayList<String> dataItemValues = new ArrayList<String>();
-			if(dataItem != null){
-				if(dataItem.getValue().contains(",")){
+			if(defaultValue != null){
+				if(defaultValue.contains(",")){
 					//multiselect value
-					dataItemValues.addAll(Arrays.asList(dataItem.getValue().split("[,]")));
+					dataItemValues.addAll(Arrays.asList(defaultValue.split("[,]")));
 				} else {
-					dataItemValues.add(dataItem.getValue());
+					dataItemValues.add(defaultValue);
 				}
 			}
+			
 			List<NameValue> selected = new ArrayList<NameValue>();
 			List<LabelledValue> values = item.getValues();
 			for(LabelledValue value: values){
@@ -112,9 +129,9 @@ public class WidgetFactory {
 				spinnerArray.add(nameValue);
 			}
 			spinner.setItems(spinnerArray);
-			for(NameValue selectedValue: selected){
-				Log.d(TAG, "Setting selected value: " + selectedValue);
-				spinner.setSelected(selectedValue);
+			for(NameValue selectedNameValue: selected){
+				Log.d(TAG, "Setting selected value: " + selectedNameValue);
+				spinner.setSelected(selectedNameValue);
 			}
 			widget = spinner;
 		} else {
