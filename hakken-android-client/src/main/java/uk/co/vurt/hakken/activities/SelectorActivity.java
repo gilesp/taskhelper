@@ -9,10 +9,9 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.fragments.JobListFragment;
 import uk.co.vurt.hakken.fragments.JobListFragment.OnJobSelectedListener;
 import uk.co.vurt.hakken.fragments.TaskDefinitionsGridFragment;
-import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment;
+import uk.co.vurt.hakken.fragments.TaskDefinitionsGridFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.processor.TaskProcessor;
 import uk.co.vurt.hakken.providers.Job;
-import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.TaskProvider;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -28,6 +27,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,13 +51,19 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 		
 		tabManager = new TabManager(this, tabHost, R.id.realtabcontent);
 		
-		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("Jobs"),
+		tabManager.addTab(tabHost.newTabSpec("jobs").setIndicator("Jobs", getResources().getDrawable(R.drawable.job_tab)),
 				JobListFragment.class, null);
-		
-		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions"),
+		tabManager.addTab(tabHost.newTabSpec("definitions").setIndicator("Definitions", getResources().getDrawable(R.drawable.task_tab)),
 				TaskDefinitionsGridFragment.class, null);
+		Object tag = (Object)getLastCustomNonConfigurationInstance();
+		if(tag != null){
+//			Log.d(TAG, "data is [" + tag.getClass() + "] " + tag);
+			tabHost.setCurrentTabByTag((String)tag);
+			tabManager.onTabChanged((String)tag);
+		}
+			
 	}
-	
+
 	@Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -215,7 +221,8 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
                     if (newTab.fragment == null) {
                         newTab.fragment = Fragment.instantiate(mActivity,
                                 newTab.clss.getName(), newTab.args);
-                        ft.add(mContainerId, newTab.fragment, newTab.tag);
+//                        ft.add(mContainerId, newTab.fragment, newTab.tag);
+                        ft.replace(mContainerId, newTab.fragment, newTab.tag);
                     } else {
                         ft.attach(newTab.fragment);
                     }
@@ -277,5 +284,10 @@ public class SelectorActivity extends FragmentActivity implements OnJobSelectedL
 				Toast.makeText( this, "Unable to create job instance:\n" + sqle.getMessage(), Toast.LENGTH_LONG).show();
 			}
         }
+	}
+
+	@Override
+	public Object onRetainCustomNonConfigurationInstance() {
+		return tabManager.mLastTab.tag;
 	}
 }

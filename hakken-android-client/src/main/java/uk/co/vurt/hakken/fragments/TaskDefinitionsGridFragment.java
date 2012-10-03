@@ -1,10 +1,11 @@
 package uk.co.vurt.hakken.fragments;
 
 import uk.co.vurt.hakken.R;
-import uk.co.vurt.hakken.fragments.TaskDefinitionsListFragment.OnTaskDefintionSelectedListener;
 import uk.co.vurt.hakken.providers.Task;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -16,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
 /**
@@ -40,38 +43,41 @@ public class TaskDefinitionsGridFragment extends Fragment  implements
 LoaderManager.LoaderCallbacks<Cursor> {
 
 	private GridView taskGrid;
-	private SimpleCursorAdapter gridAdapter;
+	private SimpleCursorAdapter adapter;
 	private OnTaskDefintionSelectedListener listener;
 
 	private final static int TASK_LOADER = 0;
 	private static final String TAG = "TaskDefinitionsGridFragment";
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		Log.d(TAG, "onCreateView");
-		return inflater.inflate(R.layout.fragment_task_grid, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		Log.d(TAG, "onActivityCreated");
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
-		getLoaderManager().initLoader(1, null, this);
-		
-		Activity activity = getActivity();
-		View view = getView();
-		Log.d(TAG, "View" + view);
-		taskGrid = (GridView) view.findViewById(R.id.taskGrid);
-		Log.d(TAG, "taskGrid" + taskGrid);
-
-		gridAdapter = new SimpleCursorAdapter(activity,
+		adapter = new SimpleCursorAdapter(getActivity(),
 				R.layout.selecttask_grid_item, null,
 				new String[] { Task.Definitions.NAME },
 				new int[] { R.id.gridview_entry_name },
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		taskGrid.setAdapter(gridAdapter);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View root = inflater.inflate(R.layout.fragment_task_grid, container, false); 
+		taskGrid = (GridView) root.findViewById(R.id.taskGrid);
+
+		taskGrid.setAdapter(adapter);
+		return root;
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		taskGrid = (GridView) getView().findViewById(R.id.taskGrid);
+		taskGrid.setAdapter(adapter);
+		taskGrid.setOnItemClickListener(taskClickListener);
+		
+		getLoaderManager().initLoader(TASK_LOADER, null, this);
 	}
 
 	@Override
@@ -84,14 +90,39 @@ LoaderManager.LoaderCallbacks<Cursor> {
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.d(TAG, "onLoadFinished called: " + data.getCount());
-		gridAdapter.swapCursor(data);
-		gridAdapter.notifyDataSetChanged();
+		adapter.swapCursor(data);
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(TAG, "onLoaderReset called: ");
-		gridAdapter.swapCursor(null);
-		gridAdapter.notifyDataSetInvalidated();
+		adapter.swapCursor(null);
+		adapter.notifyDataSetInvalidated();
 	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			listener = (OnTaskDefintionSelectedListener) activity;
+		} catch (ClassCastException cce) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnTaskDefintionSelectedListener");
+		}
+	}
+	
+	public interface OnTaskDefintionSelectedListener {
+		public void onTaskDefintionSelected(Uri jobUri);
+	}
+	
+	private OnItemClickListener taskClickListener = new OnItemClickListener(){
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			Uri jobUri = ContentUris
+					.withAppendedId(Task.Definitions.CONTENT_URI, id);
+			listener.onTaskDefintionSelected(jobUri);
+		}
+	};
 }
