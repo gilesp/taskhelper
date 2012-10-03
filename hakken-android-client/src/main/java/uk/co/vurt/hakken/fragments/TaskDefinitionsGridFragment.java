@@ -52,19 +52,26 @@ LoaderManager.LoaderCallbacks<Cursor> {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new SimpleCursorAdapter(getActivity(),
-				R.layout.selecttask_grid_item, null,
-				new String[] { Task.Definitions.NAME },
-				new int[] { R.id.gridview_entry_name },
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		Log.d(TAG, "onCreate called");
+//		adapter = new SimpleCursorAdapter(getActivity(),
+//				R.layout.selecttask_grid_item, null,
+//				new String[] { Task.Definitions.NAME },
+//				new int[] { R.id.gridview_entry_name },
+//				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView called");
 		View root = inflater.inflate(R.layout.fragment_task_grid, container, false); 
 		taskGrid = (GridView) root.findViewById(R.id.taskGrid);
 
+		adapter = new SimpleCursorAdapter(getActivity(),
+				R.layout.selecttask_grid_item, null,
+				new String[] { Task.Definitions.NAME },
+				new int[] { R.id.gridview_entry_name },
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		taskGrid.setAdapter(adapter);
 		return root;
 	}
@@ -72,7 +79,7 @@ LoaderManager.LoaderCallbacks<Cursor> {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Log.d(TAG, "onActivityCreated called");
 		taskGrid = (GridView) getView().findViewById(R.id.taskGrid);
 		taskGrid.setAdapter(adapter);
 		taskGrid.setOnItemClickListener(taskClickListener);
