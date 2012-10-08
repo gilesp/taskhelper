@@ -269,7 +269,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			jobCursor = null;
 		}
 
-		JobDefinitionAdapter jobAdapter = new JobDefinitionAdapter(provider, oldJobIds);
+		JobDefinitionAdapter jobAdapter = new JobDefinitionAdapter(provider);
 		
 		NetworkUtilities.fetchJobs(context,  account,  authToken,  new Date(getLastUpdatedDate(account)), jobAdapter);
 		
@@ -344,75 +344,75 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	
 	
 	private class JobDefinitionAdapter implements JobDefinitionHandler {
-		
+
 		private ContentProviderClient provider;
 		private List<JobDefinitionId> addedJobIds;
-		private List<JobDefinitionId> oldJobIds;
 		
-		public JobDefinitionAdapter(ContentProviderClient provider, List<JobDefinitionId> oldJobIds){
+		public JobDefinitionAdapter(ContentProviderClient provider){
 			this.provider = provider;
-			this.oldJobIds = oldJobIds;
-			addedJobIds = new ArrayList<JobDefinitionId>();
+					addedJobIds = new ArrayList<JobDefinitionId>();
 		}
 		
-		public List<JobDefinitionId> getAddedJobIds(){
-			return addedJobIds;
-		}
-
 		@Override
-		public void handle(JobDefinition newJob) {
-			Log.d(TAG, "Adding a job to database: " + newJob);
+		public void handle(JobDefinition job) {
+			Log.d(TAG, "Adding a job to database: " + job);
 			
-			JobDefinitionId newJobId = new JobDefinitionId(newJob.getTaskDefinitionId(), newJob.getRemoteId()); 
-			
+			JobDefinitionId newJobId = new JobDefinitionId(job.getTaskDefinitionId(), job.getRemoteId()); 
 			addedJobIds.add(newJobId);
 			
-			ContentValues values = new ContentValues();
-			values.put(Job.Definitions.REMOTE_ID, newJob.getRemoteId());
-			values.put(Job.Definitions.NAME, newJob.getName());
-			values.put(Job.Definitions.TASK_DEFINITION_ID, newJob.getTaskDefinitionId());
-			values.put(Job.Definitions.CREATED, newJob.getCreated().getTime());
-			if(newJob.getDue() != null){
-				values.put(Job.Definitions.DUE, newJob.getDue().getTime());
-			} else {
-				Log.e(TAG, "Job has no due date!");
-			}
-			values.put(Job.Definitions.STATUS, newJob.getStatus());
-			values.put(Job.Definitions.NOTES, "null".equals(newJob.getNotes()) ? "" : newJob.getNotes());
-			if(newJob.getGroup() != null){
-				values.put(Job.Definitions.GROUP, newJob.getGroup());
-			}
-			
-//			Uri jobUri = ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, newJob.getId());
-			Uri jobUri = Job.Definitions.CONTENT_URI;
-			
-			try{
+			//retrieve job (if it exists)
+			try {
+				String whereClause = Job.Definitions.REMOTE_ID + " = ? AND " + Job.Definitions.TASK_DEFINITION_ID + " = ?";
+				String[] whereArgs = new String[]{job.getRemoteId(), ""+job.getTaskDefinitionId()};
+				Log.d(TAG, "RemoteID: " + job.getRemoteId() + " Task Def Id: " + job.getTaskDefinitionId());
+				Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, 
+						new String[]{Job.Definitions.MODIFIED, Job.Definitions.STATUS}, 
+						whereClause, 
+						whereArgs, null);
+				
+				ContentValues values = new ContentValues();
+				values.put(Job.Definitions.REMOTE_ID, job.getRemoteId());
+				values.put(Job.Definitions.NAME, job.getName());
+				values.put(Job.Definitions.TASK_DEFINITION_ID, job.getTaskDefinitionId());
+				values.put(Job.Definitions.CREATED, job.getCreated().getTime());
+				if(job.getDue() != null){
+					values.put(Job.Definitions.DUE, job.getDue().getTime());
+				} else {
+					Log.e(TAG, "Job has no due date!");
+				}
+				values.put(Job.Definitions.STATUS, job.getStatus());
+				values.put(Job.Definitions.NOTES, "null".equals(job.getNotes()) ? "" : job.getNotes());
+				if(job.getGroup() != null){
+					values.put(Job.Definitions.GROUP, job.getGroup());
+				}
+				
 				//  if job on device & device job isn't modified, then update job (to allow for changes from other sources)
 				//  if job not on device, then create it on device
 				boolean storeDataItems = false;
 				boolean resetStatus = false;
-				if(oldJobIds.contains(newJobId)){
-					
-					Cursor jobCursor = provider.query(jobUri, new String[]{Job.Definitions.MODIFIED, Job.Definitions.STATUS}, null, null, null);
-					boolean modified = false;
-					String status = null;
-					if(jobCursor != null){
-						jobCursor.moveToFirst();
-						modified = Boolean.valueOf(jobCursor.getString(0));
-						status = jobCursor.getString(1);
-						jobCursor.close();
-						jobCursor = null;
-					}
+				Log.d(TAG, "jobCursor: " + jobCursor);
+				Log.d(TAG, "count: " + jobCursor.getCount());
+				if(jobCursor != null && jobCursor.getCount() > 0){
+					// job exists, so check to see if we can update it.
+					jobCursor.moveToFirst();
+					Log.d(TAG, "modified: " + jobCursor.getInt(0));
+					Log.d(TAG, "status: " + jobCursor.getString(1));
+					boolean modified = jobCursor.getInt(0)>0;
+					String status = jobCursor.getString(1);
+					jobCursor.close();
+					jobCursor = null;
 					
 					if(!modified && !"SERVER_ERROR".equals(status)){
 						//update job
-						Log.d(TAG, "Updating job " + newJob.getId());
+						Log.d(TAG, "Updating job " + newJobId);
 						values.put(Job.Definitions.STATUS, "UPDATING");
-						provider.update(jobUri, values, null, null);
+						provider.update(Job.Definitions.CONTENT_URI, values, whereClause, whereArgs);
 						resetStatus = true;
 						storeDataItems = true;
 					}
+				
 				} else {
+					// job doesn't exist, so insert it.
 					//storeTaskDefinition(provider, newJob.getDefinition());
 					//create job
 					Log.d(TAG, "Inserting new job " + newJobId);
@@ -425,27 +425,30 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 					Long jobId = Long.valueOf(providerUri.toString().substring(
                             providerUri.toString().lastIndexOf("/") + 1));
 					Log.i(TAG, "New job id=" + jobId);
-					newJob.setId(jobId);
+					job.setId(jobId);
 				}
 				
-				
-				
 				if(storeDataItems){
-					for(DataItem item: newJob.getDataItems()){
-						storeDataItem(provider, item, newJob);
+					for(DataItem item: job.getDataItems()){
+						storeDataItem(provider, item, job);
 					}
 					if(resetStatus){
 						values = new ContentValues();
-						values.put(Job.Definitions.STATUS, newJob.getStatus());
-						provider.update(jobUri, values, null, null);
+						values.put(Job.Definitions.STATUS, job.getStatus());
+						provider.update(Job.Definitions.CONTENT_URI, values, null, null);
 					}
 				}
-			}catch(RemoteException re){
+			} catch (RemoteException re) {
 				Log.e(TAG, "Unable to store job definition.", re);
 			}
+			
+		}
+
+		public List<JobDefinitionId> getAddedJobIds(){
+			return addedJobIds;
 		}
 	}
-	
+
 	private static class JobDefinitionId {
 	    
         private Long taskDefinitionId;
