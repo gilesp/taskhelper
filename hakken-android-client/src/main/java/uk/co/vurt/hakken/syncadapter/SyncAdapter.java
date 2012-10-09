@@ -366,7 +366,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				String[] whereArgs = new String[]{job.getRemoteId(), ""+job.getTaskDefinitionId()};
 				Log.d(TAG, "RemoteID: " + job.getRemoteId() + " Task Def Id: " + job.getTaskDefinitionId());
 				Cursor jobCursor = provider.query(Job.Definitions.CONTENT_URI, 
-						new String[]{Job.Definitions.MODIFIED, Job.Definitions.STATUS}, 
+						new String[]{Job.Definitions._ID,Job.Definitions.MODIFIED, Job.Definitions.STATUS}, 
 						whereClause, 
 						whereArgs, null);
 				
@@ -390,15 +390,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 				//  if job not on device, then create it on device
 				boolean storeDataItems = false;
 				boolean resetStatus = false;
+				long internalId = -1;
 				Log.d(TAG, "jobCursor: " + jobCursor);
 				Log.d(TAG, "count: " + jobCursor.getCount());
 				if(jobCursor != null && jobCursor.getCount() > 0){
 					// job exists, so check to see if we can update it.
 					jobCursor.moveToFirst();
-					Log.d(TAG, "modified: " + jobCursor.getInt(0));
-					Log.d(TAG, "status: " + jobCursor.getString(1));
-					boolean modified = jobCursor.getInt(0)>0;
-					String status = jobCursor.getString(1);
+					Log.d(TAG, "_id: " + jobCursor.getLong(0));
+					Log.d(TAG, "modified: " + jobCursor.getInt(1));
+					Log.d(TAG, "status: " + jobCursor.getString(2));
+					internalId = jobCursor.getLong(0);
+					boolean modified = jobCursor.getInt(1)>0;
+					String status = jobCursor.getString(2);
 					jobCursor.close();
 					jobCursor = null;
 					
@@ -406,7 +409,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 						//update job
 						Log.d(TAG, "Updating job " + newJobId);
 						values.put(Job.Definitions.STATUS, "UPDATING");
-						provider.update(Job.Definitions.CONTENT_URI, values, whereClause, whereArgs);
+						
+						int count = provider.update(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, internalId), values, whereClause, whereArgs);
+						Log.d(TAG, "Updated " + count + " rows");
 						resetStatus = true;
 						storeDataItems = true;
 					}
@@ -425,6 +430,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 					Long jobId = Long.valueOf(providerUri.toString().substring(
                             providerUri.toString().lastIndexOf("/") + 1));
 					Log.i(TAG, "New job id=" + jobId);
+					internalId = jobId;
 					job.setId(jobId);
 				}
 				
@@ -435,7 +441,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 					if(resetStatus){
 						values = new ContentValues();
 						values.put(Job.Definitions.STATUS, job.getStatus());
-						provider.update(Job.Definitions.CONTENT_URI, values, null, null);
+						provider.update(ContentUris.withAppendedId(Job.Definitions.CONTENT_URI, internalId), values, null, null);
 					}
 				}
 			} catch (RemoteException re) {
