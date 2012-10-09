@@ -9,6 +9,7 @@ import uk.co.vurt.hakken.R;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,8 +74,9 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 			}
 			
 			holder.name.setText(name);
-			holder.notes.setText("Notes: " + notes);
 			
+			holder.notes.setText("Notes: " + Html.fromHtml(notes));
+
 			//format the date for display
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 			holder.duedate.setText("Due: " + sdf.format(new Date(duedate)));
