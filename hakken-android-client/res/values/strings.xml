@@ -75,4 +75,8 @@
 	
 	<!-- Spinner -->
 	<string name="spinner_none_selected">None</string>
+	<plurals name="spinner_selected">
+	    <item quantity="one">One item selected</item>
+	    <item quantity="other">%d items selected</item>
+	</plurals>
 </resources>
