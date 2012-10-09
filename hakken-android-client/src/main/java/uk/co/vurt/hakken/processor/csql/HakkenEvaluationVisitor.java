@@ -61,7 +61,7 @@ public class HakkenEvaluationVisitor extends EvaluationVisitor {
 	}
 
 	protected void visitIsAdHocExpression(){
-		jobProcessor.isAdHocJob();
+		result = jobProcessor.isAdHocJob();
 	}
 	
 	protected void visitCurrentDateExpression() {

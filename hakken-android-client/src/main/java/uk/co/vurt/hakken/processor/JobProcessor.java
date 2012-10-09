@@ -180,6 +180,7 @@ public class JobProcessor {
 				PageSelector selector = nextPages.get(i);
 				if(selector.getCondition() != null && selector.getCondition().length() > 0 ){
 					try{
+						Log.d(TAG, "About to evaluation condition '" + selector.getCondition() + "'");
 						Expression expression = expressionFactory.createCondition(selector.getCondition());
 						expressionVisitor.setExpression(expression);
 						
