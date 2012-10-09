@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -92,29 +93,17 @@ public class MultiSelectSpinner extends Spinner implements
 
 	public String getSpinnerText(){
 		Log.d(TAG, "getSpinnerText() callled");
-		StringBuffer spinnerBuffer = new StringBuffer();
-        boolean someUnselected = false;
-        if(items != null){
-	        for (int i = 0; i < items.size(); i++) {
-	            if (selected[i] == true) {
-	                spinnerBuffer.append(items.get(i));
-	                spinnerBuffer.append(", ");
-	            } else {
-	                someUnselected = true;
-	            }
-	        }
+		int numSelected = 0;
+        if(selected != null){
+        	
+        	for(int i = 0; i < selected.length; i++){
+        		if(selected[i] == true){
+        			numSelected++;
+        		}
+        	}
         }
-        String spinnerText;
-        if (someUnselected) {
-            spinnerText = spinnerBuffer.toString();
-            if (spinnerText.length() > 2){
-                spinnerText = spinnerText.substring(0, spinnerText.length() - 2);
-            }
-        } else {
-            spinnerText = defaultText;
-        }
-        
-        return spinnerText;
+        Resources res = getResources();
+        return res.getQuantityString(R.plurals.spinner_selected, numSelected, numSelected);
 	}
 	
 	@Override
