@@ -147,18 +147,21 @@ public class RunJob extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		//TODO: Modify this so that we're not trying to serialise views within the widgetwrappers (because not all views can be serialised, plus it's a bad idea in general)
+		// Instead we need to save the relevent parameters for the view and then recreate it when the activity resumes.
+		//Or should we not bother saving the widgetWrapperMap at all and just save any data present to the db?
 		super.onSaveInstanceState(outState);
 		jobProcessor.saveInstanceState(outState);
-		if (widgetWrapperMap != null) {
-			for (WidgetWrapper wrapper : widgetWrapperMap.values()) {
-				if (wrapper.getWidget() != null
-						&& wrapper.getWidget().getParent() != null) {
-					((ViewGroup) wrapper.getWidget().getParent())
-							.removeView(wrapper.getWidget());
-				}
-			}
-			outState.putSerializable(WIDGET_MAP_KEY, widgetWrapperMap);
-		}
+//		if (widgetWrapperMap != null) {
+//			for (WidgetWrapper wrapper : widgetWrapperMap.values()) {
+//				if (wrapper.getWidget() != null
+//						&& wrapper.getWidget().getParent() != null) {
+//					((ViewGroup) wrapper.getWidget().getParent())
+//							.removeView(wrapper.getWidget());
+//				}
+//			}
+//			outState.putSerializable(WIDGET_MAP_KEY, widgetWrapperMap);
+//		}
 	}
 
 	protected void finishJob() {

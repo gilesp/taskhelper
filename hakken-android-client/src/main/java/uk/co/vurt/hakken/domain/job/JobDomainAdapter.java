@@ -4,8 +4,8 @@ package uk.co.vurt.hakken.domain.job;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import uk.co.vurt.hakken.providers.Job;
 import uk.co.vurt.hakken.R;
+import uk.co.vurt.hakken.providers.Job;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -14,11 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-//import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class JobDomainAdapter extends SimpleCursorAdapter {
-
 
 	LayoutInflater inflater;
 	
@@ -74,8 +72,8 @@ public class JobDomainAdapter extends SimpleCursorAdapter {
 			}
 			
 			holder.name.setText(name);
-			
-			holder.notes.setText("Notes: " + Html.fromHtml(notes));
+
+			holder.notes.setText("Notes: " + (notes != null ? Html.fromHtml(notes) : ""));
 
 			//format the date for display
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
