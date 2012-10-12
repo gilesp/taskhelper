@@ -16,7 +16,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapKey;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -37,7 +39,8 @@ public class ServiceMapping implements Serializable{
 	private long id;
 	DataConnectorTaskDefinitionMapping dataConnectorTaskDefinitionMapping;
 	String taskDefinitionName;
-	Map<String, String> connectorToTaskMappings;
+	
+	Map<String, EntrySet> connectorToTaskMappings;
 	Map<String, String> taskToConnectorMappings;
 	
 	@Transient
@@ -45,38 +48,54 @@ public class ServiceMapping implements Serializable{
 		return taskToConnectorMappings;
 	}
 	
-	@ElementCollection
-    @MapKeyColumn(name="connector_di")
-    @Column(name="task_di")
-    @CollectionTable(name="service_mapping_dataitems", joinColumns=@JoinColumn(name="mapping_id"), schema="hakken")
-	public Map<String, String> getConnectorToTaskMappings(){
+	@OneToMany(mappedBy="serviceMappingId")
+	@MapKey(name="entryKey")
+	public Map<String, EntrySet> getConnectorToTaskMappings(){
 		return connectorToTaskMappings;
 	}
-
-	public void setConnectorToTaskMappings(Map<String, String> mappings){
+	
+	public void setConnectorToTaskMappings(Map<String, EntrySet> mappings){
 		logger.info("setting Mappings");
-		connectorToTaskMappings = new HashMap<String, String>();
+		this.connectorToTaskMappings = mappings;
 		taskToConnectorMappings = new HashMap<String, String>();
 		List<String> mappingKeys = new ArrayList<String>(mappings.keySet());
 		for(String connectorKey: mappingKeys){
-			setMapping(connectorKey, mappings.get(connectorKey));
+			EntrySet taskDataItems = mappings.get(connectorKey);
+			for(String taskDataItem: taskDataItems.entries){
+				taskToConnectorMappings.put(taskDataItem, connectorKey);
+			}
 		}
 	}
 	
 	public void setMapping(String connectorDataItem, String taskDataItem){
 		logger.info("Setting mapping: " + connectorDataItem + ":" + taskDataItem);
 		if(connectorToTaskMappings == null){
-			connectorToTaskMappings = new HashMap<String, String>();
+			connectorToTaskMappings = new HashMap<String, EntrySet>();
 		}
-		connectorToTaskMappings.put(connectorDataItem, taskDataItem);
+		EntrySet entrySet;
+		if(connectorToTaskMappings.containsKey(connectorDataItem)){
+			entrySet = connectorToTaskMappings.get(connectorDataItem);
+		} else {
+			entrySet = new EntrySet();
+			entrySet.setEntryKey(connectorDataItem);
+		}
+		entrySet.getEntries().add(taskDataItem);
+		connectorToTaskMappings.put(connectorDataItem, entrySet);
+		
 		if(taskToConnectorMappings == null){
 			taskToConnectorMappings = new HashMap<String, String>();
 		}
 		taskToConnectorMappings.put(taskDataItem, connectorDataItem);
 	}
 	
-	public String getTaskDataItem(String connectorDataItem){
-		return connectorToTaskMappings.get(connectorDataItem);
+	public List<String> getTaskDataItem(String connectorDataItem){
+		List<String> entries = new ArrayList<String>();
+		if(connectorToTaskMappings.containsKey(connectorDataItem)){
+			for(String entry: connectorToTaskMappings.get(connectorDataItem).entries){
+				entries.add(entry);
+			}
+		}
+		return entries;
 	}
 	
 	public String getServiceDataItem(DataItem dataItem){
