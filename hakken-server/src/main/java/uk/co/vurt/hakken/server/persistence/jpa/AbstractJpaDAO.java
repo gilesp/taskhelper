@@ -37,7 +37,7 @@ public abstract class AbstractJpaDAO<ID, T extends Serializable> implements Abst
 		return entityManager.createQuery("from " + clazz.getName()).getResultList();
 	}
 
-	@Transactional
+	@Transactional(readOnly = false)
 	public void save(final T entity){
 		logger.info("About to save: " + entity);
 		try{
@@ -49,17 +49,17 @@ public abstract class AbstractJpaDAO<ID, T extends Serializable> implements Abst
 		logger.info("Saved.");
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	public void update(final T entity){
 		entityManager.merge(entity);
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	public void delete(final T entity){
 		entityManager.remove(entity);
 	}
 	
-	@Transactional
+	@Transactional(readOnly = false)
 	public void deleteById(final ID entityId){
 		final T entity = get(entityId);
 		delete(entity);

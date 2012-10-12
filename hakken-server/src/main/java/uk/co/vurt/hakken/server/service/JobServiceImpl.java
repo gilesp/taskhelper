@@ -17,6 +17,7 @@ import uk.co.vurt.hakken.domain.task.TaskDefinition;
 import uk.co.vurt.hakken.server.connector.DataConnector;
 import uk.co.vurt.hakken.server.connector.Instance;
 import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
+import uk.co.vurt.hakken.server.mapping.EntrySet;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.persistence.JobDAO;
 import uk.co.vurt.hakken.server.task.TaskRegistry;
@@ -82,19 +83,21 @@ public class JobServiceImpl implements JobService{
 					for(String connectorDataItemName: connectorDataItemNames){
 						logger.debug(connectorDataItemName + ": " + instance.getDataItems().containsKey(connectorDataItemName));
 						if(instance.getDataItems().containsKey(connectorDataItemName)){
-							DataItem dataItem = new DataItem();
-							logger.debug("value: " + instance.getDataItems().get(connectorDataItemName));
-							dataItem.setValue(instance.getDataItems().get(connectorDataItemName));
-							String taskDiName = mapping.getConnectorToTaskMappings().get(connectorDataItemName);
-							String[] parts = taskDiName.split("@@");
-							String pageName = parts[0];
-							String diName = parts[1];
-							dataItem.setPageName(pageName);
-							dataItem.setName(diName);
-							if(definition.getPage(pageName) != null && definition.getPage(pageName).getPageItem(diName) != null){
-								dataItem.setType(definition.getPage(pageName).getPageItem(diName).getType());
+							EntrySet entries = mapping.getConnectorToTaskMappings().get(connectorDataItemName);
+							for(String taskDiName: entries.getEntries()){
+								DataItem dataItem = new DataItem();
+								logger.debug("value: " + instance.getDataItems().get(connectorDataItemName));
+								dataItem.setValue(instance.getDataItems().get(connectorDataItemName));
+								String[] parts = taskDiName.split("@@");
+								String pageName = parts[0];
+								String diName = parts[1];
+								dataItem.setPageName(pageName);
+								dataItem.setName(diName);
+								if(definition.getPage(pageName) != null && definition.getPage(pageName).getPageItem(diName) != null){
+									dataItem.setType(definition.getPage(pageName).getPageItem(diName).getType());
+								}
+								dataItems.add(dataItem);
 							}
-							dataItems.add(dataItem);
 						}
 					}
 					job.setDataItems(dataItems);

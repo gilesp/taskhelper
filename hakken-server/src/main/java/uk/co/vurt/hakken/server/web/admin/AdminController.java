@@ -26,6 +26,7 @@ import uk.co.vurt.hakken.server.connector.ConfigProperty;
 import uk.co.vurt.hakken.server.connector.DataConnector;
 import uk.co.vurt.hakken.server.connector.DataConnectorTaskDefinition;
 import uk.co.vurt.hakken.server.mapping.DataConnectorTaskDefinitionMapping;
+import uk.co.vurt.hakken.server.mapping.EntrySet;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
 import uk.co.vurt.hakken.server.service.DataConnectorService;
 import uk.co.vurt.hakken.server.service.DataConnectorTaskDefinitionMappingService;
@@ -157,6 +158,33 @@ public class AdminController {
 		return "redirect:/admin/";
 	}
 	
+	@RequestMapping(value="/mapping/update", method=RequestMethod.POST)
+	public String updateMapping(HttpServletRequest request){
+		long id = Long.parseLong(request.getParameter("mappingId"));
+		ServiceMapping mapping = mappingService.get(id);
+		Enumeration parameterNames = request.getParameterNames();
+		Map<String, EntrySet> newMappings = new HashMap<String, EntrySet>();
+		while(parameterNames.hasMoreElements()){
+			String paramName = (String)parameterNames.nextElement();
+			if(paramName.contains("@@")){
+				EntrySet entrySet;
+				String connectorDiName = request.getParameter(paramName);
+				if(newMappings.containsKey(connectorDiName)){
+					entrySet = newMappings.get(connectorDiName);
+				} else {
+					entrySet = new EntrySet();
+					entrySet.setEntryKey(connectorDiName);
+				}
+				entrySet.getEntries().add(paramName);
+				newMappings.put(connectorDiName, entrySet);
+			}
+		}
+		mapping.setConnectorToTaskMappings(newMappings);
+		mappingService.save(mapping);
+		
+		return "redirect:/admin/";
+	}
+	
 	@RequestMapping(value="/mapping/{id}", method=RequestMethod.GET)
 	public String viewMapping(@PathVariable long id, Model model){
 		ServiceMapping mapping = mappingService.get(id);
@@ -168,23 +196,7 @@ public class AdminController {
 		return "mapping";
 	}
 	
-	@RequestMapping(value="/mapping/update", method=RequestMethod.POST)
-	public String updateMapping(HttpServletRequest request){
-		long id = Long.parseLong(request.getParameter("mappingId"));
-		ServiceMapping mapping = mappingService.get(id);
-		Enumeration parameterNames = request.getParameterNames();
-		Map<String, String> newMappings = new HashMap<String, String>();
-		while(parameterNames.hasMoreElements()){
-			String paramName = (String)parameterNames.nextElement();
-			if(paramName.contains("@@")){
-				newMappings.put(request.getParameter(paramName), paramName);
-			}
-		}
-		mapping.setConnectorToTaskMappings(newMappings);
-		mappingService.save(mapping);
-		
-		return "redirect:/admin/";
-	}
+	
 	
 	@RequestMapping("/reloadTasks")
 	public String reloadTasks(Model model){

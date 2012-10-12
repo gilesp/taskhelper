@@ -8,8 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.vurt.hakken.server.mapping.EntrySet;
 import uk.co.vurt.hakken.server.mapping.ServiceMapping;
+import uk.co.vurt.hakken.server.persistence.EntrySetDAO;
 import uk.co.vurt.hakken.server.persistence.ServiceMappingDAO;
 
 @Service
@@ -20,6 +23,7 @@ public class MappingServiceImpl implements MappingService {
 	Map<String, Long> definitionNameCache = new HashMap<String, Long>();
 	
 	ServiceMappingDAO dao;
+	EntrySetDAO entrySetDao;
 	
 	@Override
 	public ServiceMapping get(Long id) {
@@ -35,8 +39,16 @@ public class MappingServiceImpl implements MappingService {
 		this.dao = dao;
 	}
 
+	@Autowired
+	public void setEntrySetDao(EntrySetDAO entrySetDao){
+		entrySetDao.setClazz(EntrySet.class);
+		this.entrySetDao= entrySetDao; 
+	}
+	
 	@Override
+	@Transactional(readOnly=false)
 	public void save(ServiceMapping mapping) {
+		
 		
 		if(get(mapping.getId()) != null){
 			logger.info("Updating mapping.");
@@ -44,6 +56,11 @@ public class MappingServiceImpl implements MappingService {
 		} else {
 			logger.info("Saving new mapping.");
 			dao.save(mapping);
+		}
+		
+		for(EntrySet entrySet: mapping.getConnectorToTaskMappings().values()){
+			entrySet.setServiceMappingId(mapping.getId());
+			entrySetDao.save(entrySet);
 		}
 	}
 
