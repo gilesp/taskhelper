@@ -19,8 +19,9 @@
 		<android.platform>13</android.platform>
 		<android.support.version>r7</android.support.version>
 		<android.emulator.name>HTCDesire</android.emulator.name>
-		<maven.android.plugin.version>3.1.1</maven.android.plugin.version>
+		<maven.android.plugin.version>3.3.0</maven.android.plugin.version>
 		<parent.dir>${project.basedir}/../</parent.dir>
+		<actionBarSherlock.version>4.1.0</actionBarSherlock.version>
 	</properties>
 
 	<dependencies>
@@ -89,12 +90,22 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.google.code.gson</groupId> -->
-		<!-- <artifactId>gson</artifactId> -->
-		<!-- <version>1.7.1</version> -->
-		<!-- <scope>compile</scope> -->
-		<!-- </dependency> -->
+		
+		<!-- ActionbarSherlock
+		<dependency>
+            <groupId>com.actionbarsherlock</groupId>
+            <artifactId>library</artifactId>
+            <version>${actionBarSherlock.version}</version>
+            <type>apklib</type>
+        </dependency>
+        <dependency>
+            <groupId>com.actionbarsherlock</groupId>
+            <artifactId>library</artifactId>
+            <version>${actionBarSherlock.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+         -->
 	</dependencies>
 
 	<build>
@@ -117,35 +128,14 @@
 						<sdk>
 							<platform>${android.platform}</platform>
 						</sdk>
-						<emulator>
-							<avd>${android.emulator.name}</avd>
-						</emulator>
 						<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
 						<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
 						<assetsDirectory>${project.basedir}/assets</assetsDirectory>
 						<resourceDirectory>${project.basedir}/res</resourceDirectory>
 						<nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
-						<sdk>
-							<platform>${android.platform}</platform>
-						</sdk>
 						<deleteConflictingFiles>true</deleteConflictingFiles>
 						<undeployBeforeDeploy>true</undeployBeforeDeploy>
-						
 					</configuration>
-<!-- 					<executions> -->
-<!-- 						<execution> -->
-<!-- 							<id>alignApk</id> -->
-<!-- 							<phase>package</phase> -->
-<!-- 							<goals> -->
-<!-- 								<goal>zipalign</goal> -->
-<!-- 							</goals> -->
-<!-- 						</execution> -->
-<!-- 						<execution> -->
-<!-- 							<goals> -->
-<!-- 								<goal>deploy</goal> -->
-<!-- 							</goals> -->
-<!-- 						</execution> -->
-<!-- 					</executions> -->
 					<extensions>true</extensions>
 				</plugin>
 			</plugins>
@@ -246,35 +236,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- 
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.artifactId}-signed-aligned.apk</file>
-                                    <type>apk</type>
-                                    <classifier>signed-aligned</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>${project.build.directory}/proguard/mapping.txt</file>
-                                    <type>map</type>
-                                    <classifier>release</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-signed-aligned</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                     -->
                 </plugins>
             </build>
         </profile>
