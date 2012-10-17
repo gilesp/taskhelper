@@ -277,10 +277,7 @@ final public class NetworkUtilities {
 
 	}
 
-	/*
-	 * TODO: RP/Kash - DONE - we need to bring the commented out method below back into
-	 * play.
-	 */
+
 	public static void fetchTaskDefinitions(Context context, Account account,
 			String authToken, Date lastUpdated, TaskDefinitionHandler callback) throws JSONException,
 			ParseException, IOException, AuthenticationException {

@@ -32,7 +32,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
-import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.ParseException;
@@ -149,7 +148,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 			
 			syncJobsFromServer(account, authToken, provider);
 			
-			provider.release(); //do we need to do this?
 		}catch(Exception e){
 			handleException(e, authToken, syncResult);
 		}
