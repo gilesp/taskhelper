@@ -5,8 +5,8 @@
     </style>
     
     <style name="TitleTextStyle">
-        <item name="android:textSize">20dip</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">@dimen/theme_title_size</item>
+        <item name="android:textColor">@color/text_colour</item>
         <item name="android:textStyle">bold</item>
     </style>
     
@@ -15,9 +15,9 @@
     <style name="ActivityAssistant" parent="android:Theme"> 
         <item name="android:windowTitleBackgroundStyle">@style/TitleBackgroundStyle</item>
         <item name="android:windowTitleStyle">@style/TitleTextStyle</item>
-        <item name="android:windowTitleSize">28dip</item>
+        <item name="android:windowTitleSize">@dimen/theme_window_title_size</item>
         <item name="android:windowBackground">@color/light_blue</item>
-        <item name="android:textSize">18dip</item>
+        <item name="android:textSize">@dimen/theme_text_size</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
     
