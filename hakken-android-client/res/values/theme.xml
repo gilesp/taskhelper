@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="TitleBackgroundStyle">
         <item name="android:background">@drawable/blue_gradient</item>
     </style>
@@ -10,15 +10,14 @@
         <item name="android:textStyle">bold</item>
     </style>
     
-    <color name="light_blue">#6274d5</color>
-    
-    <style name="ActivityAssistant" parent="android:Theme"> 
+    <style name="ActivityAssistant" parent="@android:style/Theme"> 
         <item name="android:windowTitleBackgroundStyle">@style/TitleBackgroundStyle</item>
         <item name="android:windowTitleStyle">@style/TitleTextStyle</item>
         <item name="android:windowTitleSize">@dimen/theme_window_title_size</item>
         <item name="android:windowBackground">@color/light_blue</item>
         <item name="android:textSize">@dimen/theme_text_size</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColor">@color/text_colour</item>
     </style>
+    
     
 </resources>
