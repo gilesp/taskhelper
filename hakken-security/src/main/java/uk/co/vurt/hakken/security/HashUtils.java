@@ -13,9 +13,6 @@ import org.apache.commons.codec.binary.Base64;
 
 public class HashUtils {
 
-//	private static final Logger logger = LoggerFactory
-//			.getLogger(HashUtils.class);
-
 	// generated using https://www.grc.com/passwords.htm
 	//In the real world, we should be generating this on a per app/user basis and storing that in a database of some sort
 	//then if it ever gets compromised, we could issue a new one.
