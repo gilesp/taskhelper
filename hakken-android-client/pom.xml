@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<android.version>2.3.3</android.version>
+		<android.version>4.1.1.4</android.version>
 		<android.platform>13</android.platform>
 		<android.support.version>r7</android.support.version>
 		<android.emulator.name>HTCDesire</android.emulator.name>
@@ -43,7 +43,12 @@
 			<artifactId>support-v4</artifactId>
 			<version>${android.support.version}</version>
 		</dependency>
-
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${android.version}</version>
+        </dependency>
+        
 		<!-- hakken modules -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>

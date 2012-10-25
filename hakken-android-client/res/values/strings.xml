@@ -70,8 +70,8 @@
 	<string name="preferences_ok_button">OK</string>
 	
 	<!-- Tab labels -->
-	<string name="tab_jobs">Your Jobs</string>
-	<string name="tab_task_definitions">Task Definitions</string>
+	<string name="tab_jobs">Jobs</string>
+	<string name="tab_task_definitions">Definitions</string>
 	
 	<!-- Spinner -->
 	<string name="spinner_none_selected">None</string>
