@@ -16,10 +16,10 @@ expectedDir = 'src/test/resources/expected_screenshots'
 
 device = None
 
-#Utility method for taking a screenshot
-#Loops, comparing subsequent images until result is stable
-#working around issues with framebuffers and timing
-def screenShot(filename) :
+# Utility method for taking a screenshot
+# Loops, comparing subsequent images until result is stable
+# working around issues with framebuffers and timing
+def screenShot(filename=None) :
     stableImage = False
 
     while not stableImage:
@@ -29,8 +29,10 @@ def screenShot(filename) :
         stableImage = result2.sameAs(result, 0.5)
         # print stableImage, ' -- image stabilizing...'
 
-    MonkeyRunner.sleep(shortSleepInterval)
-    result2.writeToFile(filename,'png') 
+    if filename is not None:
+        MonkeyRunner.sleep(shortSleepInterval)
+        result2.writeToFile(filename, 'png')
+         
     return result2
 
 def compare(expectedFilename, actualImage) :
@@ -45,57 +47,72 @@ def waitForConnection():
 def testEmptyStartup() :
     # Runs the component
     device.startActivity(component=runComponent)
-    actual = screenShot('test_results/test1_preferences_screen.png')
+    #actual = screenShot('test_results/test1_preferences_screen.png')
+    actual = screenShot()
     return compare('test1_preferences_screen.png', actual)
     
 def testOpeningSyncServerDialog() :
     waitForConnection()
     device.touch(237, 178, 'DOWN_AND_UP')
-    actual = screenShot('test_results/test2_syncserver_dialog.png')
+    #actual = screenShot('test_results/test2_syncserver_dialog.png')
+    actual = screenShot()
     return compare('test2_syncserver_dialog.png', actual)
     
 def testTypingSyncServer() :
     waitForConnection()
     device.type('http://wm-vms-stf-01.wmfs.net:8280/hakken')
-    actual = screenShot('test_results/test3_synserver_entered.png')
+    #actual = screenShot('test_results/test3_synserver_entered.png')
+    actual = screenShot()
     return compare('test3_synserver_entered.png', actual)
     
 def testCloseSyncServerDialog() :
     waitForConnection()
     device.touch(136, 509, 'DOWN_AND_UP')
-    actual = screenShot('test_results/test4_synserver_close.png')
+    #actual = screenShot('test_results/test4_synserver_close.png')
+    actual = screenShot()
     return compare('test4_synserver_close.png', actual)
     
 def testCloseSettings():
     waitForConnection()
     device.touch(236, 751, 'DOWN_AND_UP')
-    actual = screenShot('test_results/test5_settings_closed.png')
+    #actual = screenShot('test_results/test5_settings_closed.png')
+    actual = screenShot()
     return compare('test5_settings_closed.png', actual)
-    
+
+def testSignin():
+    waitForConnection()
+    device.touch(225, 357, 'DOWN_AND_UP')
+    device.type('J.Brookes')
+    device.touch(217,376, 'DOWN_AND_UP')
+    device.type('J.Brookes')
+    actual = screenShot('test_results/test_login.png')
+    return compare('test_login.png')
+ 
 def setup() :
     waitForConnection()
-    
-    #Remove any existing package and data, to ensure we're at a default state.
+    # Remove any existing package and data, to ensure we're at a default state.
     device.removePackage(package)
-    
     # Installs the Android package. Notice that this method returns a boolean, so you can test
     # to see if the installation worked.
-    device.installPackage('target/hakken.apk')
+    return device.installPackage('target/hakken.apk')
     
 if __name__ == '__main__':
-    setup()
-    passed = 0
-    
-    tests = [testEmptyStartup,
-        testOpeningSyncServerDialog,
-        testTypingSyncServer,
-        testCloseSyncServerDialog,
-        testCloseSettings]
+    if setup():
+        passed = 0
         
-    for test in tests:
-        result = test()
-        print "%s: %s" % (test.__name__, result)
-        if result:
-            passed += 1
-                    
-    print "Status: %d/%d" % (passed, len(tests)) 
+        tests = [testEmptyStartup,
+            testOpeningSyncServerDialog,
+            testTypingSyncServer,
+            testCloseSyncServerDialog,
+            testCloseSettings,
+            testSignin]
+            
+        for test in tests:
+            result = test()
+            print "%s: %s" % (test.__name__, result)
+            if result:
+                passed += 1
+                        
+        print "Status: %d/%d" % (passed, len(tests)) 
+    else :
+        print "Unable to install package to device"
