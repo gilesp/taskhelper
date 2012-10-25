@@ -18,5 +18,7 @@
 	        android:id="@+id/labelled_check_box_value"
 	        android:layout_width="55dip"
 	        android:layout_height="match_parent"
-	        android:gravity="center" />
+	        android:gravity="center" 
+	        android:background="@drawable/checkbox_background"
+            android:button="@drawable/checkbox"/>
 </LinearLayout>

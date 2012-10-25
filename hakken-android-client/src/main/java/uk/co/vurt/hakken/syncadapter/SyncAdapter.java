@@ -232,12 +232,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	private synchronized void syncTaskDefinitions(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
 		Log.d(TAG, "syncTaskDefintions() called.");
 		
-		// delete existing
-		provider.delete(Task.Definitions.CONTENT_URI, null, null);
+		List<Long> oldDefinitionIds = new ArrayList<Long>();
+		Cursor definitionCursor = provider.query(Task.Definitions.CONTENT_URI, new String[]{Task.Definitions._ID}, null, null, null);
+		if(definitionCursor != null){
+			while(definitionCursor.moveToNext()){
+				oldDefinitionIds.add(definitionCursor.getLong(0));
+			}
+		}
 		
 		//insert again
 		TaskDefinitionAdapter taskAdapter = new TaskDefinitionAdapter(provider);		
 		NetworkUtilities.fetchTaskDefinitions(context, account, authToken, new Date(getLastUpdatedDate(account)), taskAdapter);
+		//delete any definitions not added by latest sync
+		for(Long oldDefinitionId: oldDefinitionIds){
+			if(!taskAdapter.getAddedDefinitionIds().contains(oldDefinitionId)){
+				provider.delete(Uri.withAppendedPath(Task.Definitions.CONTENT_URI, ""+oldDefinitionId), null, null);
+			}
+		}
+		
 	}
 	
 	private synchronized void syncJobsFromServer(Account account, String authToken, ContentProviderClient provider) throws AuthenticatorException, IOException, RemoteException, AuthenticationException, ParseException, JSONException {
@@ -329,14 +341,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 	
 	private class TaskDefinitionAdapter implements TaskDefinitionHandler {
 		private ContentProviderClient provider;
+		private List<Long> addedDefinitionIds;
 		
 		public TaskDefinitionAdapter(ContentProviderClient provider){
 			this.provider = provider;
+			addedDefinitionIds = new ArrayList<Long>();
 		}
 				
 		@Override
 		public void handle(TaskDefinition newTask) {
+			addedDefinitionIds.add(newTask.getId());
 			storeTaskDefinition(provider, newTask);
+		}
+		
+		public List<Long> getAddedDefinitionIds(){
+			return addedDefinitionIds;
 		}
 	}
 	
@@ -348,7 +367,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 		
 		public JobDefinitionAdapter(ContentProviderClient provider){
 			this.provider = provider;
-					addedJobIds = new ArrayList<JobDefinitionId>();
+			addedJobIds = new ArrayList<JobDefinitionId>();
 		}
 		
 		@Override

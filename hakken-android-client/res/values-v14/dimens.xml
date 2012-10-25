@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="widget_margin">0dp</dimen>
+    <dimen name="theme_text_size">26dip</dimen>
+    <dimen name="theme_title_size">28dip</dimen>
+    <dimen name="theme_window_title_size">40dip</dimen>
+</resources>
