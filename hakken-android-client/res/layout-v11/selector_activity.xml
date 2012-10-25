@@ -1,0 +1,5 @@
+<!-- API level 11+ only needs the container for tab content. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabcontent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
