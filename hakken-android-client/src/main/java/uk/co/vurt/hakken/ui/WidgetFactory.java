@@ -66,6 +66,10 @@ public class WidgetFactory {
 															  item.getLabel(), 
 															  defaultValue);
 				widget = editBox;
+				String linesAttribute = PageItemProcessor.getStringAttribute(item, "lines");
+				if(linesAttribute != null && linesAttribute.length() > 0){
+					editBox.setLines(Integer.parseInt(linesAttribute));
+				}
 			}
 			
 			
