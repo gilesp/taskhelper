@@ -1,14 +1,5 @@
-Gabba REST API Specification
+Hakken REST API Specification
 ============================
-
-Authentication
-==============
-
-TBD
-
-OAuth two-legged approach?
-http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentication/
-http://spring-security-oauth.codehaus.org/twolegged.html
 
 Base
 ====
@@ -18,16 +9,18 @@ Method: GET
 URI: /
 
 Returns:
-
+```javascript
 [
   "Jobs": "/jobs/for/{username}",
   "Tasks": "/tasks"
 ]
+```
 
 Authentication
 ==============
 
 MUST be accessed via https
+http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentication/
 
 Method: POST
 
@@ -42,18 +35,19 @@ Returns:
 
 (Successful login response)
 
+```javascript
 {
     "success": true,
     "token": "123456abcdef"
 }
-
+```
 (Unsuccessful login response)
-
+```javascript
 {
     "success": false,
     "reason": "The reason login failed."
 }
-
+```
 Jobs
 ====
 
@@ -77,7 +71,7 @@ URI: /jobs/for/{username}/since/{timestamp}?hmac={hmac}
 timestamp={timestamp}&username={username}
 
 Returns:
-
+```javascript
 {
   "id": 1,
   "name": "job_1",
@@ -89,7 +83,7 @@ Returns:
   "notes": "",
   "task": []
 }
-
+```
 task can either be a full task definition or the url for a task
 
 Specific job
@@ -115,7 +109,7 @@ or
 URI: /tasks/{name}
 
 Sample:
-
+```javascript
 {
   "id": 1,
   "name": "test_task"
@@ -134,11 +128,11 @@ Sample:
     }
   ]
 }
-
+```
 Alternative:
 (but this wouldn't be good for mobile use due to reliance on having a
 network connection)
-
+```javascript
 {
   "id": 1,
   "name": "test_task"
@@ -148,7 +142,7 @@ network connection)
     "/tasks/test_task/pages/page_2"
   ]
 }
-
+```
 Could use HTTP "Accept:" headers to choose between the forms? 
 
 Submissions
@@ -172,11 +166,12 @@ The trailing slash after {username} is required (due to idosyncrasies in the Spr
 username={username}
 
 Submitted data:
-
+```javascript
 {
   "username": "some.user",
   "jobId": 1,
   "dataitems": [
-  
+      ...
   ]
 }
+```
