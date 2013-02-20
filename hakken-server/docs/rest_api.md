@@ -4,9 +4,9 @@ Hakken REST API Specification
 Base
 ====
 
-Method: GET
+Method: **GET**
 
-URI: /
+URI: ```/```
 
 Returns:
 ```javascript
@@ -19,17 +19,19 @@ Returns:
 Authentication
 ==============
 
-MUST be accessed via https
-http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentication/
+MUST be accessed via https.
 
-Method: POST
+The approach taken for authentication of calls is similar to http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentication/
+Virtually all requests require a valid hmacSHA1 hash to be passed in order for the request to be successful.
 
-URI: /auth/login
+Method: **POST**
+
+URI: ```/auth/login```
 
 Params:
 
-    username
-    password
+1. username
+2. password
 
 Returns:
 
@@ -51,24 +53,24 @@ Returns:
 Jobs
 ====
 
-/jobs
+```/jobs```
 
 List for user
 -------------
 
-Method: GET
+Method: **GET**
 
-URI: /jobs/for/{username}
+URI: ```/jobs/for/{username}```
 
-URI: /jobs/for/{username}/since/{timestamp}
+URI: ```/jobs/for/{username}/since/{timestamp}```
 
 Authenticated Form:
 
-URI: /jobs/for/{username}/since/{timestamp}?hmac={hmac}
+URI: ```/jobs/for/{username}/since/{timestamp}?hmac={hmac}```
 
 {hmac} should be the hmacSHA1 hashed form of the string:
 
-timestamp={timestamp}&username={username}
+```timestamp={timestamp}&username={username}```
 
 Returns:
 ```javascript
@@ -89,24 +91,24 @@ task can either be a full task definition or the url for a task
 Specific job
 ------------
 
-Method: GET
+Method: **GET**
 
-URI: /jobs/{id}
+URI: ```/jobs/{id}```
 
 
 Tasks
 =====
 
-URI: /tasks
+URI: ```/tasks```
 
 Specific task
 -------------
 
-Method: GET
+Method: **GET**
 
-URI: /tasks/{id}
+URI: ```/tasks/{id}```
 or
-URI: /tasks/{name}
+URI: ```/tasks/{name}```
 
 Sample:
 ```javascript
@@ -148,22 +150,22 @@ Could use HTTP "Accept:" headers to choose between the forms?
 Submissions
 ===========
 
-URI: /submissions
+URI: ```/submissions```
 
 Submit job
 ----------
 
-Method: POST
+Method: **POST**
 
 Authenticated Form:
 
-URI: /submissions/from/{username}/?hmac={hmac}
-
-{hmac} should be the hmacSHA1 hashed form of the string:
+URI: ```/submissions/from/{username}/?hmac={hmac}```
 
 The trailing slash after {username} is required (due to idosyncrasies in the Spring MVC implementation of the server)
 
-username={username}
+{hmac} should be the hmacSHA1 hashed form of the string:
+
+```username={username}```
 
 Submitted data:
 ```javascript
