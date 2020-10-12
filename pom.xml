@@ -54,7 +54,7 @@
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<jackson.version>1.9.6</jackson.version>
-		<junit-version>4.8.1</junit-version>
+		<junit-version>4.13.1</junit-version>
 	</properties>
 
 	<modules>
